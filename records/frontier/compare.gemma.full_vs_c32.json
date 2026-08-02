@@ -1,0 +1,52 @@
+{
+ "model": "gemma",
+ "a": "full",
+ "b": "c32",
+ "cap_a": 128,
+ "cap_b": 32,
+ "identical": 10,
+ "n": 16,
+ "divergences": [
+  {
+   "item": 5,
+   "first_diff": 26,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 9,
+   "first_diff": 132,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 11,
+   "first_diff": 128,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 12,
+   "first_diff": 36,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 13,
+   "first_diff": 21,
+   "len_a": 235,
+   "len_b": 256
+  },
+  {
+   "item": 14,
+   "first_diff": 101,
+   "len_a": 191,
+   "len_b": 197
+  }
+ ],
+ "sec_a": 36.7,
+ "sec_b": 95.9,
+ "peak_a": 25.84,
+ "peak_b": 13.48,
+ "lossless": false
+}

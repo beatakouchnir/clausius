@@ -1,0 +1,15 @@
+{
+ "model": "gemma",
+ "a": "c64a",
+ "b": "c64b",
+ "cap_a": 64,
+ "cap_b": 64,
+ "identical": 16,
+ "n": 16,
+ "divergences": [],
+ "sec_a": 78.6,
+ "sec_b": 65.6,
+ "peak_a": 13.48,
+ "peak_b": 13.48,
+ "lossless": true
+}

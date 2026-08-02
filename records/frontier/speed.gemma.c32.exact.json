@@ -1,0 +1,14 @@
+{
+ "model": "gemma",
+ "capacity": 32,
+ "policy": "exact",
+ "frac_experts": 0.25,
+ "n_items": 8,
+ "gen_tokens": 1765,
+ "seconds": 45.9,
+ "tok_s": 38.46,
+ "ttft_mean_s": 1.097,
+ "topk": null,
+ "active_gb": 4.5,
+ "peak_gb": 4.64
+}

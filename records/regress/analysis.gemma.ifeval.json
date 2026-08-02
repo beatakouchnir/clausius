@@ -1,0 +1,145 @@
+{
+ "reference": "off_ref",
+ "configs": {
+  "off_c48": {
+   "accuracy": 0.8788,
+   "delta_acc": 0.0006,
+   "truth": "ok",
+   "trunc_rate": 0.085,
+   "d_z": {
+    "p90": -0.129,
+    "mean": -0.051,
+    "max": -0.077,
+    "first": 0.052,
+    "mean_top10": -0.106,
+    "gen_len": 0.092
+   }
+  },
+  "off_c64": {
+   "accuracy": 0.8687,
+   "delta_acc": -0.0095,
+   "truth": "ok",
+   "trunc_rate": 0.075,
+   "d_z": {
+    "p90": 0.033,
+    "mean": 0.088,
+    "max": -0.042,
+    "first": 0.06,
+    "mean_top10": -0.045,
+    "gen_len": -0.037
+   }
+  },
+  "off_c96": {
+   "accuracy": 0.8687,
+   "delta_acc": -0.0095,
+   "truth": "ok",
+   "trunc_rate": 0.08,
+   "d_z": {
+    "p90": 0.008,
+    "mean": 0.01,
+    "max": 0.04,
+    "first": 0.065,
+    "mean_top10": 0.007,
+    "gen_len": -0.014
+   }
+  },
+  "off_c24": {
+   "accuracy": 0.8636,
+   "delta_acc": -0.0146,
+   "truth": "ok",
+   "trunc_rate": 0.08,
+   "d_z": {
+    "p90": -0.054,
+    "mean": -0.031,
+    "max": 0.002,
+    "first": 0.046,
+    "mean_top10": -0.086,
+    "gen_len": 0.05
+   }
+  },
+  "off_c32": {
+   "accuracy": 0.8636,
+   "delta_acc": -0.0146,
+   "truth": "ok",
+   "trunc_rate": 0.08,
+   "d_z": {
+    "p90": -0.039,
+    "mean": -0.009,
+    "max": 0.002,
+    "first": 0.044,
+    "mean_top10": -0.07,
+    "gen_len": 0.044
+   }
+  },
+  "quant_4bit": {
+   "accuracy": 0.8492,
+   "delta_acc": -0.029,
+   "truth": "mild",
+   "trunc_rate": 0.085,
+   "d_z": {
+    "p90": 0.348,
+    "mean": 0.454,
+    "max": 0.192,
+    "first": 0.058,
+    "mean_top10": 0.453,
+    "gen_len": -0.183
+   }
+  },
+  "quant_mixed_4_6": {
+   "accuracy": 0.8434,
+   "delta_acc": -0.0348,
+   "truth": "mild",
+   "trunc_rate": 0.095,
+   "d_z": {
+    "p90": 0.01,
+    "mean": 0.085,
+    "max": 0.023,
+    "first": 0.013,
+    "mean_top10": 0.015,
+    "gen_len": 0.002
+   }
+  },
+  "quant_mixed_3_6": {
+   "accuracy": 0.6345,
+   "delta_acc": -0.2437,
+   "truth": "BROKEN",
+   "trunc_rate": 0.28,
+   "d_z": {
+    "p90": 0.764,
+    "mean": 0.824,
+    "max": 1.61,
+    "first": 0.266,
+    "mean_top10": 1.312,
+    "gen_len": 0.688
+   }
+  },
+  "quant_3bit-g64": {
+   "accuracy": 0.4573,
+   "delta_acc": -0.4209,
+   "truth": "BROKEN",
+   "trunc_rate": 0.325,
+   "d_z": {
+    "p90": 0.384,
+    "mean": 0.429,
+    "max": 1.919,
+    "first": 0.242,
+    "mean_top10": 0.789,
+    "gen_len": 0.859
+   }
+  },
+  "quant_2bit-g64": {
+   "accuracy": 0.115,
+   "delta_acc": -0.7632,
+   "truth": "BROKEN",
+   "trunc_rate": 0.215,
+   "d_z": {
+    "p90": 3.148,
+    "mean": 2.926,
+    "max": 3.194,
+    "first": 1.357,
+    "mean_top10": 3.46,
+    "gen_len": 1.963
+   }
+  }
+ }
+}

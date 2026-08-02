@@ -1,0 +1,243 @@
+{
+ "reference": "forget_base",
+ "configs": {
+  "exact_c128": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.071,
+    "mean": -0.071,
+    "max": -0.071,
+    "first": -0.071,
+    "mean_top10": -0.071,
+    "gen_len": 0.0
+   }
+  },
+  "exact_c192": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.0,
+    "mean": 0.0,
+    "max": 0.0,
+    "first": 0.0,
+    "mean_top10": 0.0,
+    "gen_len": 0.0
+   }
+  },
+  "exact_c32": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.0,
+    "mean": 0.0,
+    "max": 0.0,
+    "first": 0.0,
+    "mean_top10": 0.0,
+    "gen_len": 0.0
+   }
+  },
+  "exact_c48": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.0,
+    "mean": 0.0,
+    "max": 0.0,
+    "first": 0.0,
+    "mean_top10": 0.0,
+    "gen_len": 0.0
+   }
+  },
+  "exact_c64": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": -0.088,
+    "mean": -0.09,
+    "max": -0.044,
+    "first": 0.004,
+    "mean_top10": -0.044,
+    "gen_len": 0.071
+   }
+  },
+  "exact_c96": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.071,
+    "mean": 0.071,
+    "max": -0.071,
+    "first": -0.071,
+    "mean_top10": -0.071,
+    "gen_len": 0.0
+   }
+  },
+  "ref": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.0,
+    "mean": 0.0,
+    "max": 0.0,
+    "first": 0.0,
+    "mean_top10": 0.0,
+    "gen_len": 0.0
+   }
+  },
+  "sharpen2": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": -1.382,
+    "mean": -1.096,
+    "max": -1.424,
+    "first": -1.398,
+    "mean_top10": -1.427,
+    "gen_len": 0.0
+   }
+  },
+  "sharpen3": {
+   "accuracy": 0.29,
+   "delta_acc": 0.0,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": -1.363,
+    "mean": -1.078,
+    "max": -1.43,
+    "first": -1.4,
+    "mean_top10": -1.43,
+    "gen_len": -0.071
+   }
+  },
+  "static_c128": {
+   "accuracy": 0.15,
+   "delta_acc": -0.14,
+   "truth": "BROKEN",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 1.014,
+    "mean": 0.955,
+    "max": 0.971,
+    "first": 0.885,
+    "mean_top10": 0.979,
+    "gen_len": -0.266
+   }
+  },
+  "forget_adapter-attn": {
+   "accuracy": 0.13,
+   "delta_acc": -0.16,
+   "truth": "BROKEN",
+   "trunc_rate": 0.005,
+   "d_z": {
+    "p90": 0.841,
+    "mean": 0.84,
+    "max": 0.78,
+    "first": 0.451,
+    "mean_top10": 0.791,
+    "gen_len": 0.32
+   }
+  },
+  "forget_adapter-router": {
+   "accuracy": 0.125,
+   "delta_acc": -0.165,
+   "truth": "BROKEN",
+   "trunc_rate": 0.015,
+   "d_z": {
+    "p90": 0.744,
+    "mean": 0.779,
+    "max": 0.707,
+    "first": 0.288,
+    "mean_top10": 0.705,
+    "gen_len": 0.226
+   }
+  },
+  "topk2": {
+   "accuracy": 0.085,
+   "delta_acc": -0.205,
+   "truth": "BROKEN",
+   "trunc_rate": 0.06,
+   "d_z": {
+    "p90": 0.85,
+    "mean": 0.725,
+    "max": 0.893,
+    "first": 0.259,
+    "mean_top10": 0.87,
+    "gen_len": 0.511
+   }
+  },
+  "static_c64": {
+   "accuracy": 0.07,
+   "delta_acc": -0.22,
+   "truth": "BROKEN",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 1.073,
+    "mean": 1.042,
+    "max": 1.016,
+    "first": 1.026,
+    "mean_top10": 1.02,
+    "gen_len": -0.364
+   }
+  },
+  "subst_c64": {
+   "accuracy": 0.06,
+   "delta_acc": -0.23,
+   "truth": "BROKEN",
+   "trunc_rate": 0.015,
+   "d_z": {
+    "p90": 1.055,
+    "mean": 1.093,
+    "max": 1.072,
+    "first": 1.07,
+    "mean_top10": 1.051,
+    "gen_len": 0.045
+   }
+  },
+  "forget_adapter-qa": {
+   "accuracy": 0.03,
+   "delta_acc": -0.26,
+   "truth": "BROKEN",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": 0.761,
+    "mean": 0.697,
+    "max": 0.777,
+    "first": 0.776,
+    "mean_top10": 0.79,
+    "gen_len": 0.58
+   }
+  },
+  "topk1": {
+   "accuracy": 0.0,
+   "delta_acc": -0.29,
+   "truth": "BROKEN",
+   "trunc_rate": 0.04,
+   "d_z": {
+    "p90": 1.629,
+    "mean": 1.585,
+    "max": 1.635,
+    "first": 0.37,
+    "mean_top10": 1.59,
+    "gen_len": 0.964
+   }
+  }
+ }
+}

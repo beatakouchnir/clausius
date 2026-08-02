@@ -1,0 +1,14 @@
+{
+ "model": "qwen",
+ "capacity": 32,
+ "policy": "exact",
+ "frac_experts": 0.125,
+ "n_items": 8,
+ "gen_tokens": 1936,
+ "seconds": 61.4,
+ "tok_s": 31.55,
+ "ttft_mean_s": 1.425,
+ "topk": null,
+ "active_gb": 3.4,
+ "peak_gb": 3.56
+}

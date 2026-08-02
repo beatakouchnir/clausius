@@ -1,0 +1,40 @@
+{
+ "model": "qwen",
+ "a": "full",
+ "b": "c64",
+ "cap_a": 256,
+ "cap_b": 64,
+ "identical": 12,
+ "n": 16,
+ "divergences": [
+  {
+   "item": 8,
+   "first_diff": 18,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 12,
+   "first_diff": 2,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 13,
+   "first_diff": 204,
+   "len_a": 256,
+   "len_b": 256
+  },
+  {
+   "item": 14,
+   "first_diff": 20,
+   "len_a": 256,
+   "len_b": 256
+  }
+ ],
+ "sec_a": 34.5,
+ "sec_b": 105.5,
+ "peak_a": 35.47,
+ "peak_b": 18.17,
+ "lossless": false
+}

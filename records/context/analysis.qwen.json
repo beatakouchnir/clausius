@@ -1,0 +1,15 @@
+{
+ "contextual \u2212 distractor": {
+  "d_nll": 0.1465,
+  "d_ent": 0.3799,
+  "d_z": 0.565,
+  "sign_agreement": 0.9238
+ },
+ "parametric \u2212 distractor": {
+  "d_nll": 0.9345,
+  "d_ent": 0.6772,
+  "d_z": 0.809,
+  "sign_agreement": 0.8857
+ },
+ "pearson_dnll_dent": 0.6106
+}

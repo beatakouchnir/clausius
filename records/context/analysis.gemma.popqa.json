@@ -1,0 +1,28 @@
+{
+ "contextual \u2212 distractor": {
+  "d_nll": -2.2757,
+  "d_ent": -0.8234,
+  "d_z": -0.37,
+  "sign_agreement": 0.49
+ },
+ "parametric \u2212 distractor": {
+  "d_nll": 0.2459,
+  "d_ent": -0.5485,
+  "d_z": -0.238,
+  "sign_agreement": 0.3067
+ },
+ "pearson_dnll_dent": -0.3713,
+ "split::model KNEW it": {
+  "n": 150,
+  "d_nll": -1.1318,
+  "d_ent": -1.1298,
+  "d_z": -0.51
+ },
+ "split::model did NOT know": {
+  "n": 150,
+  "d_nll": -3.4196,
+  "d_ent": -0.5171,
+  "d_z": -0.235
+ },
+ "pearson_paramnll_dent": 0.0663
+}

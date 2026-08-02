@@ -1,0 +1,117 @@
+{
+ "reference": "quant_4bit",
+ "configs": {
+  "quant_mixed_4_6": {
+   "accuracy": 0.92,
+   "delta_acc": 0.015,
+   "truth": "ok",
+   "trunc_rate": 0.005,
+   "d_z": {
+    "p90": -0.037,
+    "mean": -0.067,
+    "max": -0.007,
+    "first": 0.24,
+    "mean_top10": -0.119,
+    "gen_len": 0.144
+   }
+  },
+  "ref": {
+   "accuracy": 0.9146,
+   "delta_acc": 0.0096,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": -0.154,
+    "mean": -0.204,
+    "max": -0.208,
+    "first": -0.049,
+    "mean_top10": -0.263,
+    "gen_len": -0.049
+   }
+  },
+  "exact_c32": {
+   "accuracy": 0.9091,
+   "delta_acc": 0.0041,
+   "truth": "ok",
+   "trunc_rate": 0.0,
+   "d_z": {
+    "p90": -0.199,
+    "mean": -0.255,
+    "max": -0.229,
+    "first": -0.097,
+    "mean_top10": -0.298,
+    "gen_len": -0.068
+   }
+  },
+  "quant_mixed_3_6": {
+   "accuracy": 0.725,
+   "delta_acc": -0.18,
+   "truth": "BROKEN",
+   "trunc_rate": 0.15,
+   "d_z": {
+    "p90": 1.47,
+    "mean": 1.258,
+    "max": 1.424,
+    "first": -0.408,
+    "mean_top10": 1.534,
+    "gen_len": 0.663
+   }
+  },
+  "quant_3bit-g64": {
+   "accuracy": 0.4322,
+   "delta_acc": -0.4728,
+   "truth": "BROKEN",
+   "trunc_rate": 0.205,
+   "d_z": {
+    "p90": 0.954,
+    "mean": 1.063,
+    "max": 1.89,
+    "first": -0.409,
+    "mean_top10": 1.282,
+    "gen_len": 1.067
+   }
+  },
+  "subst_c32": {
+   "accuracy": 0.0302,
+   "delta_acc": -0.8748,
+   "truth": "BROKEN",
+   "trunc_rate": 0.675,
+   "d_z": {
+    "p90": 0.669,
+    "mean": 0.892,
+    "max": 1.822,
+    "first": 0.84,
+    "mean_top10": 1.14,
+    "gen_len": 1.763
+   }
+  },
+  "static_c32": {
+   "accuracy": 0.025,
+   "delta_acc": -0.88,
+   "truth": "BROKEN",
+   "trunc_rate": 0.78,
+   "d_z": {
+    "p90": 0.794,
+    "mean": 0.941,
+    "max": 2.531,
+    "first": 1.066,
+    "mean_top10": 1.42,
+    "gen_len": 3.348
+   }
+  },
+  "quant_2bit-g64": {
+   "accuracy": 0.01,
+   "delta_acc": -0.895,
+   "truth": "BROKEN",
+   "trunc_rate": 0.21,
+   "d_z": {
+    "p90": 5.104,
+    "mean": 3.572,
+    "max": 4.81,
+    "first": 1.682,
+    "mean_top10": 5.71,
+    "gen_len": 6.121
+   }
+  }
+ }
+}

@@ -1,0 +1,655 @@
+{
+ "gsm8k": [
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.36,
+   "est": true,
+   "acc": 0.9146,
+   "sec": 2.41,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.5,
+   "mem": 7.38,
+   "est": true,
+   "acc": 0.525,
+   "sec": 3.03,
+   "dominated_by": [
+    "e4b/none/c0"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "static",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.25,
+   "mem": 5.62,
+   "est": true,
+   "acc": 0.0151,
+   "sec": 4.09,
+   "dominated_by": [
+    "e4b/none/c0"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.125,
+   "mem": 3.4,
+   "est": false,
+   "acc": 0.9447,
+   "sec": 10.21,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "static",
+   "topk": null,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.27,
+   "est": true,
+   "acc": 0.9447,
+   "sec": 2.75,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.5,
+   "mem": 7.49,
+   "est": false,
+   "acc": 0.915,
+   "sec": 4.37,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.9424,
+   "sec": 2.86,
+   "dominated_by": [
+    "qwen/exact/k7/c256"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": 4,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.87,
+   "sec": 2.71,
+   "dominated_by": [
+    "gemma/static/c128",
+    "gemma/exact/k6/c128",
+    "gemma/exact/c128"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": 4,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.9195,
+   "sec": 3.38,
+   "dominated_by": [
+    "qwen/exact/c256",
+    "qwen/exact/k7/c256",
+    "gemma/exact/k6/c128"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": 7,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.9548,
+   "sec": 2.84,
+   "dominated_by": []
+  },
+  {
+   "model": "e4b",
+   "policy": "none",
+   "topk": null,
+   "cap": 0,
+   "frac": 0.0,
+   "mem": 3.91,
+   "est": false,
+   "acc": 0.8426,
+   "sec": 2.74,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 128,
+   "frac": 0.5,
+   "mem": 9.73,
+   "est": false,
+   "acc": 0.9444,
+   "sec": 6.55,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": 6,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.92,
+   "sec": 2.59,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.9146,
+   "sec": 2.38,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": 7,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.8995,
+   "sec": 2.53,
+   "dominated_by": [
+    "gemma/static/c128",
+    "gemma/exact/c128"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.25,
+   "mem": 4.5,
+   "est": false,
+   "acc": 0.9091,
+   "sec": 6.13,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 48,
+   "frac": 0.1875,
+   "mem": 4.46,
+   "est": false,
+   "acc": 0.9447,
+   "sec": 9.14,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.25,
+   "mem": 4.39,
+   "est": true,
+   "acc": 0.025,
+   "sec": 7.88,
+   "dominated_by": [
+    "e4b/none/c0",
+    "gemma/exact/c24"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": 6,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.9296,
+   "sec": 2.9,
+   "dominated_by": [
+    "qwen/exact/c256",
+    "qwen/exact/k7/c256"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 24,
+   "frac": 0.1875,
+   "mem": 3.76,
+   "est": false,
+   "acc": 0.9091,
+   "sec": 7.04,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.25,
+   "mem": 5.51,
+   "est": false,
+   "acc": 0.9447,
+   "sec": 8.5,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "static",
+   "topk": null,
+   "cap": 128,
+   "frac": 0.5,
+   "mem": 9.84,
+   "est": true,
+   "acc": 0.0854,
+   "sec": 3.2,
+   "dominated_by": [
+    "gemma/static/c64",
+    "e4b/none/c0"
+   ]
+  }
+ ],
+ "mmlu_pro": [
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.25,
+   "mem": 5.51,
+   "est": false,
+   "acc": 0.8014,
+   "sec": 28.35,
+   "dominated_by": [
+    "gemma/exact/c32"
+   ]
+  },
+  {
+   "model": "e4b",
+   "policy": "none",
+   "topk": null,
+   "cap": 0,
+   "frac": 0.0,
+   "mem": 3.91,
+   "est": false,
+   "acc": 0.6364,
+   "sec": 8.87,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.25,
+   "mem": 4.5,
+   "est": false,
+   "acc": 0.8456,
+   "sec": 15.51,
+   "dominated_by": []
+  }
+ ],
+ "popqa": [
+  {
+   "model": "qwen",
+   "policy": "static",
+   "topk": null,
+   "cap": 128,
+   "frac": 0.5,
+   "mem": 9.84,
+   "est": true,
+   "acc": 0.15,
+   "sec": 0.15,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 24,
+   "frac": 0.1875,
+   "mem": 3.76,
+   "est": false,
+   "acc": 0.2287,
+   "sec": 0.9,
+   "dominated_by": [
+    "qwen/exact/c32"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": 6,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.2632,
+   "sec": 0.31,
+   "dominated_by": [
+    "qwen/exact/c128"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.25,
+   "mem": 5.51,
+   "est": false,
+   "acc": 0.29,
+   "sec": 0.5,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": 6,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.26,
+   "sec": 0.17,
+   "dominated_by": [
+    "qwen/exact/c256",
+    "qwen/exact/k4/c256"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 128,
+   "frac": 0.5,
+   "mem": 9.73,
+   "est": false,
+   "acc": 0.29,
+   "sec": 0.28,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 48,
+   "frac": 0.1875,
+   "mem": 4.46,
+   "est": false,
+   "acc": 0.29,
+   "sec": 0.59,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.25,
+   "mem": 4.5,
+   "est": false,
+   "acc": 0.2287,
+   "sec": 0.79,
+   "dominated_by": [
+    "qwen/exact/c48",
+    "qwen/exact/c32"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.25,
+   "mem": 4.39,
+   "est": true,
+   "acc": 0.0256,
+   "sec": 0.27,
+   "dominated_by": [
+    "e4b/none/c0"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.2287,
+   "sec": 0.29,
+   "dominated_by": [
+    "qwen/exact/c128",
+    "gemma/static/c128"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.29,
+   "sec": 0.17,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.5,
+   "mem": 7.49,
+   "est": false,
+   "acc": 0.2258,
+   "sec": 0.49,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 96,
+   "frac": 0.75,
+   "mem": 10.49,
+   "est": false,
+   "acc": 0.2287,
+   "sec": 0.4,
+   "dominated_by": [
+    "qwen/exact/c128"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 96,
+   "frac": 0.75,
+   "mem": 10.37,
+   "est": true,
+   "acc": 0.1719,
+   "sec": 0.3,
+   "dominated_by": [
+    "qwen/exact/c128"
+   ]
+  },
+  {
+   "model": "e4b",
+   "policy": "none",
+   "topk": null,
+   "cap": 0,
+   "frac": 0.0,
+   "mem": 3.91,
+   "est": false,
+   "acc": 0.1508,
+   "sec": 0.19,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.5,
+   "mem": 7.38,
+   "est": true,
+   "acc": 0.0612,
+   "sec": 0.31,
+   "dominated_by": [
+    "e4b/none/c0",
+    "qwen/static/c64"
+   ]
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": 4,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.48,
+   "est": false,
+   "acc": 0.2251,
+   "sec": 0.3,
+   "dominated_by": [
+    "qwen/exact/c128",
+    "gemma/exact/c128",
+    "gemma/static/c128"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "static",
+   "topk": null,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.27,
+   "est": true,
+   "acc": 0.285,
+   "sec": 0.16,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": 4,
+   "cap": 256,
+   "frac": 1.0,
+   "mem": 18.17,
+   "est": false,
+   "acc": 0.28,
+   "sec": 0.17,
+   "dominated_by": [
+    "qwen/exact/c256"
+   ]
+  },
+  {
+   "model": "qwen",
+   "policy": "static",
+   "topk": null,
+   "cap": 64,
+   "frac": 0.25,
+   "mem": 5.62,
+   "est": true,
+   "acc": 0.07,
+   "sec": 0.15,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 32,
+   "frac": 0.125,
+   "mem": 3.4,
+   "est": false,
+   "acc": 0.29,
+   "sec": 0.73,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "static",
+   "topk": null,
+   "cap": 128,
+   "frac": 1.0,
+   "mem": 13.36,
+   "est": true,
+   "acc": 0.2353,
+   "sec": 0.27,
+   "dominated_by": []
+  },
+  {
+   "model": "qwen",
+   "policy": "exact",
+   "topk": null,
+   "cap": 192,
+   "frac": 0.75,
+   "mem": 13.95,
+   "est": false,
+   "acc": 0.29,
+   "sec": 0.25,
+   "dominated_by": []
+  },
+  {
+   "model": "gemma",
+   "policy": "exact",
+   "topk": null,
+   "cap": 48,
+   "frac": 0.375,
+   "mem": 6.0,
+   "est": false,
+   "acc": 0.2328,
+   "sec": 0.63,
+   "dominated_by": [
+    "qwen/exact/c64",
+    "qwen/exact/c48"
+   ]
+  }
+ ]
+}

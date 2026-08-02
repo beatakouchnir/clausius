@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.9', '3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      # NON-editable on purpose. Under the src layout there is no importable
+      # package at the repo root, so this imports the built wheel rather than
+      # the source tree — a missing module or a wrong packages= entry fails
+      # here instead of shipping.
+      #
+      # No accelerator and no mlx: comparison and analysis are pure numpy, so
+      # the suite and any re-analysis of the published corpus run on a stock
+      # runner. Only `capture` needs mlx-lm and a Mac.
+      - run: pip install ".[dev]"
+      - run: pytest -q
