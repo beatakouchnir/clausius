@@ -1,0 +1,8 @@
+clausius
+Copyright 2026 Beata Kouchnir
+
+This product includes software developed for measuring the effect of
+deployment-time changes on language models.
+
+Portions of the research package (`knowledge/`) read from, but do not
+redistribute, the sibling `quantize` and `ghostlight` repositories.

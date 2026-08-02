@@ -1,0 +1,115 @@
+"""Command line for clausius. Exits non-zero on a regression, for CI.
+
+    clausius capture --model M --prompts p.jsonl --out ref.json
+    clausius capture --model M --prompts p.jsonl --out cand.json --adapter ./lora
+    clausius compare ref.json cand.json
+"""
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from .core import (DEFAULT_SIGNAL, DEFAULT_THRESHOLD, SIGNALS, capture,
+                   compare)
+
+
+def read_prompts(path):
+    """One prompt per line: JSONL with a "prompt" field, or plain text.
+
+    Both are accepted because the realistic source is a sample of production
+    traffic, which is usually a log rather than a curated dataset.
+    """
+    lines = [l for l in Path(path).read_text().splitlines() if l.strip()]
+    out = []
+    for line in lines:
+        if line.lstrip().startswith('{'):
+            d = json.loads(line)
+            out.append(d.get('prompt') or d.get('text') or d.get('input'))
+        else:
+            out.append(line)
+    missing = [i for i, p in enumerate(out) if not p]
+    if missing:
+        raise SystemExit(
+            f"{len(missing)} line(s) had no prompt field (first: line "
+            f"{missing[0] + 1}); expected JSONL with 'prompt'/'text'/'input', "
+            f"or plain text")
+    return out
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(
+        prog='clausius', description=__doc__.split('\n')[0],
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest='cmd', required=True)
+
+    c = sub.add_parser('capture', help='record one configuration')
+    c.add_argument('--model', required=True, help='path or HF id')
+    c.add_argument('--prompts', required=True, help='JSONL or plain text')
+    c.add_argument('--out', required=True)
+    c.add_argument('--tag', default=None)
+    c.add_argument('--adapter', default=None, help='LoRA adapter path')
+    c.add_argument('--max-tokens', type=int, default=512)
+    c.add_argument('--limit', type=int, default=None,
+                   help='use only the first N prompts')
+    c.add_argument('--raw', action='store_true',
+                   help="do not apply the model's chat template. For base "
+                        "models; on an instruct model this causes runaway "
+                        "generation and a truncation-dominated capture.")
+
+    d = sub.add_parser('compare', help='paired comparison of two captures')
+    d.add_argument('reference')
+    d.add_argument('candidate')
+    d.add_argument('--signal', default=DEFAULT_SIGNAL, choices=SIGNALS)
+    d.add_argument('--threshold', type=float, default=DEFAULT_THRESHOLD)
+    d.add_argument('--two-sided', action='store_true',
+                   help='also flag entropy DECREASES. Known false positive: a '
+                        'pure confidence change with zero accuracy impact will '
+                        'trip it.')
+    d.add_argument('--keep-truncated', action='store_true',
+                   help='do not drop items that hit the token cap. Dilutes the '
+                        'effect and lets generation length leak in.')
+    d.add_argument('--json', action='store_true')
+
+    a = ap.parse_args(argv)
+
+    if a.cmd == 'capture':
+        prompts = read_prompts(a.prompts)
+        if a.limit:
+            prompts = prompts[:a.limit]
+        print(f"  {len(prompts)} prompts · {a.model}"
+              + (f" + {a.adapter}" if a.adapter else ""), file=sys.stderr)
+
+        def tick(i, n):
+            if i % 25 == 0 or i == n:
+                print(f"  {i}/{n}", file=sys.stderr, flush=True)
+
+        cap = capture(a.model, prompts, tag=a.tag or Path(a.out).stem,
+                      max_tokens=a.max_tokens, adapter=a.adapter,
+                      chat=False if a.raw else None, progress=tick)
+        n_tr = cap.meta.get('truncated', 0)
+        if n_tr > len(prompts) * 0.25:
+            print(f"  warning: {n_tr}/{len(prompts)} hit the {a.max_tokens}-token "
+                  f"cap and will be dropped at compare time — raise "
+                  f"--max-tokens", file=sys.stderr)
+        print(f"  → {cap.save(a.out)}", file=sys.stderr)
+        return 0
+
+    r = compare(a.reference, a.candidate, signal=a.signal,
+                threshold=a.threshold, one_sided=not a.two_sided,
+                drop_truncated=not a.keep_truncated)
+    if a.json:
+        print(json.dumps({'verdict': r.verdict, 'flagged': r.flagged,
+                          'signal': r.signal, 'effect': round(r.effect, 4),
+                          'threshold': r.threshold, 'one_sided': r.one_sided,
+                          'n_compared': r.n_compared,
+                          'n_dropped_truncated': r.n_dropped_truncated,
+                          'detail': {k: round(v, 4)
+                                     for k, v in r.detail.items()}}, indent=1))
+    else:
+        print(r)
+    # non-zero on regression so a CI step fails without extra glue
+    return 1 if r.flagged else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
