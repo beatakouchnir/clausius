@@ -23,7 +23,7 @@ like the related quantities they are. Entropy is the signal this tool reads.*
 pip install clausius              # or: pip install -e ".[mlx]"          # mlx extra is needed only to capture
 ```
 
-Take 25 prompts of your own — production traffic is ideal, and **no labels are
+Take 60 prompts of your own — production traffic is ideal, and **no labels are
 needed**. Capture the configuration you trust, capture the one you changed,
 compare:
 
@@ -39,10 +39,28 @@ REGRESSION  (max d_z = +5.922, threshold 0.3, one-sided)
   all signals: max +5.92  p90 +11.64  mean +10.43  mean_top10 +9.00  first +2.80  gen_len +10.55
 ```
 
-That is a real run. Those two checkpoints differ only in quantization, and the
-2-bit one independently measures **73 points lower** on instruction adherence
-(§4). Twenty-five unlabelled prompts were enough to catch it. `compare` exits
-non-zero on a regression, so it drops into CI without glue.
+That is a real run, on 25 prompts. Those two checkpoints differ only in
+quantization, and the 2-bit one independently measures **73 points lower** on
+instruction adherence (§4). Twenty-five unlabelled prompts were enough to catch
+it. `compare` exits non-zero on a regression, so it drops into CI without glue.
+
+Start at 60 rather than 25, though: `compare` refuses to run on fewer than 20
+paired items, and truncated items are dropped before that count is taken. The
+run above landed on exactly 20 — one more truncation and it would have raised
+instead of reporting. 60 keeps the floor out of reach on a first attempt.
+
+**`capture` uses every prompt in the file.** `--limit N` takes only the first
+N, and exists for prompt sets large enough that a badly chosen `--max-tokens`
+is expensive to discover. Reach for it rarely: a full capture at a generous cap
+*is* the reference you need, whereas a sampled probe is thrown away, so on a
+60-prompt set sampling costs a run rather than saving one.
+
+**Set `--max-tokens` for your traffic, and set it high.** The 512 default suits
+short-answer work; a mixed instruction-following set will blow through it, and
+items that hit the cap are dropped at compare time. A capture can be re-analysed
+at any *tighter* cap, because every item's true length is known — but never at a
+looser one, since truncated items no longer carry theirs. Capture generously
+once rather than twice.
 
 The same three commands cover a LoRA checkpoint (`--adapter`), an inference
 backend, or an offload setting — clausius does not manage configurations, it
