@@ -59,6 +59,14 @@ SIGNALS = ('max', 'p90', 'mean', 'mean_top10', 'first', 'gen_len')
 DEFAULT_SIGNAL = 'max'
 DEFAULT_THRESHOLD = 0.3
 
+# Below this many paired items the effect size is noise. `compare` refuses;
+# `capture` reports how far a run is from it while the model is still loaded.
+MIN_PAIRED_ITEMS = 20
+
+# Caps a truncation curve is reported at. Only the entries at or under the cap
+# a capture actually used are answerable — see `truncation_curve`.
+CAP_LADDER = (256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192)
+
 
 def aggregate(entropy: np.ndarray, n_prompt: int) -> dict:
     """Every aggregation of a per-token entropy sequence, over generated tokens.
@@ -132,6 +140,80 @@ class Result:
                  "  all signals: " + "  ".join(
                      f"{k} {v:+.2f}" for k, v in self.detail.items())]
         return "\n".join(lines)
+
+
+@dataclass
+class TruncationCurve:
+    """What every tighter generation cap would have cost, from one capture.
+
+    The point of reporting this at capture time is that the answer is already
+    in hand and the alternative is finding out at compare time, after a second
+    capture has also been paid for.
+    """
+    cap_used: int
+    n_items: int
+    n_censored: int
+    rows: list
+    floor: int = MIN_PAIRED_ITEMS
+
+    @property
+    def survivors(self) -> int:
+        """Items that would survive truncation filtering at the cap used."""
+        return self.n_items - self.n_censored
+
+    @property
+    def usable(self) -> bool:
+        """Whether a paired comparison against this capture can succeed.
+
+        A candidate can only ever truncate MORE items, never fewer, so a
+        reference already under the floor is a comparison that cannot be run.
+        """
+        return self.survivors >= self.floor
+
+    def __str__(self) -> str:
+        lines = []
+        for r in self.rows:
+            mark = "  <- this run" if r['cap'] == self.cap_used else ""
+            warn = ("  below compare's floor of %d" % self.floor
+                    if r['survivors'] < self.floor else "")
+            lines.append(f"    cap {r['cap']:>5}: {r['truncated']:>3} truncated, "
+                         f"{r['survivors']:>3} survive{warn}{mark}")
+        if self.n_censored:
+            lines.append(
+                f"    {self.n_censored} item(s) reached the {self.cap_used} cap; "
+                f"their true lengths are unknown, so this table cannot be "
+                f"extended above it")
+        return "\n".join(lines)
+
+
+def truncation_curve(capture, caps=CAP_LADDER, floor=MIN_PAIRED_ITEMS):
+    """Truncation counts this capture would have shown at tighter caps.
+
+    Exact downward, silent upward. Every item that finished has its true
+    generated length recorded, so the count at any cap at or under the one used
+    is not an estimate — it is what would have happened. Items that hit the cap
+    have no recorded true length, so no cap above it is answerable at all and
+    none is reported; extrapolating there would be inventing data.
+
+    Accepts a `Capture` or a path to a saved one.
+    """
+    cap = capture if isinstance(capture, Capture) else Capture.load(capture)
+    cap_used = cap.meta.get('max_tokens')
+    if not cap_used:
+        raise ValueError(
+            "capture has no max_tokens in meta; the curve is defined relative "
+            "to the cap that was used and cannot be computed without it")
+    lengths = [r['ent']['gen_len'] for r in cap.rows]
+    n = len(lengths)
+    # matches capture()'s own truncation test: n_gen >= max_tokens - 2
+    counted = sorted({c for c in caps if c <= cap_used} | {int(cap_used)})
+    rows = [{'cap': c,
+             'truncated': sum(1 for x in lengths if x >= c - 2),
+             'survivors': sum(1 for x in lengths if x < c - 2)}
+            for c in counted]
+    censored = sum(1 for x in lengths if x >= cap_used - 2)
+    return TruncationCurve(cap_used=int(cap_used), n_items=n,
+                           n_censored=censored, rows=rows, floor=floor)
 
 
 def apply_chat_template(tokenizer, prompt, chat=None):
@@ -237,7 +319,7 @@ def compare(reference, candidate, signal=DEFAULT_SIGNAL,
             if not (drop_truncated and (ref.rows[i].get('truncated')
                                         or cand.rows[i].get('truncated')))]
     dropped = len(ref.rows) - len(keep)
-    if len(keep) < 20:
+    if len(keep) < MIN_PAIRED_ITEMS:
         raise ValueError(
             f"only {len(keep)} items survive truncation filtering; the effect "
             f"size would be noise. Raise max_tokens or pass "

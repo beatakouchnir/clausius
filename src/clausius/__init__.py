@@ -20,9 +20,12 @@ identical inputs.
 See `core` for why each default is what it is — every one of them is a measured
 result rather than a taste, and FINDINGS.md has the evidence.
 """
-from .core import (DEFAULT_SIGNAL, DEFAULT_THRESHOLD, SIGNALS, Capture, Result,
-                   aggregate, capture, compare)
+from .core import (CAP_LADDER, DEFAULT_SIGNAL, DEFAULT_THRESHOLD,
+                   MIN_PAIRED_ITEMS, SIGNALS, Capture, Result, TruncationCurve,
+                   aggregate, capture, compare, truncation_curve)
 
 __all__ = ['capture', 'compare', 'Capture', 'Result', 'aggregate',
-           'SIGNALS', 'DEFAULT_SIGNAL', 'DEFAULT_THRESHOLD']
+           'truncation_curve', 'TruncationCurve',
+           'SIGNALS', 'DEFAULT_SIGNAL', 'DEFAULT_THRESHOLD',
+           'MIN_PAIRED_ITEMS', 'CAP_LADDER']
 __version__ = '0.1.0'
