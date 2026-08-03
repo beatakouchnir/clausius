@@ -1,0 +1,60 @@
+{"prompt": "What is the capital of Australia?"}
+{"prompt": "Who wrote the novel 'Things Fall Apart'?"}
+{"prompt": "In what year did the Chernobyl disaster occur?"}
+{"prompt": "What is the chemical symbol for tungsten?"}
+{"prompt": "Which river flows through Baghdad?"}
+{"prompt": "Name the largest moon of Saturn."}
+{"prompt": "What language is spoken natively in Bhutan?"}
+{"prompt": "Who painted 'The Garden of Earthly Delights'?"}
+{"prompt": "What is the boiling point of water at sea level in Fahrenheit?"}
+{"prompt": "Which country won the 1998 FIFA World Cup?"}
+{"prompt": "A train leaves Boston at 7:15am travelling at 60 mph. A second train leaves the same station at 8:00am travelling at 80 mph on the same track. At what time does the second train catch the first?"}
+{"prompt": "A shop sells notebooks for $4.50 each. If you buy 5 or more you get 20% off the whole order. What is the total cost of 7 notebooks?"}
+{"prompt": "I have 3 red marbles, 5 blue marbles, and 2 green marbles in a bag. If I draw two marbles without replacement, what is the probability both are blue?"}
+{"prompt": "A rectangular garden is 12 metres long and 8 metres wide. A path 1 metre wide runs around the outside of it. What is the area of the path alone?"}
+{"prompt": "If a recipe for 4 servings needs 300g of flour, how much flour is needed for 7 servings? Show your working."}
+{"prompt": "A car depreciates 15% in value each year. If it cost $28,000 new, what is it worth after 3 years? Round to the nearest dollar."}
+{"prompt": "Two workers can paint a fence in 6 hours. How long would it take three workers of the same speed, and what assumption are you making?"}
+{"prompt": "A number is doubled, then 7 is subtracted, then the result is divided by 3, giving 11. What was the original number?"}
+{"prompt": "In a class of 30 students, 18 study French and 15 study German. Every student studies at least one. How many study both?"}
+{"prompt": "A cyclist covers 40 km at 20 km/h, then 30 km at 15 km/h. What is the average speed for the whole journey?"}
+{"prompt": "Summarise the following in exactly three bullet points, each under 15 words: Remote work adoption rose sharply during the pandemic, then partially reversed as firms mandated office attendance. Studies find productivity effects are mixed and depend heavily on job type and management practice."}
+{"prompt": "Write a JSON object with the keys 'name', 'role', and 'years_experience' describing a fictional senior data engineer. Return only the JSON, no prose."}
+{"prompt": "Rewrite the following sentence in the passive voice: 'The committee approved the revised budget on Tuesday.'"}
+{"prompt": "List exactly five common causes of memory leaks in long-running server processes. Number them 1 to 5, one line each, no explanation."}
+{"prompt": "Produce a markdown table with three columns (Term, Definition, Example) and exactly four rows explaining basic statistics terms."}
+{"prompt": "Reply with exactly one word: the antonym of 'ephemeral'."}
+{"prompt": "Convert this into a bulleted meeting agenda with time allocations totalling 60 minutes: we need to cover last quarter's numbers, the hiring plan, the migration status, and open questions."}
+{"prompt": "Write a two-sentence product description for a stainless steel insulated water bottle. The first sentence must be under 12 words."}
+{"prompt": "Give me a YAML snippet defining a CI job named 'test' that runs on ubuntu-latest and executes 'pytest -q'. Return only YAML."}
+{"prompt": "Classify the sentiment of this review as exactly one of POSITIVE, NEGATIVE, or MIXED, and output only that word: 'The battery life is superb but the screen scratches far too easily.'"}
+{"prompt": "Explain the difference between a process and a thread in operating systems."}
+{"prompt": "Why does adding an index to a database table speed up reads but slow down writes?"}
+{"prompt": "Explain what a race condition is to someone who has never written concurrent code."}
+{"prompt": "What is the difference between TCP and UDP, and when would you choose each?"}
+{"prompt": "Describe what happens, step by step, when you type a URL into a browser and press enter."}
+{"prompt": "Explain the concept of eventual consistency and give one real-world system that relies on it."}
+{"prompt": "What is the difference between authentication and authorization?"}
+{"prompt": "Why is floating point arithmetic sometimes inexact? Give a concrete example."}
+{"prompt": "Explain garbage collection and one situation where it can hurt latency."}
+{"prompt": "What does it mean for a hash function to be cryptographically secure?"}
+{"prompt": "Write a Python function that takes a list of integers and returns the second largest distinct value, or None if there isn't one."}
+{"prompt": "Write a SQL query that returns the top 5 customers by total order value from tables 'customers' (id, name) and 'orders' (id, customer_id, amount)."}
+{"prompt": "Write a bash one-liner that finds all files larger than 100MB under the current directory and prints them sorted by size."}
+{"prompt": "Here is a Python function with a bug. Identify it and give the corrected version:\n\ndef average(xs):\n    total = 0\n    for x in xs:\n        total += x\n    return total / len(xs)"}
+{"prompt": "Write a regular expression that matches a valid ISO 8601 date in the form YYYY-MM-DD, and explain each part."}
+{"prompt": "Convert this loop into a list comprehension:\n\nresult = []\nfor x in range(20):\n    if x % 3 == 0:\n        result.append(x * x)"}
+{"prompt": "Write a Python context manager that times the block it wraps and prints the elapsed milliseconds."}
+{"prompt": "Given a JSON array of objects each with 'id' and 'score', write JavaScript that returns the ids of the three highest scores."}
+{"prompt": "Explain what this shell command does: find . -name '*.log' -mtime +30 -delete"}
+{"prompt": "Write a unit test using pytest for a function called parse_duration that turns '1h30m' into 5400 seconds."}
+{"prompt": "A customer writes: 'I was charged twice for the same order and nobody has replied to my emails for a week.' Draft a professional support reply under 80 words."}
+{"prompt": "Draft a short internal announcement that the deployment freeze begins next Friday and lasts two weeks."}
+{"prompt": "Rewrite this to be more concise without losing meaning: 'It is important to note that, at this point in time, we are not currently in a position to be able to provide a definitive answer to your question.'"}
+{"prompt": "Write three subject lines for an email announcing a 20% discount ending Sunday."}
+{"prompt": "A colleague's pull request has good logic but no tests and unclear variable names. Write constructive review feedback."}
+{"prompt": "Turn these notes into two clear sentences for a status report: migration 60% done, blocked on vendor API keys, expect completion mid-March, no impact to customers yet."}
+{"prompt": "Explain to a non-technical stakeholder why the team needs two weeks for refactoring that produces no visible features."}
+{"prompt": "Write a polite message declining a meeting invitation because it conflicts with a customer call, and propose an alternative."}
+{"prompt": "Summarise the argument for and against adopting a four-day work week in one short paragraph each."}
+{"prompt": "A user reports the app is 'slow'. List the clarifying questions you would ask, in priority order."}
