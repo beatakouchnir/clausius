@@ -171,8 +171,15 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     That is the intended extension point: clausius does not manage
     configurations, it compares whatever two runs you hand it.
     """
-    import mlx.core as mx
-    from mlx_lm import generate, load
+    try:
+        import mlx.core as mx
+        from mlx_lm import generate, load
+    except ImportError as e:  # the only part of this library that needs an accelerator
+        raise ImportError(
+            "capture needs mlx-lm, which runs on Apple Silicon only:\n"
+            "    pip install 'clausius[mlx]'\n"
+            "compare, aggregate and truncation_curve are pure numpy and run "
+            "anywhere — you can re-analyse captures on any machine.") from e
 
     if model_obj is None:
         model_obj, tokenizer = (load(model, adapter_path=adapter) if adapter
