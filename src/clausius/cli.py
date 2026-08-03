@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from .core import (DEFAULT_SIGNAL, DEFAULT_THRESHOLD, SIGNALS, capture,
-                   compare)
+                   compare, truncation_curve)
 
 
 def read_prompts(path):
@@ -48,9 +48,18 @@ def main(argv=None):
     c.add_argument('--out', required=True)
     c.add_argument('--tag', default=None)
     c.add_argument('--adapter', default=None, help='LoRA adapter path')
-    c.add_argument('--max-tokens', type=int, default=512)
+    c.add_argument('--max-tokens', type=int, default=512,
+                   help='generation cap. Capture at the most generous cap you '
+                        'can afford: truncated items are dropped at compare '
+                        'time, and a capture can be re-analysed at any TIGHTER '
+                        'cap but never at a looser one — the lengths of '
+                        'truncated items are not recoverable.')
     c.add_argument('--limit', type=int, default=None,
-                   help='use only the first N prompts')
+                   help='use only the first N prompts (default: all of them). '
+                        'Sampling is rarely worth it: a full capture at a '
+                        'generous --max-tokens is itself the reference, while '
+                        'a sampled probe is thrown away. Use it on prompt sets '
+                        'large enough that a wrong cap is expensive.')
     c.add_argument('--raw', action='store_true',
                    help="do not apply the model's chat template. For base "
                         "models; on an instruct model this causes runaway "
@@ -86,12 +95,26 @@ def main(argv=None):
         cap = capture(a.model, prompts, tag=a.tag or Path(a.out).stem,
                       max_tokens=a.max_tokens, adapter=a.adapter,
                       chat=False if a.raw else None, progress=tick)
-        n_tr = cap.meta.get('truncated', 0)
-        if n_tr > len(prompts) * 0.25:
-            print(f"  warning: {n_tr}/{len(prompts)} hit the {a.max_tokens}-token "
-                  f"cap and will be dropped at compare time — raise "
-                  f"--max-tokens", file=sys.stderr)
+        # save before any verdict on the run: the capture cost real GPU time and
+        # is still re-analysable (compare --keep-truncated) even when doomed for
+        # the default path.
         print(f"  → {cap.save(a.out)}", file=sys.stderr)
+
+        curve = truncation_curve(cap)
+        print(f"  truncation at this and every tighter cap:", file=sys.stderr)
+        print(str(curve), file=sys.stderr)
+        if not curve.usable:
+            # A candidate can only truncate more items, so this comparison is
+            # already impossible. Say so now rather than after a second capture.
+            print(f"\n  ERROR: only {curve.survivors} of {curve.n_items} items "
+                  f"survive at --max-tokens {curve.cap_used}, and compare needs "
+                  f"{curve.floor}.\n"
+                  f"  A candidate capture can only truncate MORE items, so this "
+                  f"comparison cannot succeed.\n"
+                  f"  Re-capture with a larger --max-tokens (the cap is not "
+                  f"recoverable after the fact), or compare --keep-truncated to "
+                  f"accept a diluted effect.", file=sys.stderr)
+            return 2
         return 0
 
     r = compare(a.reference, a.candidate, signal=a.signal,

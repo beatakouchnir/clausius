@@ -10,8 +10,8 @@ preference, and several encode bugs that actually happened.
 import numpy as np
 import pytest
 
-from clausius import Capture, aggregate, compare
-from clausius.core import DEFAULT_THRESHOLD
+from clausius import Capture, aggregate, compare, truncation_curve
+from clausius.core import DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS
 
 
 def make(rows_ent, prompts=None, truncated=None, tag='t'):
@@ -155,3 +155,77 @@ def test_round_trips_through_disk(tmp_path):
     a, b = make([1.0] * 40), make([2.0] * 40)
     pa, pb = a.save(tmp_path / 'a.json'), b.save(tmp_path / 'b.json')
     assert compare(pa, pb).flagged
+
+
+# --- truncation curve -----------------------------------------------------
+
+def with_lengths(lengths, cap):
+    """A Capture carrying explicit generated lengths and the cap it used."""
+    rows = [{'ent': {'first': 1.0, 'mean': 1.0, 'max': 1.0, 'p90': 1.0,
+                     'mean_top10': 1.0, 'gen_len': float(L)},
+             'truncated': L >= cap - 2, 'empty_gen': False}
+            for L in lengths]
+    return Capture(model='m', tag='t',
+                   prompts=[f'p{i}' for i in range(len(lengths))],
+                   rows=rows, meta={'max_tokens': cap})
+
+
+def test_curve_reproduces_a_measured_tighter_cap():
+    """The projection is exact downward, not an estimate.
+
+    Measured: a 60-prompt capture at cap 1536 predicted 47/60 truncated at cap
+    512, and a separate capture actually run at 512 truncated exactly 47. That
+    equality is the whole basis for reporting the curve instead of re-running,
+    so it is pinned here.
+    """
+    cap = with_lengths([1000.0] * 47 + [100.0] * 13, cap=1536)
+    row = next(r for r in truncation_curve(cap).rows if r['cap'] == 512)
+    assert row['truncated'] == 47
+    assert row['survivors'] == 13
+
+
+def test_curve_never_extrapolates_above_the_cap_used():
+    """Items that hit the cap have no recorded true length.
+
+    Reporting a count above the cap used would be inventing data: those items
+    wanted at least the cap and might have wanted ten times it.
+    """
+    curve = truncation_curve(with_lengths([100.0] * 30, cap=1024))
+    assert max(r['cap'] for r in curve.rows) == 1024
+    assert all(r['cap'] <= 1024 for r in curve.rows)
+
+
+def test_curve_counts_are_a_partition():
+    lengths = [50.0, 300.0, 700.0, 1500.0] * 10
+    curve = truncation_curve(with_lengths(lengths, cap=1536))
+    for r in curve.rows:
+        assert r['truncated'] + r['survivors'] == curve.n_items
+
+
+def test_curve_flags_a_capture_that_cannot_be_compared():
+    """A candidate can only truncate more, so a doomed reference is knowable now.
+
+    This is the eight-minute failure the curve exists to prevent: capture the
+    reference, capture the candidate, then learn at compare time that the pair
+    was never viable.
+    """
+    doomed = truncation_curve(with_lengths([2000.0] * 47 + [100.0] * 13, cap=1536))
+    assert doomed.survivors == 13
+    assert not doomed.usable
+
+    fine = truncation_curve(with_lengths([100.0] * 47 + [2000.0] * 13, cap=1536))
+    assert fine.survivors == 47
+    assert fine.usable
+
+
+def test_curve_floor_matches_compares_floor():
+    """One constant, so the warning and the refusal can never disagree."""
+    assert truncation_curve(with_lengths([1.0] * 30, cap=512)).floor \
+        == MIN_PAIRED_ITEMS
+
+
+def test_curve_requires_the_cap_it_is_relative_to():
+    bare = Capture(model='m', tag='t', prompts=['p'],
+                   rows=[{'ent': {'gen_len': 10.0}, 'truncated': False}])
+    with pytest.raises(ValueError, match='max_tokens'):
+        truncation_curve(bare)
