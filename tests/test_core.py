@@ -253,3 +253,35 @@ def test_capture_rejects_model_obj_without_tokenizer():
     """
     with pytest.raises(ValueError, match='without `tokenizer`'):
         capture(None, ['p'], model_obj=object())
+
+
+# --- the CI contract ------------------------------------------------------
+# `compare` exits non-zero on a regression so it drops into CI without glue.
+# That is a promise made in the README, so it is pinned here rather than left
+# to a hand-run smoke test.
+
+def test_cli_exits_nonzero_on_regression(tmp_path):
+    rng = np.random.default_rng(7)
+    base = rng.normal(3.0, 1.0, 40)
+    a = make(base.tolist()).save(tmp_path / 'ref.json')
+    b = make((base + 1.2).tolist()).save(tmp_path / 'cand.json')
+    assert cli_main(['compare', str(a), str(b)]) == 1
+
+
+def test_cli_exits_zero_when_clean(tmp_path):
+    rng = np.random.default_rng(8)
+    base = rng.normal(3.0, 1.0, 40)
+    a = make(base.tolist()).save(tmp_path / 'ref.json')
+    b = make(base.tolist()).save(tmp_path / 'cand.json')
+    assert cli_main(['compare', str(a), str(b)]) == 0
+
+
+def test_cli_json_output_is_machine_readable(tmp_path, capsys):
+    rng = np.random.default_rng(9)
+    base = rng.normal(3.0, 1.0, 40)
+    a = make(base.tolist()).save(tmp_path / 'ref.json')
+    b = make((base + 1.2).tolist()).save(tmp_path / 'cand.json')
+    cli_main(['compare', str(a), str(b), '--json'])
+    out = json.loads(capsys.readouterr().out)
+    assert out['verdict'] == 'REGRESSION' and out['flagged'] is True
+    assert out['n_compared'] == 40
