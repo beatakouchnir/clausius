@@ -64,6 +64,7 @@ from __future__ import annotations
 
 import json
 import time
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -183,6 +184,12 @@ class TruncationCurve:
         reference already under the floor is a comparison that cannot be run.
         """
         return self.survivors >= self.floor
+
+    def as_dict(self) -> dict:
+        """JSON-serialisable form, for storing on a Capture's meta."""
+        return {'cap_used': self.cap_used, 'n_items': self.n_items,
+                'n_censored': self.n_censored, 'survivors': self.survivors,
+                'usable': self.usable, 'floor': self.floor, 'rows': self.rows}
 
     def __str__(self) -> str:
         lines = []
@@ -319,11 +326,30 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     # used to write — is worse than useless as provenance.
     origin = str(model) if model is not None else \
         f'<preloaded {type(model_obj).__name__}>'
-    return Capture(model=origin, tag=tag, prompts=list(prompts), rows=rows,
-                   meta={'max_tokens': max_tokens, 'adapter': adapter,
-                         'chat': chat,
-                         'truncated': sum(r['truncated'] for r in rows),
-                         'seconds': round(time.time() - t0, 1)})
+    cap = Capture(model=origin, tag=tag, prompts=list(prompts), rows=rows,
+                  meta={'max_tokens': max_tokens, 'adapter': adapter,
+                        'chat': chat,
+                        'truncated': sum(r['truncated'] for r in rows),
+                        'seconds': round(time.time() - t0, 1)})
+
+    # The curve travels with the capture, so a caller who never touches the CLI
+    # still has it — including after a save/load round trip weeks later.
+    curve = truncation_curve(cap)
+    cap.meta['truncation'] = curve.as_dict()
+    if not curve.usable:
+        # A warning rather than a raise: the capture is real, it cost GPU time,
+        # and `compare(drop_truncated=False)` can still use it. But silence here
+        # is what let a doomed pair reach compare twice during development, and
+        # the Python API is the documented path for offload wrappers and patched
+        # runtimes — the callers least likely to be watching a terminal.
+        warnings.warn(
+            f"only {curve.survivors} of {curve.n_items} items survive at "
+            f"max_tokens={curve.cap_used}, and compare() needs {curve.floor}. "
+            f"A candidate capture can only truncate more, so this comparison "
+            f"cannot succeed. Re-capture with a larger max_tokens (the cap is "
+            f"not recoverable after the fact), or pass drop_truncated=False.",
+            stacklevel=2)
+    return cap
 
 
 def compare(reference, candidate, signal=DEFAULT_SIGNAL,

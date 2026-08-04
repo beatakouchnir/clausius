@@ -285,3 +285,28 @@ def test_cli_json_output_is_machine_readable(tmp_path, capsys):
     out = json.loads(capsys.readouterr().out)
     assert out['verdict'] == 'REGRESSION' and out['flagged'] is True
     assert out['n_compared'] == 40
+
+
+# --- the curve travels with the capture ------------------------------------
+# capture() cannot run without mlx, but what it attaches must survive a save and
+# a reload, because the whole point is that a caller who never touches the CLI
+# still has the curve weeks later.
+
+def test_curve_as_dict_round_trips_through_disk(tmp_path):
+    # lengths must actually reach the cap, or nothing is censored and the
+    # capture is perfectly usable — survivors is counted at the cap USED
+    cap = with_lengths([2000.0] * 47 + [100.0] * 13, cap=1536)
+    cap.meta['truncation'] = truncation_curve(cap).as_dict()
+    reloaded = Capture.load(cap.save(tmp_path / 'c.json'))
+    t = reloaded.meta['truncation']
+    assert t['cap_used'] == 1536 and t['n_items'] == 60
+    assert t['survivors'] == 13 and t['usable'] is False
+    assert next(r for r in t['rows'] if r['cap'] == 512)['truncated'] == 47
+
+
+def test_curve_as_dict_matches_the_curve():
+    curve = truncation_curve(with_lengths([100.0] * 30, cap=1024))
+    d = curve.as_dict()
+    assert d['survivors'] == curve.survivors
+    assert d['usable'] == curve.usable
+    assert d['floor'] == MIN_PAIRED_ITEMS
