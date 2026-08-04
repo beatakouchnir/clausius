@@ -2238,3 +2238,90 @@ question-answer pairs).
 for this task.** That is an upgrade from F10b's "does not validate", and the
 remaining gap is a dataset problem rather than a signal problem. Three attempts
 is where this stops.
+
+## F14 — the ladder against an *unquantized* reference, adjudicated with labels
+
+F8d measured the quantization ladder against a **4-bit** reference, and so did
+all thirteen benign configurations behind the ±0.10 null. No arm in this record
+had ever used an unquantized reference. When `clausius compare` was pointed at
+one it flagged **bf16 → 4-bit**, which the corpus gave no way to classify: the
+detector reports that something moved, never how much accuracy fell.
+
+Setup: `gemma-4-26b-a4b-it`, mlx-community bf16 converted locally with
+`mlx_lm.convert --q-group-size 64` to 8/4/3/2-bit, so bit-width is the only
+variable. Entropy on 60 unlabelled mixed instruction prompts at cap 4096;
+accuracy on the gsm8k test split, shuffled seed 0.
+
+**The entropy ladder is monotone in bit depth:**
+
+| arm | bits/weight | max d_z | flagged |
+|---|---|---|---|
+| **8-bit** | 8.500 | **+0.172** | no |
+| 4-bit | 4.502 | +0.654 | yes |
+| 3-bit | 3.503 | +2.066 | yes |
+| 2-bit | 2.503 | +8.134 | yes |
+
+**And the labels adjudicate it:**
+
+| arm | n | accuracy | Δacc | b | c | p |
+|---|---|---|---|---|---|---|
+| bf16 (reference) | 1319 | 0.8476 | — | — | — | — |
+| **8-bit** | 300 | 0.8733 | **+0.0133** | 3 | 7 | 0.3438 |
+| **4-bit** | 1319 | 0.8256 | **−0.0220** | 70 | 41 | **0.0076** |
+| 2-bit | 100 | 0.0100 | −0.8600 | 86 | 0 | <0.0001 |
+
+*b = bf16 correct and the arm wrong; c = the reverse; p is an exact two-sided
+binomial McNemar over the discordant pairs.*
+
+**Four things this establishes.**
+
+1. **The flag was a true detection, not a false positive.** 4-bit costs 2.2
+   accuracy points, 70 items broken against 41 fixed, p=0.0076. Entropy called
+   it correctly on 60 unlabelled prompts.
+2. **The 8-bit arm rules out the artifact explanation.** If quantized-vs-bf16
+   comparisons flagged merely for being quantized, 8-bit would flag too. It does
+   not — d_z +0.172, clean — and its accuracy drifts the *wrong* way (+1.3pp,
+   p=0.34), which is what a genuine null looks like on both instruments at once.
+3. **The null is wider against an unquantized reference.** 8-bit is benign by
+   labels and still reads +0.172, above the ±0.10 ceiling of F8b. The 0.3
+   threshold holds, but with ~1.7x margin rather than the ~3x the corpus implies.
+   Threshold headroom does not generalise from a quantized reference to an
+   unquantized one.
+4. **The sensitivity gap, measured directly.** Walking the paired items in order
+   gives the n at which labels would have caught what entropy caught:
+
+   | n | b | c | p |
+   |---|---|---|---|
+   | 200 | 7 | 8 | 1.0000 |
+   | 500 | 28 | 17 | 0.1352 |
+   | 800 | 42 | 28 | 0.1196 |
+   | **878** | 50 | 31 | **0.0448** ← first crosses 0.05 |
+   | 1319 | 70 | 41 | 0.0076 |
+
+   **Labels needed n=878. Entropy needed 60 unlabelled prompts** — a ~15x
+   difference in eval budget, on top of needing no gold answers at all. This is
+   a second instance of F8's top-k result (−2.3pp, flagged at n=200, labels
+   needing n=800), on an unrelated mechanism and a different model.
+
+**The effect is stable, and a mid-run read of it was not.** Items 0–499 give
+Δacc −0.0220; items 500–1318 give −0.0220. But *unpaired* running accuracy part
+way through the second block suggested the gap was collapsing to ~−0.8pp, which
+was sampling noise in an incomplete arm. McNemar depends on the item-level
+discordance, not on either arm's marginal accuracy, so partial-run marginals are
+not a preview of the verdict — a caution worth keeping for any long paired run.
+
+**Limits.**
+
+- **Entropy and accuracy were measured on different prompt sets** — 60 mixed
+  instruction prompts for the former, gsm8k for the latter. F8d measured both on
+  the same items. So "the flag corresponds to this accuracy loss" assumes the
+  damage is general rather than specific to either set. Closing that gap needs an
+  entropy capture over the gsm8k prompts themselves, and it is the obvious next
+  run.
+- **3-bit has no labelled arm.** Its d_z +2.066 sits between two measured points
+  and is assumed, not shown, to sit between them in damage.
+- **8-bit is "not significant", not "proven zero"** at n=300; a real effect
+  smaller than this test resolves is not excluded.
+
+Reproduce with `python -m knowledge.quantladder analyse`, over the records in
+`records/quantladder/`. No model or accelerator needed for the analysis.
