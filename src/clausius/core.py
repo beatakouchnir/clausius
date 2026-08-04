@@ -35,11 +35,25 @@ PAIRED, SAME PROMPTS. Item-to-item variance in base entropy dwarfs the effect of
     a config change, so unpaired comparison is hopeless. Mismatched prompt sets
     are rejected rather than silently compared.
 
-TRUNCATED ITEMS EXCLUDED. A damaged model rambles into the token cap, and those
-    items dilute the signal across hundreds of low-information tokens —
-    excluding them roughly doubled the measured effect. It also stops the
-    detector from riding on generation length, which is a property of the cap
-    you chose rather than of the model.
+TRUNCATED ITEMS EXCLUDED. Items that hit the token cap dilute the signal across
+    hundreds of low-information tokens — excluding them roughly doubled the
+    measured effect — and dropping them stops the detector riding on generation
+    length, which is a property of the cap you chose rather than of the model.
+
+    This note used to say that a damaged model rambles into the cap. The
+    measurements do not support it. At cap 512 a *healthy* 4-bit checkpoint
+    truncated 47/60 items while a destroyed 2-bit one truncated 3; two LoRA
+    fine-tunes truncated 22 and 33 of 50 on held-out domains where their own
+    base truncated none. Rambling tracks how far off-distribution a prompt is,
+    not how damaged the model is. The filter is right; the reason was wrong.
+
+    It carries a cost on heterogeneous traffic. The items it drops are the
+    long-output ones, and F11 measures those as the family most sensitive to
+    compression — validating on short factual recall understates damage to
+    structured generation by ~14x. So on a mixed prompt set the filter biases
+    what survives toward the least sensitive items. Set a cap generous enough
+    that truncation is rare rather than routine, and read `n_dropped_truncated`
+    as a statement about which prompts were measured, not only how many.
 
 NO SINGLE AGGREGATION WINS. `max` is monotone in damage where `p90` inverts on
     long-output tasks; `p90` gives a larger effect on some others. Every verdict

@@ -2325,3 +2325,44 @@ not a preview of the verdict — a caution worth keeping for any long paired run
 
 Reproduce with `python -m knowledge.quantladder analyse`, over the records in
 `records/quantladder/`. No model or accelerator needed for the analysis.
+
+### F14b — correction: rambling tracks off-distribution, not damage
+
+F8's `gen_len` baseline note reads *"Broken models ramble into the token cap"*,
+and `core.py` used the same sentence to justify excluding truncated items. That
+held for F8's own arms — expert-zeroing and static capacity did ramble — but it
+does not generalise, and three runs in this session contradict it in both
+directions:
+
+| run | cap | the config that rambled | the config that did not |
+|---|---|---|---|
+| quantization ladder | 512 | 4-bit, **healthy**: 47/60 truncated | 2-bit, **destroyed**: 3/60 |
+| forgetting, numina | 4096 | fine-tune: 33/50 | its own base: 0/50 |
+| forgetting, magicoder | 4096 | fine-tune: 22/50 | its own base: 0/50 |
+
+In the first, the *undamaged* config is the one that ran into the cap while the
+config with 1% gsm8k accuracy terminated early — 2-bit emits degenerate text and
+stops. In the other two, a fine-tune rambles on domains it was not trained on
+while the checkpoint it was fine-tuned *from* terminates cleanly on the same 50
+prompts.
+
+**What actually predicts truncation is how far off-distribution the prompt is
+for that checkpoint** — which correlates with damage only when the damage is
+what moved the model off-distribution.
+
+**This does not weaken the truncation filter**, whose two independent
+justifications survive: truncated items dilute the signal across hundreds of
+low-information tokens (excluding them roughly doubled the measured effect), and
+keeping them lets the detector ride on generation length, a property of the cap
+rather than of the model. Only the stated mechanism was wrong. `core.py`'s
+docstring is corrected; F8's text stands as the record of what its arms showed.
+
+**It does add a caution the docs did not carry.** The filter drops long-output
+items, and F11 measures those as the family most sensitive to compression —
+short factual recall understates damage to structured generation by ~14x. On
+heterogeneous traffic the filter therefore biases the surviving set toward the
+*least* sensitive prompts. F8d and F8e never saw this because each ran a single
+task at a per-task cap, so the filter removed a roughly uniform slice; it bites
+on exactly the mixed production traffic the README recommends as ideal. Read
+`n_dropped_truncated` as a statement about *which* prompts were measured, not
+only how many.
