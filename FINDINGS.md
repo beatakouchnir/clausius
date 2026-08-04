@@ -2319,9 +2319,12 @@ not a preview of the verdict — a caution worth keeping for any long paired run
   entropy capture over the gsm8k prompts themselves, and it is the obvious next
   run.
 - **3-bit has no labelled arm.** Its d_z +2.066 sits between two measured points
-  and is assumed, not shown, to sit between them in damage.
+  and is assumed, not shown, to sit between them in damage. *Closed by F14d:
+  3-bit scores 0.2940, −56.6pp, and the assumption was badly wrong about the
+  magnitude even though the ordering held.*
 - **8-bit is "not significant", not "proven zero"** at n=300; a real effect
-  smaller than this test resolves is not excluded.
+  smaller than this test resolves is not excluded. *Extended in F14d to n=800;
+  still null, still not zero.*
 
 Reproduce with `python -m knowledge.quantladder analyse`, over the records in
 `records/quantladder/`. No model or accelerator needed for the analysis.
@@ -2419,3 +2422,74 @@ at n=300, both n.s.), and its entropy is inside the null on gsm8k. That is
 consistent with 8-bit being free, but an effect smaller than these tests resolve
 is not excluded — and F14's own n-walk is the reminder that "not significant at
 this n" and "absent" are different statements.
+
+### F14d — the complete matched ladder, and what its shape says
+
+F14c matched one arm pair on one distribution. This completes it: every arm now
+has **entropy and labels on the same gsm8k items**, closing both of F14's
+remaining limits.
+
+| arm | bits/weight | entropy d_z | flagged | accuracy | Δacc | b | c | p |
+|---|---|---|---|---|---|---|---|---|
+| 8-bit | 8.500 | **−0.062** | no | 0.8462 (n=800) | +0.0050 | 17 | 21 | 0.6271 |
+| 4-bit | 4.502 | +0.839 | yes | 0.8256 (n=1319) | −0.0220 | 70 | 41 | 0.0076 |
+| 3-bit | 3.503 | +1.697 | yes | 0.2940 (n=500) | **−0.5660** | 286 | 3 | <0.0001 |
+| 2-bit | 2.503 | +5.303 | yes | 0.0100 (n=100) | −0.8600 | 86 | 0 | <0.0001 |
+
+Monotone on both instruments, in agreement, across four arms and a 25x range of
+damage. Specificity 1/1, sensitivity 3/3, no arm out of order.
+
+**Entropy is ordinal, not proportional — within a single mechanism.** 3-bit loses
+**25x more accuracy than 4-bit** (−56.6pp against −2.2pp) and reads **2x the
+d_z** (+1.697 against +0.839). F8d established that d_z magnitude is
+mechanism-dependent by comparing quantization against expert-zeroing; this shows
+the same compression *inside one mechanism*, on matched items, where every
+confound F8d had to argue around is held fixed. The ordering is trustworthy; the
+spacing is not. "Something moved, and roughly how hard" survives; any attempt to
+read accuracy loss off d_z — even along a single axis — does not.
+
+**3-bit is a broken deployment, not a degraded one.** At 0.2940 against bf16's
+0.8600 on the same 500 items, with 286 items broken against 3 fixed, it is far
+worse than its position between +0.839 and +5.303 suggests. F14's assumption
+that it "sits between two measured points in damage" was right about the order
+and badly wrong about the distance — recorded because that is exactly the error
+the paragraph above warns against, made in this document before it was measured.
+
+**8-bit at n=800 remains null.** +0.5pp, b=17 against c=21, p=0.63 — drifting the
+wrong way, as at n=300. Consistent with 8-bit being free; still not a proof of
+zero.
+
+### F14e — the offload path through the public API (integration, not a finding)
+
+F8 already measured offload arms label-free and `quantize` measures their
+accuracy, so nothing here is a new result. What had never been exercised is the
+README's claim that the same three commands cover an offload setting:
+`knowledge/regress.py` carries its own capture implementation and never touches
+the packaged `clausius`, so the public `model_obj` extension point had no
+coverage against a real wrapper.
+
+Driving `quantize.offload_model.wrap` through `clausius.capture(model_obj=...)`
+on 100 gsm8k items, cap 1024:
+
+| comparison | max d_z | verdict | F8's sign |
+|---|---|---|---|
+| exact c256 → exact c64 (50% resident, experts *fetched*) | **+0.073** | clean | −0.05, clean ✓ |
+| exact c256 → static c64 (non-resident experts *dropped*) | **+2.917** | REGRESSION | +0.64, flagged ✓ |
+
+Both signs reproduce; the magnitudes differ, as they must — different model,
+task and prompt set. The integration works: 30 layers wrapped, provenance
+recorded as `<preloaded Model>`, entropy computed over the wrapped forward pass.
+
+One incidental observation, relevant to F14b: the lossy arm truncated **50/100**
+where the exact arms truncated 11. Here damage *does* drive rambling. F14b's
+claim is that rambling does not *reliably* indicate damage, not that the two
+never coincide — severe damage can itself push a model off-distribution, and
+this is that case.
+
+**A gap this exposed in the tool.** The first attempt at this check failed at
+`compare` with 12 of 40 items surviving, because it used a prompt set already
+measured as truncating 78% at the chosen cap. The truncation curve and the
+fail-fast added for exactly this failure live in `cli.py`, so a caller using the
+Python API — which is the documented path for offload wrappers and patched
+runtimes — receives neither the curve nor the refusal. The protection is on the
+interface least likely to be scripted.
