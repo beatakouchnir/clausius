@@ -266,7 +266,20 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     to construct itself — a patched runtime, a custom cache, an offload wrapper.
     That is the intended extension point: clausius does not manage
     configurations, it compares whatever two runs you hand it.
+
+    Arguments are checked before mlx is imported, so a caller wiring up that
+    extension point finds out on any machine rather than only on a Mac.
     """
+    if model_obj is None and model is None:
+        raise ValueError(
+            "capture needs either `model` (a path or HF id) or a preloaded "
+            "`model_obj` plus `tokenizer`")
+    if model_obj is not None and tokenizer is None:
+        raise ValueError(
+            "`model_obj` was given without `tokenizer`; capture needs both — "
+            "the tokenizer renders the chat template and counts prompt tokens, "
+            "which is what separates prompt positions from generated ones")
+
     try:
         import mlx.core as mx
         from mlx_lm import generate, load
@@ -301,7 +314,12 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
                      'text': text[:2000]})
         if progress:
             progress(i + 1, len(prompts))
-    return Capture(model=str(model), tag=tag, prompts=list(prompts), rows=rows,
+    # A capture is read back weeks later, so it has to say what produced it. With
+    # a preloaded model there is no path to record, and str(None) — which this
+    # used to write — is worse than useless as provenance.
+    origin = str(model) if model is not None else \
+        f'<preloaded {type(model_obj).__name__}>'
+    return Capture(model=origin, tag=tag, prompts=list(prompts), rows=rows,
                    meta={'max_tokens': max_tokens, 'adapter': adapter,
                          'chat': chat,
                          'truncated': sum(r['truncated'] for r in rows),
