@@ -2282,11 +2282,11 @@ binomial McNemar over the discordant pairs.*
    comparisons flagged merely for being quantized, 8-bit would flag too. It does
    not — d_z +0.172, clean — and its accuracy drifts the *wrong* way (+1.3pp,
    p=0.34), which is what a genuine null looks like on both instruments at once.
-3. **The null is wider against an unquantized reference.** 8-bit is benign by
-   labels and still reads +0.172, above the ±0.10 ceiling of F8b. The 0.3
-   threshold holds, but with ~1.7x margin rather than the ~3x the corpus implies.
-   Threshold headroom does not generalise from a quantized reference to an
-   unquantized one.
+3. **The null is wider here than ±0.10.** 8-bit is benign by labels and still
+   reads +0.172 on this prompt set, above the ceiling of F8b, leaving ~1.7x
+   margin to the threshold rather than ~3x. *Superseded in part by F14c:* the
+   same pair against the same bf16 reference reads −0.062 on gsm8k, so the
+   widening belongs to the prompt set, not to the reference being unquantized.
 4. **The sensitivity gap, measured directly.** Walking the paired items in order
    gives the n at which labels would have caught what entropy caught:
 
@@ -2366,3 +2366,56 @@ task at a per-task cap, so the filter removed a roughly uniform slice; it bites
 on exactly the mixed production traffic the README recommends as ideal. Read
 `n_dropped_truncated` as a statement about *which* prompts were measured, not
 only how many.
+
+### F14c — same items, both instruments: the limit closed, and a correction
+
+F14 measured entropy on 60 mixed instruction prompts and accuracy on gsm8k —
+two distributions — and flagged that as its main weakness. This repeats the
+entropy capture over **the exact gsm8k items already scored** (shuffled indices
+0-199, cap 1024), so both instruments finally refer to one set.
+
+| comparison | entropy d_z | flagged | Δacc, same 200 | b | c | p |
+|---|---|---|---|---|---|---|
+| bf16 → 8-bit | **−0.062** | no | +0.0050 | 3 | 4 | 1.0000 |
+| bf16 → 4-bit | **+0.839** | yes | +0.0050 | 7 | 8 | 1.0000 |
+
+**The flag survives, and strengthens.** On gsm8k items 4-bit reads +0.839 against
++0.654 on the mixed set, and the 8-bit control is cleaner (−0.062 against
++0.172). F14's headline is confirmed on matched distributions rather than
+narrowed.
+
+**And on those same 200 items, labels see nothing at all.** Δacc is +0.5pp — the
+*wrong* direction — with b=7 against c=8 and p=1.0000. Yet the same two
+checkpoints over the full 1319-item split give −2.2pp at p=0.0076, so the
+damage is real and this 200-item sample simply cannot resolve it.
+
+That is the project's central claim reproduced under the tightest possible
+control: **same checkpoints, same 200 items, same run — entropy flags, labels
+are blind, and the ground truth from 6.6x more items agrees with entropy.** F8's
+top-k arm and F14's n=878 walk both argued this by comparing budgets across
+different item counts; this shows it at a fixed one.
+
+**The correction.** F14's third point attributed the widened null (+0.172) to the
+reference being unquantized. That is wrong. The same 8-bit checkpoint, against
+the same bf16 reference, reads −0.062 on gsm8k — comfortably inside ±0.10. What
+changed between the two measurements is the prompt set: 60 heterogeneous
+instruction-following prompts versus 200 items of one task. Two candidates, not
+separated here:
+
+- **Prompt-set heterogeneity**, consistent with F14b — a mixed set truncates
+  unevenly and mixes output-length regimes, both of which move per-item
+  variance, and d_z is a ratio to that variance.
+- **Small-n noise**, since the mixed-set figure rests on 59 surviving pairs
+  against 178.
+
+Either way the corpus-derived ±0.10 should be read as a property of the runs it
+came from — single-task, per-task caps — rather than a universal null. The 0.3
+threshold retains margin in both regimes, which is the part that matters
+operationally.
+
+**A note on what this does not show.** 8-bit's accuracy is statistically
+indistinguishable from bf16 on every measurement taken (+0.5pp at n=200, +1.3pp
+at n=300, both n.s.), and its entropy is inside the null on gsm8k. That is
+consistent with 8-bit being free, but an effect smaller than these tests resolve
+is not excluded — and F14's own n-walk is the reminder that "not significant at
+this n" and "absent" are different statements.

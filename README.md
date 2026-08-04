@@ -158,13 +158,14 @@ same answer, if you even have labels.
 put the false-alarm null at **|d_z| ≤ 0.10**, which sets the threshold at 0.3.
 An earlier eyeballed 0.5 was ~5x the null and was costing real detections.
 
-> **The null is wider against an unquantized reference.** All thirteen benign
-> configs were measured against a *4-bit* baseline. Measured instead against
-> bf16, an 8-bit checkpoint of `gemma-4-26b-a4b-it` — benign by labels, gsm8k
-> 0.8733 vs 0.8600, n=300, p=0.34, and drifting the *wrong* way — reads
-> **d_z +0.172**. That is above the 0.10 ceiling and leaves ~1.7x margin to the
-> threshold rather than ~3x. The threshold holds; the headroom does not
-> generalise from a quantized reference to an unquantized one.
+> **The null width varies with the prompt set.** An 8-bit checkpoint of
+> `gemma-4-26b-a4b-it` is benign by labels (gsm8k 0.8500 vs 0.8450 on the same
+> 200 items, and +1.3pp at n=300, both n.s.). Against a bf16 reference it reads
+> **d_z +0.172** on a mixed instruction-following set of 60 prompts, and
+> **−0.062** on 200 gsm8k items. Same pair, same reference, opposite sides of
+> the ±0.10 null. The 0.3 threshold keeps margin in both, but ±0.10 is a
+> property of the corpus it was measured on — single-task runs at per-task caps
+> — and a heterogeneous prompt set is entitled to a wider null.
 
 **Adversarial testing.** The dangerous failure would be damage that makes a model
 *more* confident — a silent false negative. Two constructions were built to
