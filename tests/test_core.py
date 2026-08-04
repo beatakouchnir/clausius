@@ -7,10 +7,13 @@ published measurement corpus can do it on a laptop.
 Each test guards a decision that came out of a measurement rather than a
 preference, and several encode bugs that actually happened.
 """
+import json
+
 import numpy as np
 import pytest
 
-from clausius import Capture, aggregate, compare, truncation_curve
+from clausius import Capture, aggregate, capture, compare, truncation_curve
+from clausius.cli import main as cli_main
 from clausius.core import DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS
 
 
@@ -229,3 +232,24 @@ def test_curve_requires_the_cap_it_is_relative_to():
                    rows=[{'ent': {'gen_len': 10.0}, 'truncated': False}])
     with pytest.raises(ValueError, match='max_tokens'):
         truncation_curve(bare)
+
+
+# --- the preloaded-model extension point ----------------------------------
+# capture() cannot be exercised without mlx, but its argument contract can, and
+# that contract is the whole interface for patched runtimes, custom caches and
+# offload wrappers. These run on a stock CI runner.
+
+def test_capture_needs_a_model_or_a_preloaded_one():
+    with pytest.raises(ValueError, match='either `model`'):
+        capture(None, ['p'])
+
+
+def test_capture_rejects_model_obj_without_tokenizer():
+    """The tokenizer is not optional even when the model is already loaded.
+
+    It renders the chat template and counts prompt tokens, and that count is
+    what separates prompt positions from generated ones. Without it the entropy
+    would be aggregated over the wrong span.
+    """
+    with pytest.raises(ValueError, match='without `tokenizer`'):
+        capture(None, ['p'], model_obj=object())
