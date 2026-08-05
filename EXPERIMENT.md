@@ -1077,3 +1077,76 @@ building.
    in this repo.
 3. **Truncated-entropy check** — only if hosted APIs are ever reopened.
 4. **RAG utilisation** — verify the gap first.
+
+---
+
+# Scope decision — BUILT, NOT SHIPPED: the torch backend
+
+Decided 2026-08-04. Recorded with the evidence and the bar that would reverse it,
+in the same spirit as the hosted-API decision above: so it is not re-argued from
+scratch, and so the reason is available to anyone who wonders why a working
+implementation is sitting on a branch.
+
+## What exists
+
+A complete `transformers` backend — `capture(..., backend='transformers')`,
+running on CUDA, CPU or MPS — on `feat/torch-backend`. It is not a sketch: 39
+tests, chunked entropy accumulation sized to avoid a full-vocabulary float32
+logit tensor (4 GB at a 256k vocabulary and 4096 tokens), graceful degradation
+when `accelerate` is absent, and a warning when captures from two runtimes are
+compared.
+
+## Why it is not in v0
+
+F15 measured it on MPS against gsm8k labels rather than assumed damage:
+
+| arm | Δacc | d_z | verdict |
+|---|---|---|---|
+| identity | — | +0.000 | clean ✓ |
+| **fp16 → fp32** | **−0.67pp** | **+0.306** | **REGRESSION ✗** |
+| 8-bit fake-quant | −4.67pp | +0.347 | REGRESSION ✓ |
+| 4-bit fake-quant | −40.67pp | +2.989 | REGRESSION ✓ |
+
+Determinism is exact and sensitivity is 2/2. But a benign change flags, and
+worse, the benign arm (+0.306) and a genuine −4.7pp regression (+0.347) have
+almost entirely overlapping intervals. On that stack the detector separates gross
+damage and cannot resolve subtle damage at the shipped threshold.
+
+**The result is also not yet interpretable.** The single torch benign arm is a
+compute-dtype change; all thirteen mlx benign arms are configuration changes.
+Those are not the same kind of control, and a pure dtype swap is plausibly the
+hardest benign case for an entropy detector — it perturbs every logit slightly,
+in a correlated way, where an exact-offload capacity change does the same
+arithmetic on the same weights. So +0.306 may indict the backend, the 0.5B model,
+or the control. Three explanations, no measurement separating them.
+
+Shipping it would contradict this package's own headline — *every default is a
+measured result, not a preference* — since the default threshold demonstrably
+does not hold there. An `experimental` label does not fix that; it prints the
+contradiction in smaller type. And in practice labels get skipped: the realistic
+failure is not a crash but a CUDA user rolling back a good deployment on a false
+alarm.
+
+## What would reverse this
+
+1. A **framework-neutral damaged checkpoint** — quantise-dequantise once in
+   numpy, write safetensors, load the identical weights into both runtimes — so
+   the damage is bit-identical and only the runtime differs.
+2. **≥3 benign configurations** on the torch side, of the same *kind* as the mlx
+   controls, establishing a null. Group-wise 8-bit is the obvious first: the
+   per-tensor 8-bit used in F15 is a much cruder scheme and cost 4.67 points,
+   where mlx's group-64 8-bit cost nothing.
+3. **A CUDA run**, with real quantizers (bitsandbytes NF4, GPTQ), because F8d
+   established that d_z magnitude is mechanism-dependent — validating one
+   quantizer does not license a claim about the others.
+
+None of this needs owned hardware; a rented A100 for a day covers it.
+
+## What does not depend on this
+
+Every finding in this record is stack-independent as a *claim*. That entropy
+detects damage without labels, that d_z is ordinal rather than proportional,
+that short factual benchmarks understate compression damage ~14x, that labels
+needed n=878 where entropy needed 60 — a CUDA shop can act on all of it without
+running this code. The corpus is the differentiated asset; the backend decides
+who can re-run it, not whether it is true.

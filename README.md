@@ -1,4 +1,4 @@
-# external — measuring what compression does to a model
+# clausius — did the thing you changed break your model?
 
 Two questions, both answered on consumer hardware (M5 Max, 128 GB), across five
 model families:
@@ -10,6 +10,19 @@ model families:
 Full evidence, positives *and* negatives, in **[FINDINGS.md](FINDINGS.md)** —
 which opens with a prior-art accounting stating which parts independently
 re-derive published work and which appear to be new.
+
+**Scope, up front.** Capturing needs Apple Silicon (`mlx-lm`). Everything else —
+`compare`, the analysis, and re-deriving every table below from the committed
+corpus — is pure numpy and runs anywhere, with no model downloads:
+
+```bash
+git clone https://github.com/wintergreen22/clausius && cd clausius
+pip install ".[dev]" && pytest -q                  # 36 tests, no accelerator
+python -m knowledge.quantladder analyse            # rebuilds F14's ladder from records
+python -m knowledge.frontier report                # rebuilds the 3-axis Pareto frontier
+```
+
+That is the fastest way to check whether the numbers here are real.
 
 ---
 
@@ -245,24 +258,17 @@ the full-distribution measurements here. Hosted-API support and entropy-gated
 cascade routing are both recorded as **don't-build** decisions in
 [EXPERIMENT.md](EXPERIMENT.md), with the conditions that would reopen them.
 
-**Two backends, one validated.** `--backend mlx` is what every number in
-[FINDINGS.md](FINDINGS.md) was measured on. `--backend transformers` runs the
-same measurement on torch — CUDA, CPU or MPS — because nothing about the method
-needs Apple Silicon: it wants greedy generation and one teacher-forced pass
-yielding full-vocabulary logits. **It is experimental, and the 0.3 threshold
-does not transfer to it unchanged.**
-
-Measured on MPS against gsm8k labels (F15): the detector is exact on an identity
-arm, and flags both damaged arms — −4.7pp at d_z +0.35, −40.7pp at +2.99. But a
-**benign** change (fp16 → fp32, identical weights, accuracy unchanged) also
-flags, at **+0.31**. Specificity is 0/1 there, against 13/13 on mlx. Gross damage
-separates cleanly; a benign precision change and a ~5pp regression do not.
-**Calibrate your own null before using it** — the recipe is below, and on that
-stack the floor is ≥0.31, arguing for a threshold nearer 0.9 than 0.3.
-
-Untested entirely: **CUDA**, multi-GPU sharding, and CUDA quantizers
-(bitsandbytes, GPTQ, AWQ). Comparing a capture from one backend against the
-other warns, because the threshold was calibrated within a runtime.
+**Apple Silicon to capture, anywhere to analyse.** `capture` needs `mlx-lm`;
+`compare` and every analysis path are pure numpy. Nothing about the *method*
+needs Apple Silicon — it wants greedy generation and one teacher-forced pass
+yielding full-vocabulary logits, which torch provides too — and a working torch
+backend exists on the `feat/torch-backend` branch. **It is deliberately not
+shipped.** On a 0.5B model it flagged a *benign* precision change at d_z +0.31,
+and that false positive is not yet attributable to the backend, the model scale,
+or the control I chose. Shipping a runtime whose threshold has not been
+calibrated would contradict the claim this package makes about its defaults.
+The decision, and the bar it has to clear, are in
+[EXPERIMENT.md](EXPERIMENT.md); the measurement is F15.
 
 ### Calibrating your own null
 

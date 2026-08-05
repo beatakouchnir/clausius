@@ -9,7 +9,7 @@ import json
 import sys
 from pathlib import Path
 
-from .core import (BACKENDS, DEFAULT_SIGNAL, DEFAULT_THRESHOLD, SIGNALS, capture,
+from .core import (DEFAULT_SIGNAL, DEFAULT_THRESHOLD, SIGNALS, capture,
                    compare, top_movers, truncation_curve)
 
 
@@ -66,11 +66,6 @@ def main(argv=None):
                         'generous --max-tokens is itself the reference, while '
                         'a sampled probe is thrown away. Use it on prompt sets '
                         'large enough that a wrong cap is expensive.')
-    c.add_argument('--backend', default='auto', choices=('auto',) + BACKENDS,
-                   help="runtime to capture with: 'mlx' (Apple Silicon), "
-                        "'transformers' (CUDA/CPU/MPS), or 'auto'. Recorded on "
-                        "the capture — entropy from two different runtimes is "
-                        "not a like-for-like measurement.")
     c.add_argument('--raw', action='store_true',
                    help="do not apply the model's chat template. For base "
                         "models; on an instruct model this causes runaway "
@@ -109,8 +104,7 @@ def main(argv=None):
 
         cap = capture(a.model, prompts, tag=a.tag or Path(a.out).stem,
                       max_tokens=a.max_tokens, adapter=a.adapter,
-                      chat=False if a.raw else None, progress=tick,
-                      backend=a.backend)
+                      chat=False if a.raw else None, progress=tick)
         # save before any verdict on the run: the capture cost real GPU time and
         # is still re-analysable (compare --keep-truncated) even when doomed for
         # the default path.

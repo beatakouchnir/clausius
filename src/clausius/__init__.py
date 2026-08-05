@@ -20,15 +20,15 @@ identical inputs.
 See `core` for why each default is what it is — every one of them is a measured
 result rather than a taste, and FINDINGS.md has the evidence.
 """
-from .core import (BACKENDS, BOOTSTRAP_RESAMPLES, BOOTSTRAP_SEED, CAP_LADDER,
+from .core import (BOOTSTRAP_RESAMPLES, BOOTSTRAP_SEED, CAP_LADDER,
                    DEFAULT_SIGNAL, DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS,
                    SIGNALS, Capture, Result, TruncationCurve, aggregate,
                    bootstrap_ci, capture, compare, top_movers,
-                   resolve_backend, truncation_curve)
+                   truncation_curve)
 
 __all__ = ['capture', 'compare', 'Capture', 'Result', 'aggregate',
            'truncation_curve', 'TruncationCurve', 'top_movers',
-           'bootstrap_ci', 'resolve_backend', 'BACKENDS',
+           'bootstrap_ci',
            'SIGNALS', 'DEFAULT_SIGNAL', 'DEFAULT_THRESHOLD',
            'MIN_PAIRED_ITEMS', 'CAP_LADDER',
            'BOOTSTRAP_RESAMPLES', 'BOOTSTRAP_SEED']
