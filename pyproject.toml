@@ -31,9 +31,9 @@ dev = ["pytest>=7"]
 clausius = "clausius.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/wintergreen22/clausius"
-Findings = "https://github.com/wintergreen22/clausius/blob/main/FINDINGS.md"
-Issues = "https://github.com/wintergreen22/clausius/issues"
+Homepage = "https://github.com/beatakouchnir/clausius"
+Findings = "https://github.com/beatakouchnir/clausius/blob/main/FINDINGS.md"
+Issues = "https://github.com/beatakouchnir/clausius/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/clausius"]

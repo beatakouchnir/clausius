@@ -33,7 +33,7 @@ re-derive published work and which appear to be new.
 corpus — is pure numpy and runs anywhere, with no model downloads:
 
 ```bash
-git clone https://github.com/wintergreen22/clausius && cd clausius
+git clone https://github.com/beatakouchnir/clausius && cd clausius
 pip install ".[dev]" && pytest -q                  # 36 tests, no accelerator
 python -m knowledge.quantladder analyse            # rebuilds F14's ladder from records
 python -m knowledge.frontier report                # rebuilds the 3-axis Pareto frontier
@@ -50,7 +50,7 @@ like the related quantities they are. Entropy is the signal this tool reads.*
 ## Quickstart
 
 ```bash
-pip install "clausius[mlx] @ git+https://github.com/wintergreen22/clausius"
+pip install "clausius[mlx] @ git+https://github.com/beatakouchnir/clausius"
 ```
 
 The `mlx` extra is needed only to **capture**, and only runs on Apple Silicon.
