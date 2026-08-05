@@ -2599,3 +2599,53 @@ argument that had been removed from the shipping branch hours earlier, while the
 job sat queued. A self-inflicted failure, recorded because the experiment is
 still owed. It remains the open question in the torch scope decision, and the
 work belongs on `feat/torch-backend` where the argument still exists.
+
+### F15c — the torch false positive is a small-model artifact, not a backend defect
+
+F15 found a benign precision change flagging at d_z +0.306 on a 0.5B model in
+torch, and could not attribute it: backend, scale, or choice of control. F15b
+showed the same *class* of change reads clean at 26B on mlx, but differed in
+scale **and** framework, so it isolated nothing.
+
+This holds framework, change-type, prompt set and cap fixed at F15's settings
+and moves only model size.
+
+| stack | change | Δacc (measured) | entropy d_z | 95% CI | verdict |
+|---|---|---|---|---|---|
+| 0.5B, torch | fp16 → fp32 | −0.0067 | **+0.306** | [+0.18, +0.43] | FLAGGED ✗ |
+| **7B, torch** | fp16 → fp32 | **0.0000** | **−0.036** | [−0.33, +0.21] | **clean ✓** |
+| 26B, mlx | bf16 → fp16 | +0.0300 (p=0.109) | −0.043 | [−0.17, +0.12] | clean ✓ |
+
+**The flag is a property of the 0.5B model, not of the runtime.** Identical
+framework, identical change, identical prompts — and 7B reads −0.036 where 0.5B
+read +0.306. The 7B arm is also the cleanest benign control in this record:
+gsm8k 0.8700 against 0.8700, a delta of exactly zero.
+
+**Torch specificity is now 1/2, with the failure confined to the smallest
+model.** F15's headline — "sensitivity transfers, the threshold does not" — was
+too strong. It does transfer at the scales anyone deploys; it fails at a size
+where nobody runs a regression gate.
+
+**A plausible mechanism, not established here.** d_z is a mean divided by the
+standard deviation of the same paired differences. A precision change perturbs
+every logit slightly and systematically; what varies is how large that
+systematic shift is *relative to* item-to-item variability. At 0.5B the shift
+appears to dominate the spread; by 7B it does not. That predicts the effect
+should shrink monotonically with scale, which two points cannot confirm.
+
+**What this does and does not settle.** It removes the reason F15 gave for
+calling the backend uninterpretable, and it supplies the first *measured-benign*
+torch control the detector calls correctly. It does not clear the bar in
+EXPERIMENT.md: that asks for three benign configurations of the same kind as the
+mlx controls, a framework-neutral damaged checkpoint, and a CUDA run with real
+quantizers. This is one benign configuration, of a kind mlx never tested, on
+MPS. **Every torch measurement in this record is still MPS; CUDA remains
+entirely unmeasured.**
+
+**Process note.** This experiment failed twice before producing a number, both
+times self-inflicted: once on a `backend` argument removed from the shipping
+branch while the job sat queued, once because `sys.path.insert(repo_root)` does
+not shadow an editable install under a `src/` layout, so it silently imported
+the wrong checkout. Roughly two hours. Both are in the README's operational
+cautions, and the second is why the script now asserts on `module.__file__`
+before doing any work.
