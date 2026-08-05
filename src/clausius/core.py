@@ -272,9 +272,145 @@ def apply_chat_template(tokenizer, prompt, chat=None):
         return prompt
 
 
+BACKENDS = ('mlx', 'transformers')
+
+
+def resolve_backend(backend='auto', model_obj=None) -> str:
+    """Which runtime will do the generating.
+
+    'auto' prefers a preloaded model's own runtime, then mlx, then transformers.
+    The choice is recorded on the capture, because entropy from two different
+    runtimes is not a like-for-like measurement and a comparison across them
+    would be silently meaningless.
+    """
+    if backend not in ('auto',) + BACKENDS:
+        raise ValueError(f"unknown backend {backend!r}; choose from "
+                         f"{('auto',) + BACKENDS}")
+    if backend != 'auto':
+        return backend
+    if model_obj is not None:
+        mod = type(model_obj).__module__ or ''
+        return 'transformers' if mod.split('.')[0] == 'torch' or \
+            hasattr(model_obj, 'generate') and hasattr(model_obj, 'parameters') \
+            else 'mlx'
+    try:
+        import mlx_lm  # noqa: F401
+        return 'mlx'
+    except ImportError:
+        return 'transformers'
+
+
+def _backend_mlx():
+    try:
+        import mlx.core as mx
+        from mlx_lm import generate as _generate, load as _load
+    except ImportError as e:
+        raise ImportError(
+            "the mlx backend needs mlx-lm, which runs on Apple Silicon only:\n"
+            "    pip install 'clausius[mlx]'\n"
+            "On other hardware use backend='transformers' "
+            "(pip install 'clausius[torch]').\n"
+            "compare, aggregate and truncation_curve are pure numpy and run "
+            "anywhere — you can re-analyse captures on any machine.") from e
+
+    def load(model, adapter):
+        return _load(model, adapter_path=adapter) if adapter else _load(model)
+
+    def run(model_obj, tok, rendered, max_tokens):
+        text = _generate(model_obj, tok, prompt=rendered,
+                         max_tokens=max_tokens, verbose=False)
+        ids = tok.encode(rendered + text)
+        n_prompt = len(tok.encode(rendered))
+        logits = model_obj(mx.array([ids])[:, :-1]).astype(mx.float32)
+        logp = logits - mx.logsumexp(logits, axis=-1, keepdims=True)
+        ent = np.asarray((-mx.sum(mx.exp(logp) * logp, axis=-1))[0].tolist())
+        del logits, logp
+        return text, n_prompt, len(ids) - n_prompt, ent
+
+    return load, run
+
+
+def _backend_transformers(chunk=256):
+    """EXPERIMENTAL. The same measurement on torch, so the tool is not Apple-only.
+
+    Nothing about the method needs mlx: it wants greedy generation and one
+    teacher-forced pass yielding full-vocabulary logits, which transformers
+    gives on CUDA, CPU or MPS.
+
+    Comparisons are always WITHIN one backend — a reference and a candidate
+    captured the same way — so kernel-level numerical differences cancel in the
+    paired difference, and d_z is a dimensionless effect size. That is the
+    argument for the 0.3 threshold transferring — but the threshold itself was
+    calibrated on one stack, and F14c showed that null is not a constant. On a
+    new backend or quantizer, measure your own floor from two configurations you
+    believe are equivalent; the README has the recipe. FINDINGS F15 records what
+    was and was not measured here: validated on CPU and MPS against gsm8k
+    accuracy, untested on CUDA, on multi-GPU sharding, and against CUDA
+    quantizers.
+
+    Entropy is accumulated over `chunk` positions at a time. A full-vocabulary
+    float32 logit tensor is vocab x seq_len x 4 bytes — 4 GB at a 256k
+    vocabulary and 4096 tokens — and materialising it whole is how this OOMs.
+    """
+    try:
+        import importlib.util
+
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+    except ImportError as e:
+        raise ImportError(
+            "the transformers backend needs torch and transformers:\n"
+            "    pip install 'clausius[torch]'") from e
+
+    def _best_device():
+        if torch.cuda.is_available():
+            return 'cuda'
+        if getattr(torch.backends, 'mps', None) and torch.backends.mps.is_available():
+            return 'mps'
+        return 'cpu'
+
+    def load(model, adapter):
+        tok = AutoTokenizer.from_pretrained(model)
+        kw = {'dtype': 'auto'}
+        # device_map='auto' raises without `accelerate`, which is an optional
+        # companion rather than a transformers dependency. Degrade instead of
+        # failing: a partial install should still capture, on one device.
+        if importlib.util.find_spec('accelerate') is not None:
+            kw['device_map'] = 'auto'
+        obj = AutoModelForCausalLM.from_pretrained(model, **kw)
+        if 'device_map' not in kw:
+            obj = obj.to(_best_device())
+        if adapter:
+            from peft import PeftModel      # only needed for LoRA captures
+            obj = PeftModel.from_pretrained(obj, adapter)
+        return obj.eval(), tok
+
+    @torch.no_grad()
+    def run(model_obj, tok, rendered, max_tokens):
+        device = next(model_obj.parameters()).device
+        enc = tok(rendered, return_tensors='pt').to(device)
+        n_prompt = int(enc['input_ids'].shape[1])
+        out = model_obj.generate(
+            **enc, max_new_tokens=max_tokens, do_sample=False,   # greedy, as mlx
+            pad_token_id=tok.pad_token_id if tok.pad_token_id is not None
+            else tok.eos_token_id)
+        ids = out[0]
+        text = tok.decode(ids[n_prompt:], skip_special_tokens=True)
+        logits = model_obj(ids[:-1].unsqueeze(0)).logits
+        parts = []
+        for s in range(0, logits.shape[1], chunk):
+            sl = logits[:, s:s + chunk].float()
+            lp = sl - sl.logsumexp(-1, keepdim=True)
+            parts.append((-(lp.exp() * lp).sum(-1))[0])
+        ent = torch.cat(parts).cpu().numpy()
+        return text, n_prompt, int(ids.shape[0]) - n_prompt, ent
+
+    return load, run
+
+
 def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
             chat=None, model_obj=None, tokenizer=None,
-            progress=None) -> Capture:
+            progress=None, backend='auto') -> Capture:
     """Run `prompts` through a model configuration and record its entropy.
 
     `model` is a path or HF id. Pass `model_obj`/`tokenizer` instead to reuse an
@@ -283,8 +419,10 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     That is the intended extension point: clausius does not manage
     configurations, it compares whatever two runs you hand it.
 
-    Arguments are checked before mlx is imported, so a caller wiring up that
-    extension point finds out on any machine rather than only on a Mac.
+    `backend` selects the runtime: 'mlx' (Apple Silicon), 'transformers'
+    (CUDA/CPU/MPS), or 'auto'. Arguments are checked before any runtime is
+    imported, so a caller wiring up the extension point finds out on any
+    machine rather than only where the runtime happens to install.
     """
     if model_obj is None and model is None:
         raise ValueError(
@@ -296,34 +434,19 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
             "the tokenizer renders the chat template and counts prompt tokens, "
             "which is what separates prompt positions from generated ones")
 
-    try:
-        import mlx.core as mx
-        from mlx_lm import generate, load
-    except ImportError as e:  # the only part of this library that needs an accelerator
-        raise ImportError(
-            "capture needs mlx-lm, which runs on Apple Silicon only:\n"
-            "    pip install 'clausius[mlx]'\n"
-            "compare, aggregate and truncation_curve are pure numpy and run "
-            "anywhere — you can re-analyse captures on any machine.") from e
+    name = resolve_backend(backend, model_obj)
+    load, run = (_backend_mlx if name == 'mlx' else _backend_transformers)()
 
     if model_obj is None:
-        model_obj, tokenizer = (load(model, adapter_path=adapter) if adapter
-                                else load(model))
+        model_obj, tokenizer = load(model, adapter)
     rows, t0 = [], time.time()
     for i, prompt in enumerate(prompts):
         rendered = apply_chat_template(tokenizer, prompt, chat)
-        text = generate(model_obj, tokenizer, prompt=rendered,
-                        max_tokens=max_tokens, verbose=False)
-        ids = tokenizer.encode(rendered + text)
-        n_prompt = len(tokenizer.encode(rendered))
-        n_gen = len(ids) - n_prompt
         # teacher-forced pass over prompt+completion: entropy at the positions
         # where the model actually committed, not at whatever it would have
         # produced under a different sampler
-        logits = model_obj(mx.array([ids])[:, :-1]).astype(mx.float32)
-        logp = logits - mx.logsumexp(logits, axis=-1, keepdims=True)
-        ent = np.asarray((-mx.sum(mx.exp(logp) * logp, axis=-1))[0].tolist())
-        del logits, logp
+        text, n_prompt, n_gen, ent = run(model_obj, tokenizer, rendered,
+                                         max_tokens)
         rows.append({'ent': aggregate(ent, n_prompt),
                      'truncated': n_gen >= max_tokens - 2,
                      'empty_gen': n_gen <= 0,
@@ -337,7 +460,7 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
         f'<preloaded {type(model_obj).__name__}>'
     cap = Capture(model=origin, tag=tag, prompts=list(prompts), rows=rows,
                   meta={'max_tokens': max_tokens, 'adapter': adapter,
-                        'chat': chat,
+                        'chat': chat, 'backend': name,
                         'truncated': sum(r['truncated'] for r in rows),
                         'seconds': round(time.time() - t0, 1)})
 
@@ -379,6 +502,19 @@ def _pair(reference, candidate, drop_truncated):
         raise ValueError(
             "captures used different prompts; pairing them would compare two "
             "datasets rather than two configurations")
+
+    rb, cb = ref.meta.get('backend'), cand.meta.get('backend')
+    if rb and cb and rb != cb:
+        # Not an error: "did switching inference backend break the model" is a
+        # real question, and this is how you would ask it. But the 0.3 threshold
+        # was calibrated within a runtime, where kernel-level differences cancel
+        # in the paired difference. Across runtimes they do not, and no benign
+        # backend swap has been measured to establish that null.
+        warnings.warn(
+            f"comparing a {rb} capture against a {cb} one. The threshold is "
+            f"calibrated within a single runtime; across runtimes a benign "
+            f"difference in numerics or tokenisation is not distinguishable "
+            f"from damage, and that null has not been measured.", stacklevel=2)
 
     keep = [i for i in range(len(ref.rows))
             if not (drop_truncated and (ref.rows[i].get('truncated')
