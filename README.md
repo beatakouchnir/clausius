@@ -149,7 +149,7 @@ construction that fools a two-sided one, the truncation filter from an effect
 that doubles once you apply it. `src/clausius/core.py` states each one and
 [FINDINGS.md](FINDINGS.md) has the evidence.
 
-> **Status.** `clausius` is installable and tested (14 tests, no accelerator
+> **Status.** `clausius` is installable and tested (36 tests, no accelerator
 > required). The `knowledge/` research package that produced the findings below
 > is *not* packaged — it needs local model checkpoints and a sibling
 > `quantize` checkout, and is kept for reproducibility rather than reuse.
@@ -534,6 +534,42 @@ Reads `../quantize/records` (override with `QUANTIZE_REPO`). `quantize` and
   0.345 → 0.820 purely by raising the cap. Caps are set per task and never
   shortened to save time.
 
+Six more from one session of unattended runs. Every one was catchable in
+seconds and none was caught in advance, which is the actual lesson: **verify the
+cheap precondition before paying the expensive cost.** That is what the
+truncation curve does for `capture`, and it is what these do for everything
+around it.
+
+- **A script does not inherit your PATH.** An overnight suite died with
+  `command not found: uv` in *every* arm. Worse, it exited **0**, because the
+  last statement was an `echo` — fourteen failed steps reported as success. Use
+  absolute paths (`/Users/you/.local/bin/uv`), and count failures explicitly so
+  the exit code means something.
+- **A version check is not a preflight.** The second attempt ran `uv --version`
+  successfully and then lost `uv` on the next line. Probe with a *real* unit of
+  work — here, a three-prompt capture through the full stack, ~30 seconds —
+  because only that exercises what the long run will exercise.
+- **Never point a long run at an untested cap.** One comparison burned eight
+  minutes of generation before `compare` refused: 40 prompts at a cap already
+  measured as truncating 78% of that very prompt set. The truncation curve
+  answers this before the run, not after.
+- **Measure the benign arm; do not assume it.** A control assumed harmless
+  ("8-bit should be free") turned out to cost 4.67 accuracy points once
+  labelled. The detector had been right and the assumption wrong — and a
+  validation checking whether a tool agrees with your priors validates nothing.
+- **Do not change an API while a job is queued against it.** Two multi-hour runs
+  died on a `backend` argument removed from the shipping branch hours earlier,
+  while they sat waiting behind another job.
+- **Verify the import, not the `sys.path`.** With a `src/` layout,
+  `sys.path.insert(0, repo_root)` does **not** shadow an editable install, so a
+  run silently imported the wrong checkout. `assert expected in module.__file__`
+  costs one line and one second.
+
+These matter most where compute is rented and time-boxed: the dollars are
+trivial, but a silent failure burns a slot in a day you cannot extend. They are
+the pre-flight list for the CUDA validation the torch backend is waiting on
+(see [EXPERIMENT.md](EXPERIMENT.md)).
+
 ---
 
 ## Repository layout
@@ -541,7 +577,7 @@ Reads `../quantize/records` (override with `QUANTIZE_REPO`). `quantize` and
 | path | what | needs |
 |---|---|---|
 | `src/clausius/` | **the tool** — capture, compare, CLI | numpy; mlx-lm only to capture |
-| `tests/` | 14 tests, none load a model; CI installs the built wheel, not the source | numpy |
+| `tests/` | 36 tests, none load a model; CI installs the built wheel, not the source | numpy |
 | `records/frontier`, `records/regress`, `records/context` | **the measurement corpus** — every number in FINDINGS.md, ~5 MB | — |
 | `knowledge/` | the research package that produced the findings | local checkpoints, sibling `quantize` |
 | `FINDINGS.md` | the full experimental record, positives and negatives | — |
