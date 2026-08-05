@@ -1,7 +1,7 @@
 """The configuration frontier — when is a compressed big model worse than a small one?
 
 This replaces the accuracy-vs-budget sweep that was scoped and then abandoned,
-because reading `quantize/offload.py` showed the sweep would have measured a
+because reading the offload runtime showed the sweep would have measured a
 guaranteed null. `ExpertCache.ensure()` at `policy='exact'` INSTALLS a missing
 expert from disk before the gather, so a cache miss costs latency and nothing
 else.
@@ -95,7 +95,7 @@ MODELS = {
     'qwen': (traces.artifact('qwen36-35b-a3b-4bit-g64'),
              'artifacts/qwen_expert_store', 256, 40,
              'records/expert_trace.qwen36-35b-a3b-4bit-g64.jsonl.gz'),
-    # The small-model reference. NOT MoE (quantize confirmed), so it has no
+    # The small-model reference. NOT MoE (confirmed separately), so it has no
     # store, no experts and no trace -- only `--policy none` works on it. It is
     # here so the frontier's comparison point is measured through THIS scorer
     # rather than quoted across harnesses.
@@ -140,19 +140,16 @@ def load_wrapped(name, capacity, policy, pins=None, topk=None,
 
     `store_dir` is NOT optional even though wrap() allows None: without it the
     original expert weights stay referenced AS the store, so wrapping ADDS the
-    resident slots instead of replacing anything. quantize's own note records
+    resident slots instead of replacing anything. the vendored own note records
     that this OOM-ed Metal on a k=8 run.
 
     policy='none' skips wrapping entirely, which is how the non-MoE reference
     model (gemma-e4b) gets measured through THIS scorer rather than being quoted
-    from quantize's harness. wrap() would raise on it — correctly, there are no
+    from the vendored harness. wrap() would raise on it — correctly, there are no
     MoE layers to find.
     """
     import mlx.core as mx
     mx.set_memory_limit(int(LIMIT_GB * 1024 ** 3))
-    import sys
-    if str(repo()) not in sys.path:
-        sys.path.insert(0, str(repo()))
     from mlx_lm import load
 
     path, store, n_exp, n_lay, _ = _paths(name)
@@ -175,7 +172,7 @@ def load_wrapped(name, capacity, policy, pins=None, topk=None,
         if store is None:
             raise SystemExit(
                 "--model-path carries no expert store; use --policy none")
-        from quantize.offload_model import wrap
+        from ._vendor.offload_model import wrap
         n = wrap(model, capacity, store_dir=store, policy=policy, pins=pins)
         print(f"  wrapped {n} layers · capacity {capacity}/{n_exp} "
               f"({capacity / n_exp:.0%} of experts) · policy {policy}",
@@ -280,9 +277,9 @@ def probe_prompts(tok, n=16, cap=256):
     cannot. Divergence compounds, so if the cache perturbs anything at all this
     is where it shows.
     """
-    from .popqa import quantize_suite
+    from .popqa import task_suite
     from .stage_a import load_task
-    suite = quantize_suite()
+    suite = task_suite()
     items = load_task('gsm8k', n, 0)
     return [(suite.build_prompt(tok, it, think=False), cap) for it in items]
 
@@ -431,7 +428,7 @@ def cmd_speed(a):
     FRONT.mkdir(parents=True, exist_ok=True)
 
     # Discarded warmup. The smoke run read 10.16 tok/s at FULL capacity against
-    # quantize's measured 58 — not a regression, just kernel compilation and a
+    # the previously measured 58 — not a regression, just kernel compilation and a
     # cold cache amortised over only 32 tokens. Timing the first pass would make
     # low capacities look artificially good, because their surcharge is real
     # work while this is one-off overhead.
@@ -489,9 +486,9 @@ def cmd_acc(a):
     model, tok, _ = load_wrapped(a.model, a.capacity, a.policy, pins, a.topk)
 
     from mlx_lm import generate
-    from .popqa import quantize_suite
+    from .popqa import task_suite
     from .stage_a import CAPS, QUANTIZE_TASKS, load_task, score_item
-    suite = quantize_suite()
+    suite = task_suite()
     items = load_task(a.task, a.n, a.seed)
     rows, t0 = [], time.time()
     for i, it in enumerate(items):

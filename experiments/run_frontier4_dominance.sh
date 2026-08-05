@@ -43,7 +43,7 @@ step dom-gemma-gsm8k-c24 $QV -m knowledge.frontier acc --model gemma --task gsm8
 step dom-gemma-popqa-c24 $QV -m knowledge.frontier acc --model gemma --task popqa --capacity 24 --policy exact --n 200
 
 # --------------------------------------- 2. mmlu_pro — the widest capability gap
-# The task where the small model falls furthest behind (quantize: gemma-26b 0.530
+# The task where the small model falls furthest behind (measured separately: gemma-26b 0.530
 # vs e4b 0.285), so it is where "use the big model, offloaded" should look best.
 # n=150 not 200: cap4160 makes this the most expensive task in the suite, and
 # R14 forbids shortening the cap to save time — truncation manufactures errors.

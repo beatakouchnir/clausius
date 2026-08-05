@@ -152,7 +152,8 @@ that doubles once you apply it. `src/clausius/core.py` states each one and
 > **Status.** `clausius` is installable and tested (36 tests, no accelerator
 > required). The `knowledge/` research package that produced the findings below
 > is *not* packaged — it needs local model checkpoints and a sibling
-> `quantize` checkout, and is kept for reproducibility rather than reuse.
+> checkpoints and an external artifact store, and is kept for reproducibility
+> rather than reuse.
 
 ---
 
@@ -503,8 +504,8 @@ python3 -m knowledge.routing --model qwen --kind expert
 python3 -m knowledge.frontier hot            # hot-expert lists from saved traces
 python3 -m knowledge.frontier report         # 3-axis Pareto frontier
 
-# needs mlx-lm (use quantize's venv)
-QV=../quantize/.venv/bin/python
+# needs mlx-lm
+QV=.venv/bin/python
 $QV -m knowledge.seam                        # resolve both router spellings
 $QV -m knowledge.capture --selftest          # stub-model pipeline check
 
@@ -520,8 +521,10 @@ $QV -m knowledge.regress capture --model qwen --capacity 64 --policy static --ta
 $QV -m knowledge.regress analyse --model qwen --task gsm8k
 ```
 
-Reads `../quantize/records` (override with `QUANTIZE_REPO`). `quantize` and
-`ghostlight` are **read-only** to this project; nothing here writes to them.
+Reads captured traces and checkpoints from an external artifact store
+(`CLAUSIUS_ARTIFACTS`, default `../artifacts`) — they are far too large to
+publish. The outputs derived from them are committed under `records/`, which is
+what the analysis paths above actually read.
 
 ### Operational cautions, learned the hard way
 
@@ -585,7 +588,7 @@ the pre-flight list for the CUDA validation the torch backend is waiting on
 | `src/clausius/` | **the tool** — capture, compare, CLI | numpy; mlx-lm only to capture |
 | `tests/` | 36 tests, none load a model; CI installs the built wheel, not the source | numpy |
 | `records/frontier`, `records/regress`, `records/context` | **the measurement corpus** — every number in FINDINGS.md, ~5 MB | — |
-| `knowledge/` | the research package that produced the findings | local checkpoints, sibling `quantize` |
+| `knowledge/` | the research package that produced the findings | local checkpoints, external artifact store |
 | `FINDINGS.md` | the full experimental record, positives and negatives | — |
 | `EXPERIMENT.md` | designs, scope decisions, and what was deliberately not built | — |
 

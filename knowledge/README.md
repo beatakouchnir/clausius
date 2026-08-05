@@ -5,11 +5,15 @@ product** — that is [`src/clausius/`](../src/clausius), which is installable,
 tested, and depends on none of this.
 
 It is kept for one reason: the findings make claims, and the claims should be
-checkable. It is coupled to local model checkpoints and a sibling `quantize`
-checkout, so it is not expected to run unmodified on another machine.
+checkable. It is coupled to local model checkpoints and an external artifact
+store, so it is not expected to run unmodified on another machine.
+
+Code it needs from the author's other projects is **vendored** under
+`_vendor/`, not imported, so this repository is self-contained: clone it and
+every import resolves.
 
 ```bash
-export QUANTIZE_REPO=/path/to/quantize   # defaults to ../quantize
+export CLAUSIUS_ARTIFACTS=/path/to/artifacts   # defaults to ../artifacts
 python3 -m knowledge.frontier report     # no model needed
 ```
 
@@ -22,12 +26,12 @@ is the evidence for those, not a suggestion to build on them.
 
 | module | what |
 |---|---|
-| `traces` | read quantize's captured routing traces — stdlib only, no GPU |
+| `traces` | read captured routing traces from the artifact store — stdlib only, no GPU |
 | `seam` | locate a model's expert modules and router without knowing the family |
 | `probes` | matched recall/derivation probe suites, built to separate mechanism from topic |
 | `capture` | capture per-token routing over a probe suite |
 | `cot` | where to measure entropy when the answer follows a reasoning chain (R14) |
-| `_gl` | thin re-export of the sibling `ghostlight` repo's calibration metrics — read-only, by path |
+| `_gl` | flat re-export of the vendored calibration metrics (`_vendor/calibration.py`) |
 | `finetune` | run an mlx-lm LoRA arm under a hard memory ceiling |
 | `corpus` | build a membership benchmark with ground truth by construction |
 

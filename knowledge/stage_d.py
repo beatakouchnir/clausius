@@ -15,9 +15,9 @@ fixed budget, and it is what this reports, alongside:
                  20% at random catches 20% of errors for free.
   AURC / E-AURC  selective-prediction risk. E-AURC subtracts the best AURC
                  achievable at that base rate, so it compares across tasks with
-                 different accuracies. ghostlight measured 8-vote
+                 different accuracies. a prior study measured 8-vote
                  self-consistency at AURC 0.087 (math) / 0.259 (MCQ).
-  ECE            calibration, raw and out-of-fold recalibrated. ghostlight's
+  ECE            calibration, raw and out-of-fold recalibrated. The vendored
                  Phase 2 finding applies directly: recalibration is a MONOTONIC
                  map, so it fixes ECE and **cannot change ranking** — AUC,
                  AURC and catch@budget are all unmoved by it. Reported to show
@@ -27,7 +27,7 @@ Entropy is not a probability, so it is mapped to one by out-of-fold Platt
 scaling before any calibration metric is computed. Ranking metrics use the raw
 signal.
 
-All metrics come from ghostlight's `harness/calibration.py` rather than being
+All metrics come from the vendored `_vendor/calibration.py` rather than being
 reimplemented, so the numbers stay comparable with its n=740 study.
 
 No GPU, no model — reads the Stage A/B captures.

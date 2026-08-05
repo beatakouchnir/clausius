@@ -10,7 +10,7 @@ actually use, and it is the one comparison R13 never made.
 self-consistency at 1/k the cost."** If self-consistency dominates outright,
 the answer is to use self-consistency and this project's signal is redundant.
 
-ghostlight already measured 8-vote self-consistency on gemma-4-26b-a4b:
+a prior n=740 study measured 8-vote self-consistency on gemma-4-26b-a4b:
 **AURC 0.087 on math, 0.259 on MCQ** (n=740). So the incumbent is strong on
 math and weak on MCQ, and its `vote_signals` (share / margin / neg_entropy) are
 reused here rather than reimplemented, so the numbers stay comparable.
@@ -25,7 +25,7 @@ identical correctness labels, or the comparison is between two different
 datasets. The greedy pass supplies both the entropy and the correctness label;
 the sampled passes supply only the votes.
 
-Needs mlx-lm. Reuses quantize's loaders/scorers and ghostlight's vote_signals.
+Needs mlx-lm. Reuses the vendored loaders/scorers and vote_signals.
 
 Usage:
   python3 -m knowledge.stage_b --task popqa --n 200 --k 5
@@ -43,7 +43,7 @@ import numpy as np
 from . import traces
 from .cot import variants
 from .meter import OUT
-from .popqa import quantize_suite
+from .popqa import task_suite
 from .stage_a import CAPS, QUANTIZE_TASKS, load_task, score_item
 
 
@@ -95,7 +95,7 @@ def capture(a):
     from mlx_lm import load, generate
     from mlx_lm.sample_utils import make_sampler
 
-    suite = quantize_suite()
+    suite = task_suite()
     items = load_task(a.task, a.n, a.seed)
     print(f"{len(items)} {a.task} · k={a.k} @ temp {a.temp} · "
           f"cap {CAPS.get(a.task)}", flush=True)

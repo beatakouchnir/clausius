@@ -46,7 +46,7 @@ for C in 256 128 64; do
 done
 
 # --------------------------------------------- REFERENCE: e4b through this code
-# The frontier's small-model comparison point has been quoted from quantize's
+# The frontier's small-model comparison point has been quoted from the earlier
 # harness (gsm8k 0.785, popqa 0.135). Measuring it through THIS scorer removes a
 # cross-harness assumption from the headline claim. e4b is not MoE, so only
 # policy=none works — wrap() would correctly refuse it.

@@ -8,7 +8,7 @@
 # dominance result is the strongest thing in the repo and it inherits F3.
 #
 # IFEval is the right third task: 768-token structured output, and it is the
-# capability agents actually depend on. quantize measured it neutral at ONE
+# capability agents actually depend on. it was measured neutral at ONE
 # offload point (0.850 -> 0.875); this sweeps the rungs.
 #
 # Tags are namespaced `off_*` — the previous run silently overwrote a saved

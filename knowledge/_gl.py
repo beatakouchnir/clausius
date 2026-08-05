@@ -1,32 +1,17 @@
-"""Thin re-export of ghostlight's calibration metrics.
+"""Calibration metrics — ECE, MCE, Brier, risk-coverage, AURC, recalibration.
 
-ghostlight already has a 564-line, numpy-only calibration suite (ECE, MCE,
-Brier, risk-coverage, AURC, Platt scaling, bootstrap CI, out-of-fold
-recalibration) plus a published n=740 study on gemma-4-26b-a4b. Reimplementing
-AURC here would risk a number that is not comparable with the 0.087 / 0.259 it
-recorded for 8-vote self-consistency on math / MCQ.
+A 564-line, numpy-only calibration suite, alongside an n=740 study on
+gemma-4-26b-a4b. Reimplementing AURC here would risk a number that is not
+comparable with the 0.087 / 0.259 that study recorded for 8-vote
+self-consistency on math / MCQ, so the implementation is shared rather than
+rewritten.
 
-ghostlight is read-only to this project, exactly as quantize is: imported by
-path, never written to. Override the location with GHOSTLIGHT_REPO.
+It used to be imported by path from a sibling repository that is not published.
+The suite is now vendored at `_vendor/calibration.py`, and this module is a flat
+re-export of it, so callers are unchanged.
 """
-import os
-import sys
-from pathlib import Path
+from ._vendor import calibration as _c
 
-_DEFAULT = Path(__file__).resolve().parent.parent.parent / 'ghostlight'
-
-
-def _load():
-    repo = Path(os.environ.get('GHOSTLIGHT_REPO', _DEFAULT))
-    if not (repo / 'harness' / 'calibration.py').exists():
-        raise ImportError(f"ghostlight calibration not found at {repo}")
-    if str(repo) not in sys.path:
-        sys.path.insert(0, str(repo))
-    from harness import calibration
-    return calibration
-
-
-_c = _load()
 risk_coverage = _c.risk_coverage
 ece = _c.ece
 brier = _c.brier

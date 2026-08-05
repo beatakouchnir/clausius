@@ -21,7 +21,7 @@ the time the chain is written the model has committed, so a confident-but-wrong
 chain ends in a near-deterministic token. **Use `mean` entropy over the
 generation for CoT, `first` for short-answer recall.**
 
-**2. Token caps contaminate everything, and quantize's own data shows how much.**
+**2. Token caps contaminate everything, and the earlier suite data shows how much.**
 27/250 GSM8K generations hit the 512-token cap and **81.5% of those were wrong**
 — *73% of all errors were truncation artifacts, not reasoning errors*. Removing
 capped items inverts the ranking:
@@ -122,7 +122,8 @@ errors), **AA-Omniscience** and **HLE** as the high-error knowledge tasks,
 low-error-rate control. `think=False` throughout to match `suite.json`.
 Sized by expected error count, not item count.
 
-Reuses `quantize/suite.py` loaders, prompt builder and scorers unchanged, so
+Reuses the vendored `_vendor/suite.py` loaders, prompt builder and scorers
+unchanged, so
 accuracies are comparable to the recorded runs and the scorer is not
 re-litigated.
 
@@ -309,7 +310,7 @@ The plan was: sweep the offload cache's resident capacity, measure benchmark
 accuracy at each rung, publish the accuracy-vs-memory curve nobody in the MLX
 ecosystem has. Estimated 16-50 GPU hours.
 
-Then `quantize/offload.py` `ExpertCache.ensure()`: at `policy='exact'` a cache
+Then the offload runtime's `ExpertCache.ensure()`: at `policy='exact'` a cache
 miss calls `_install(e)`, which **fetches the real weights from disk before the
 gather**. A miss costs latency and nothing else.
 
@@ -317,7 +318,7 @@ gather**. A miss costs latency and nothing else.
 > sweep would have spent 16-50 hours redrawing a flat line.
 
 Which also means the control-vs-offload accuracy deltas in
-`quantize/records/suite.json` — mmlu_pro 0.530 → 0.500, and ifeval 0.850 →
+the recorded suite run — mmlu_pro 0.530 → 0.500, and ifeval 0.850 →
 0.875 in the *other* direction — are **numerical noise, not degradation**. The
 file names the source itself: `gather_qmm`'s sorted and unsorted paths "disagree
 by ~1.3e-3 absolute", and `do_sort = indices.size >= 64` routes decode (8
@@ -391,7 +392,7 @@ offload (7.78 GB), 26b hot-10%/cold-2-bit resident (9.06 GB), e4b resident
 holds **one** `self.weight` of shape `(num_experts, out, in)` quantized with a
 single `bits` and `group_size`. Per-expert mixed bit width inside a layer is
 impossible without splitting each layer into two modules (hot subset + cold
-subset) and routing between them, or writing custom kernels. `quantize/skew.py`
+subset) and routing between them, or writing custom kernels. the expert-skew analysis
 is analysis only — it projects GB via a `gb(n_experts, bits)` formula and builds
 no artifact. Not an overnight job; needs a decision on whether to build it.
 
@@ -461,7 +462,7 @@ local single-user inference, not batched serving.
 
 ## Contamination note
 
-The `think/cap4096` rows in `quantize/records/suite.json` (humaneval control
+The `think/cap4096` rows in the recorded suite run (humaneval control
 0.38 vs **e4b 0.85**; gsm8k control 0.65 vs e4b 0.89) are R14 truncation
 artifacts — the big models are cut off mid-reasoning while e4b finishes. They
 must stay out of any frontier. Use the cap4160/cap960 rows.
@@ -685,7 +686,7 @@ inferred ~0.91 is now **measured at 0.9091**.
 
 ### e4b through this scorer — the cross-harness gap was real
 
-**gsm8k 0.8426** (quantize's harness: 0.785), **popqa 0.1508** (0.135), at
+**gsm8k 0.8426** (the earlier harness: 0.785), **popqa 0.1508** (0.135), at
 **3.91 GB**. Quoting across harnesses would have flattered the comparison by
 ~6pp, which is why the reference arm was worth its 15 minutes.
 

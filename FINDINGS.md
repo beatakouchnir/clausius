@@ -843,7 +843,7 @@ catastrophically and wrongly. Abstention rate is a model property, it varies by
 
 The comparison that decides whether this is a product or a redundancy.
 Self-consistency — sample k times, measure agreement — is what production
-systems actually use. k=5 at temperature 0.7, vote signals from the sibling `ghostlight` repo's
+systems actually use. k=5 at temperature 0.7, vote signals from the vendored calibration suite's
 `vote_signals` so the numbers stay comparable to its n=740 study. Wall-clock is
 measured per arm, not assumed.
 
@@ -924,7 +924,7 @@ excluding truncated items at the tight cap was systematically removing the
 harder questions, leaving an easier set. Any error-prediction result computed at
 a tight cap is measuring truncation, not error.
 
-This is the same effect quantize recorded across its suite (`mmlu_pro/qwen`
+This is the same effect recorded across the earlier suite (`mmlu_pro/qwen`
 0.345 -> 0.820 at cap4160; `gsm8k/qwen` 0.86 -> 0.935 at cap960) and that R14
 found on GSM8K, where 73% of "errors" were truncation artifacts.
 
@@ -935,7 +935,7 @@ found on GSM8K, where 73% of "errors" were truncation artifacts.
 The triage question answered on a real error corpus. **400 PopQA items, 300
 genuine model errors (75%)**, ground truth from the benchmark's curated alias
 sets — not from a table written here. Dataset, prompt builder (`think=False`)
-and scorer are imported from `quantize/suite.py` unchanged, so the accuracy is
+and scorer come from the vendored `_vendor/suite.py` unchanged, so the accuracy is
 comparable to the run already recorded there: **0.250 here against 0.29
 recorded**, on a different 400-item sample. That agreement is the check that
 the harness is sound.
@@ -1335,7 +1335,7 @@ setting silently broke your model?
 Two models throughout: `gemma-4-26b-a4b` (30 layers x 128 experts, 12.0 GB of
 experts at 4-bit) and `qwen3.6-35b-a3b` (40 x 256, 16.9 GB), with
 `gemma-4-e4b` (3.91 GB, not MoE) as the small-model reference. The offload
-runtime is quantize's `ExpertCache`: a contiguous resident tensor of C expert
+runtime is the vendored `ExpertCache`: a contiguous resident tensor of C expert
 slots per layer with an id->slot map, backed by an on-disk expert store.
 
 ## F1 — The sweep that was cancelled, and why that is the finding
@@ -1349,7 +1349,7 @@ Reading `ExpertCache.ensure()` killed it. At `policy='exact'` a cache miss calls
 miss costs latency and nothing else.
 
 This also reclassified data that had been quoted three times as if it were
-signal: the control-vs-offload accuracy deltas in quantize's `suite.json`
+signal: the control-vs-offload accuracy deltas in the recorded suite run
 (mmlu_pro 0.530 -> 0.500, but ifeval 0.850 -> **0.875** and qwen mmlu_pro
 0.345 -> **0.370** in the other direction) are **numerical noise**. The file
 names the source itself — `gather_qmm`'s sorted and unsorted paths "disagree by
@@ -1448,7 +1448,7 @@ reported the same 13.48 GB (gemma) / 18.17 GB (qwen). Fixed with
 **Two regimes.** A **cliff** from 100% to 75% (elasticity 2.05 gemma / 2.72
 qwen), because full capacity short-circuits `ensure()` entirely — no
 device->host sync — and stepping below it costs a sync per layer per token,
-measured elsewhere in quantize at **41% of per-token time**. Then a shallow
+measured separately at **41% of per-token time**. Then a shallow
 slope: post-cliff throughput elasticity **0.53 / 0.45**, i.e.
 
 > **speed ∝ memory^0.5.** Halve the memory, lose ~30% of throughput. 4x less
@@ -1499,7 +1499,7 @@ decision.
 than throughput. The SSD footprint is not free — qwen at 3.40 GB RAM also needs
 its 17 GB expert store on disk against e4b's ~4 GB total; offload trades disk
 for RAM. And e4b measured through *this* scorer reads 0.8426/0.1508 against
-quantize's 0.785/0.135 — a ~6pp cross-harness gap that would have flattered the
+the earlier 0.785/0.135 — a ~6pp cross-harness gap that would have flattered the
 comparison had it been quoted rather than re-measured.
 
 ## F6 — The lossy path is dominated everywhere
@@ -2178,7 +2178,7 @@ bit-width reduction, not about quantization as such.
 ### F10c — redesigned, and now partially validated
 
 Three faults were identified in F10b. All three are fixed here: PopQA long-tail
-items so there is something to detect; every prompt through quantize's
+items so there is something to detect; every prompt through the vendored
 `build_prompt` so the models are in-distribution; and entropy measured over the
 model's **own generated span** rather than one token — the likely cause of the
 chance-level per-item agreement, and also what the shipped `clausius` measures.
@@ -2461,14 +2461,14 @@ zero.
 
 ### F14e — the offload path through the public API (integration, not a finding)
 
-F8 already measured offload arms label-free and `quantize` measures their
+F8 already measured offload arms label-free, and their accuracy was measured
 accuracy, so nothing here is a new result. What had never been exercised is the
 README's claim that the same three commands cover an offload setting:
 `knowledge/regress.py` carries its own capture implementation and never touches
 the packaged `clausius`, so the public `model_obj` extension point had no
 coverage against a real wrapper.
 
-Driving `quantize.offload_model.wrap` through `clausius.capture(model_obj=...)`
+Driving the vendored `offload_model.wrap` through `clausius.capture(model_obj=...)`
 on 100 gsm8k items, cap 1024:
 
 | comparison | max d_z | verdict | F8's sign |

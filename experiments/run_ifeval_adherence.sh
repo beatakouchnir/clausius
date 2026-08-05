@@ -15,7 +15,7 @@
 # against the capabilities agents actually run on.
 QV=${QV:-python}          # interpreter with mlx-lm available
 cd "$(dirname "$0")/.." || exit 1
-A=${QUANTIZE_REPO:-../quantize}/artifacts
+A=${CLAUSIUS_ARTIFACTS:-../artifacts}
 step() { echo "=== STEP $1 $(date +%H:%M) ==="; shift; "$@" 2>&1 | grep -v "examples/s\]"; echo "=== DONE $(date +%H:%M) ==="; }
 echo "### ifeval sweep start $(date) ###"
 step if-4bit $QV -m knowledge.regress capture --model gemma --task ifeval --policy none --model-path $A/26b-a4b-4bit-g64 --tag quant_4bit --n 200

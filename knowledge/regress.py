@@ -78,16 +78,12 @@ def substitute_nonresident(model):
     something"), which is why it belongs in a deployment-config test rather than
     being dismissed as synthetic.
 
-    Implemented by rewriting `cache.map` after wrap(), so quantize stays
+    Implemented by rewriting `cache.map` after wrap(), so the vendored runtime stays
     read-only. Deterministic `e % len(slots)` rather than random: the run has to
     be reproducible for the paired comparison to mean anything.
     """
     import mlx.core as mx
-    import sys
-    from .frontier import repo
-    if str(repo()) not in sys.path:
-        sys.path.insert(0, str(repo()))
-    from quantize.moe import find_moe
+    from ._vendor.moe import find_moe
     n = 0
     for _li, _owner, _attr, glu in find_moe(model):
         c = getattr(glu, 'cache', None)
@@ -152,9 +148,9 @@ def cmd_capture(a):
               flush=True)
 
     from mlx_lm import generate
-    from .popqa import quantize_suite
+    from .popqa import task_suite
     from .stage_a import CAPS, load_task, score_item
-    suite = quantize_suite()
+    suite = task_suite()
     items = load_task(a.task, a.n, a.seed)
     cap = CAPS.get(a.task, 512)
     REG.mkdir(parents=True, exist_ok=True)

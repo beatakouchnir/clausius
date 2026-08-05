@@ -10,7 +10,7 @@ against a proper null. That result cannot distinguish two explanations:
 
 Only the first is worth anything. A meter that fires on vocabulary is useless
 on free text, and every W5-family probe set so far confounds the two: the
-KNOWLEDGE and REASONING lists in quantize/ablate.py share almost no vocabulary.
+the KNOWLEDGE and REASONING probe lists share almost no vocabulary.
 
 So each fact here generates BOTH classes from the SAME entities:
 
@@ -36,7 +36,7 @@ pattern is a readable ADDRESS for that fact. Paraphrases are hand-written
 rather than templated, because a templated paraphrase set would measure
 template identity rather than the fact.
 
-The suite deliberately reuses facts from quantize/ablate.py's KNOWLEDGE list
+The suite deliberately reuses facts from that KNOWLEDGE list
 where possible: those are already validated to survive `validate()` on both
 checkpoints (46/50 kept on qwen), so probe attrition here is predictable
 instead of discovered on the GPU.
@@ -249,7 +249,7 @@ F = [
 ]
 
 # Derivation offsets, applied to `value` for year facts. Small and exact so the
-# model can do them in ONE step — quantize's validate() exists because a probe
+# model can do them in ONE step — the original validate() exists because a probe
 # the model cannot solve unaided measures noise, and "17 times 23" was the
 # lesson that cost. Offsets crossing a century boundary are avoided for the
 # same reason.

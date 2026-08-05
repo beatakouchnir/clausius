@@ -69,7 +69,7 @@ step ctx-analyse $QV -m knowledge.context --analyse
 # with the offload arms from chains 3-4, so the table will also list those
 # against the quant_4bit reference. Their Δacc is still computed correctly; only
 # the quant_* rows belong to this experiment.
-A=${QUANTIZE_REPO:-../quantize}/artifacts
+A=${CLAUSIUS_ARTIFACTS:-../artifacts}
 for T in popqa gsm8k; do
   step quant-4bit-$T $QV -m knowledge.regress capture --model gemma --task $T --policy none --model-path $A/26b-a4b-4bit-g64 --tag quant_4bit
   for Q in 3bit-g64 2bit-g64 mixed_4_6 mixed_3_6; do

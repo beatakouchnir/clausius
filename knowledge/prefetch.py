@@ -31,7 +31,7 @@ count table beats recency, the signal is real and a better model would only
 help; if it does not, no amount of modelling rescues it.
 
 HONEST CEILING, stated before running. Prefetch can only help where LRU misses.
-quantize measured OPT − LRU at +0.173 hit rate at 2 GB and +0.048 at 8 GB, so
+the offload benchmarks measured OPT − LRU at +0.173 hit rate at 2 GB and +0.048 at 8 GB, so
 that gap is the whole prize and this cannot exceed it.
 
 Stdlib + numpy. No model, no GPU.
@@ -182,7 +182,7 @@ def main():
     print(f"  on top: best fill control "
           f"{max(res['prev+freq'], res['prev+random']):.4f} · prev+cooc "
           f"{res['prev+cooc']:.4f} · lift {hyb:+.4f}")
-    print(f"\n  Context: quantize measured the whole OPT-minus-LRU headroom at")
+    print(f"\n  Context: the offload benchmarks measured the whole OPT-minus-LRU headroom at")
     print(f"  +0.173 hit rate at 2 GB. A lift far below that is not a lever.")
     print(f"  A real gain needs the early-layer predictor to beat RECENCY,")
     print(f"  which is what LRU already exploits for free.")

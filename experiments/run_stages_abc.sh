@@ -4,7 +4,7 @@
 # record and every step brackets itself with STEP/DONE markers.
 QV=${QV:-python}          # interpreter with mlx-lm available
 Q27=${QWEN_DENSE:-mlx-community/Qwen3.6-27B-4bit}
-QMOE=${QUANTIZE_REPO:-../quantize}/artifacts/qwen36-35b-a3b-4bit-g64
+QMOE=${CLAUSIUS_ARTIFACTS:-../artifacts}/qwen36-35b-a3b-4bit-g64
 GMOE=${GEMMA_MOE:?set GEMMA_MOE to a gemma-4-26b-a4b checkpoint}
 G31=${GEMMA_DENSE:?set GEMMA_DENSE to a gemma-4-31b checkpoint}
 GE4B=mlx-community/gemma-4-e4b-it-4bit

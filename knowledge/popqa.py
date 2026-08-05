@@ -9,13 +9,13 @@ facts I am less reliable too, and mislabelling a correct answer as an error is
 worse than having no data.
 
 PopQA solves both problems. It is long-tail entity QA — the shape of question a
-user actually asks — and quantize already measured it: **0.29 on qwen, 0.225 on
+user actually asks — and it was measured separately: **0.29 on qwen, 0.225 on
 gemma**, i.e. a 71-77% error rate, with curated alias sets as ground truth.
 
-REUSED FROM quantize/suite.py, not reimplemented: the dataset and split, the
+REUSED FROM the vendored `_vendor/suite.py`, not reimplemented: the dataset and split, the
 prompt and instruction wording, and the alias scorer. Matching that harness is
 what makes the error rate here comparable to the numbers already in
-records/suite.json. quantize is read-only to this project; nothing is written
+records/suite.json. the vendored code is read-only here.; nothing is written
 back.
 
 WHAT IS COMPARED, all read at one forward pass over the prompt:
@@ -51,15 +51,11 @@ from .meter import OUT
 CAP = OUT / 'popqa.capture.json'
 
 
-def quantize_suite():
-    """Import quantize's suite module so the task and scorer are the same ones
-    that produced records/suite.json — not a re-implementation that might
-    disagree about what counts as correct."""
-    from . import traces
-    repo = traces.repo()
-    if str(repo) not in sys.path:
-        sys.path.insert(0, str(repo))
-    from quantize import suite            # noqa
+def task_suite():
+    """The vendored task/scorer suite — the same code that produced
+    records/suite.json, not a re-implementation that might disagree about what
+    counts as correct. Vendored at `_vendor/suite.py`; see that file's header."""
+    from ._vendor import suite
     return suite
 
 
@@ -89,7 +85,7 @@ def main():
     print(f"{d['model']} · PopQA · {len(rows)} items · "
           f"accuracy {1 - y.mean():.3f} · **{int(y.sum())} errors "
           f"({y.mean():.1%})**")
-    print(f"  (quantize/suite.json recorded popqa/qwen accuracy 0.29)\n")
+    print(f"  (the recorded suite run gives popqa/qwen accuracy 0.29)\n")
 
     from .detect import auc
     from .meter import counts, score
@@ -151,9 +147,9 @@ def capture(a):
     from mlx_lm import load, generate
     from .seam import find_gates, gate_output, describe
 
-    suite = quantize_suite()
+    suite = task_suite()
     items = suite.load_items('popqa', a.n, a.seed)
-    print(f"{len(items)} PopQA items from quantize's loader", flush=True)
+    print(f"{len(items)} PopQA items from the vendored loader", flush=True)
 
     print("loading …", flush=True)
     model, tok = load(a.model)
@@ -188,7 +184,7 @@ def capture(a):
     out = []
     try:
         for i, it in enumerate(items):
-            # quantize's own prompt builder, with think=False to match the
+            # the vendored prompt builder, with think=False to match the
             # runs already in records/suite.json. Rebuilding the prompt here
             # would risk a different accuracy than the 0.29 being compared to.
             pr = suite.build_prompt(tok, it, think=False)

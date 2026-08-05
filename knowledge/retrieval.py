@@ -15,7 +15,7 @@ because each fault dictates one feature of this design.
      first-token NLL was 10.0 (qwen) and 14.2 (gemma) — near-zero probability on
      the gold answer, for models that score 0.23-0.29 on the task. That gap says
      the measurement was taken in a regime the models do not operate in.
-     -> every prompt goes through quantize's `build_prompt`, the same chat
+     -> every prompt goes through the vendored `build_prompt`, the same chat
      templating every other measurement in this project uses.
 
   3. A SINGLE-TOKEN SIGNAL. Alias-aware scoring fixed a real bug but forced
@@ -38,7 +38,7 @@ WHAT IS COMPARED. Three arms, all chat-templated:
                alone moved entropy more than relevance did).
 
 THE GROUND TRUTH IS CORRECTNESS, not NLL. Whether the generated answer is right
-is what a RAG user cares about, it is scored by quantize's official alias
+is what a RAG user cares about, it is scored by the vendored official alias
 scorer, and it is binary and interpretable. NLL against one arbitrary alias is
 what produced a spurious result in attempt 2.
 
@@ -85,7 +85,7 @@ def build(items):
     """[(item_index, arm, item_with_context)] — context lives in the prompt.
 
     The context is embedded in the item's `prompt` and the whole thing then goes
-    through quantize's `build_prompt`, so the chat template wraps it exactly as
+    through the vendored `build_prompt`, so the chat template wraps it exactly as
     it wraps every other prompt in this project. Building the template by hand
     here is what put attempt 2 off-distribution.
     """
@@ -148,10 +148,10 @@ def main():
 
     from .cot import variants
     from .frontier import MODELS
-    from .popqa import quantize_suite
+    from .popqa import task_suite
     from .stage_a import CAPS, load_task, score_item
 
-    suite = quantize_suite()
+    suite = task_suite()
     items = load_task('popqa', a.n, a.seed)
     work = build(items)
     cap = CAPS['popqa']

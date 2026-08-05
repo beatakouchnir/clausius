@@ -6,7 +6,7 @@ you want to know how a number in [FINDINGS.md](../FINDINGS.md) was generated,
 the script that generated it is here.
 
 They are **not** a supported entry point. They assume local checkpoints, a
-sibling `quantize` checkout, and a Mac with enough unified memory, and several
+external artifact store, and a Mac with enough unified memory, and several
 of them are supersets or repairs of earlier ones:
 `run_frontier5_topk_rerun.sh` re-runs an arm that `run_frontier3_topk.sh` got
 wrong. The numbering is chronological, not a
@@ -14,7 +14,7 @@ hierarchy.
 
 ```bash
 export QV=/path/to/python-with-mlx-lm   # defaults to `python`
-export QUANTIZE_REPO=../quantize
+export CLAUSIUS_ARTIFACTS=../artifacts
 sh experiments/run_frontier1_exactness.sh
 ```
 

@@ -136,7 +136,7 @@ def popqa_probes(n, seed):
     a model handed the literal answer that does not become more confident has a
     problem worth surfacing, whatever mechanism it would have used.
     """
-    from .popqa import quantize_suite
+    from .popqa import task_suite
     from .stage_a import load_task
     items = load_task('popqa', n, seed)
     out = []

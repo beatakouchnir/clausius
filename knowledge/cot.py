@@ -28,13 +28,13 @@ ONE CAPTURE, MANY ANALYSES. The generation is expensive and the aggregation is
 free, so the run records per-token entropy across the whole sequence and every
 variant is computed offline (profile_experts.py's discipline).
 
-CONTEXT FROM ghostlight. Its n=740 calibration study measured 8-vote
+CONTEXT FROM A PRIOR CALIBRATION STUDY. An n=740 study measured 8-vote
 self-consistency at AURC **0.087 on math** and 0.259 on MCQ, so on this task the
 incumbent is strong, not weak. Entropy does not need to beat it here — Stage B
 does that comparison properly — but a variant that cannot even beat generation
 length is not worth carrying into the long experiment.
 
-Needs mlx-lm. Reuses quantize's GSM8K loader, prompt builder and scorer.
+Needs mlx-lm. Reuses the vendored GSM8K loader, prompt builder and scorer.
 
 Usage:
   python3 -m knowledge.cot --capture --n 200
@@ -50,7 +50,7 @@ import numpy as np
 
 from . import traces
 from .meter import OUT
-from .popqa import quantize_suite
+from .popqa import task_suite
 
 CAP = OUT / 'cot.capture.json'
 
@@ -116,12 +116,12 @@ def main():
     print(f"  dumb baseline (gen_len): {res.get('gen_len', float('nan')):.4f}")
     print(f"  R13's measure (first):   {res.get('first', float('nan')):.4f}")
 
-    # ghostlight's AURC, so the number is comparable with its n=740 study
+    # the same AURC implementation, so the number is comparable with that n=740 study
     try:
         from . import _gl
         corr = 1 - y
         print(f"\n  {'variant':12s} {'AURC':>8s} {'E-AURC':>8s}   "
-              f"(ghostlight: 8-vote self-consistency AURC 0.087 on math, "
+              f"(prior study: 8-vote self-consistency AURC 0.087 on math, "
               f"0.259 on MCQ)")
         # E-AURC subtracts the best achievable AURC at this base rate, so it is
         # the metric that compares fairly ACROSS tasks with different accuracy.
@@ -131,7 +131,7 @@ def main():
             rc = _gl.risk_coverage(-v[ok], corr[ok])
             print(f"  {k:12s} {rc['aurc']:8.4f} {rc['e_aurc']:8.4f}")
     except Exception as e:
-        print(f"\n  (ghostlight metrics unavailable: {e})")
+        print(f"\n  (calibration metrics unavailable: {e})")
 
     dest = OUT / 'cot.json'
     dest.write_text(json.dumps({'task': d['task'], 'model': d['model'],
@@ -143,7 +143,7 @@ def main():
 def find_answer_pos(tok, ids, n_prompt, text):
     """Index of the position that EMITS the final answer token.
 
-    quantize's number scorer takes the last number after an `ANSWER:` marker,
+    the vendored number scorer takes the last number after an `ANSWER:` marker,
     so the answer is located by finding that number's character offset in the
     generated text and mapping it back to a token — the same character-offset
     approach that fixed the multi-token failures in generated.py.
@@ -172,7 +172,7 @@ def capture(a):
     mx.set_memory_limit(int(a.limit_gb * 1024 ** 3))
     from mlx_lm import load, generate
 
-    suite = quantize_suite()
+    suite = task_suite()
     items = suite.load_items(a.task, a.n, a.seed)
     print(f"{len(items)} {a.task} items", flush=True)
     print("loading …", flush=True)

@@ -1,6 +1,6 @@
-"""Read quantize's captured routing traces. Stdlib only, no model, no GPU.
+"""Read captured routing traces from the artifact store. Stdlib only, no model, no GPU.
 
-quantize's profiler was built on "CAPTURE ONCE, ANALYSE FOREVER": a GPU run
+The capture tooling was built on "CAPTURE ONCE, ANALYSE FOREVER": a GPU run
 writes a trace, and every analysis afterwards runs from it with no model load.
 This project inherits that discipline for a harder reason than convenience —
 loading a 19 GB MoE perturbs anything else running on the machine. MLX uses
@@ -8,7 +8,7 @@ unified memory, so pinning to `mx.cpu` does NOT isolate you: same RAM pool,
 same memory bus. The axis that matters is loads-a-model vs doesn't, and
 everything in this module is on the safe side of it.
 
-Two trace kinds, both written by quantize, both domain-labelled:
+Two trace kinds, both written by the capture tooling, both domain-labelled:
 
   expert-trace/1   which experts were SELECTED, per token   (gemma + qwen)
   gate-trace/1     the top-32 experts by GATE SCORE, ranked (qwen only)
@@ -27,25 +27,27 @@ than assuming a fixed block size: the capture loop increments its pass counter
 on prefill too, so consecutive prompts leave a gap of 2 in the pass ids while
 tokens within a generation are contiguous.
 
-Point at a quantize checkout other than ../quantize with QUANTIZE_REPO.
+Traces and checkpoints are far too large to publish, so they live outside
+this repo. Point CLAUSIUS_ARTIFACTS at the directory holding them; the
+recorded outputs derived from them are committed under records/.
 """
 import gzip
 import json
 import os
 from pathlib import Path
 
-_DEFAULT = Path(__file__).resolve().parent.parent.parent / 'quantize'
+_DEFAULT = Path(__file__).resolve().parent.parent.parent / 'artifacts'
 
 
 def repo():
-    return Path(os.environ.get('QUANTIZE_REPO', _DEFAULT))
+    return Path(os.environ.get('CLAUSIUS_ARTIFACTS', _DEFAULT))
 
 
 def artifact(name=''):
-    """Path to a checkpoint under the quantize checkout's artifacts/.
+    """Path to a checkpoint under the artifact store.
 
     Exists so no module hardcodes an absolute path to somebody's home
-    directory. Override the checkout with QUANTIZE_REPO; these defaults only
+    directory. Override the checkout with CLAUSIUS_ARTIFACTS; these defaults only
     say which checkpoint an experiment used, and are not expected to resolve on
     a machine that does not have it.
     """
@@ -55,12 +57,12 @@ def artifact(name=''):
 def records_dir():
     d = repo() / 'records'
     if not d.is_dir():
-        raise SystemExit(f"no quantize records at {d}; set QUANTIZE_REPO")
+        raise SystemExit(f"no records at {d}; set CLAUSIUS_ARTIFACTS")
     return d
 
 
 # The traces this project reads, and the ablation record each one pairs with.
-# The pairing is checkpoint-sensitive and easy to get wrong: quantize holds
+# The pairing is checkpoint-sensitive and easy to get wrong: the store holds
 # BOTH a base and an instruct ablation for gemma, and the gemma trace was
 # captured on the INSTRUCT checkpoint. W5.2 found layer identity does not
 # transfer base->instruct (top-4 overlap 1/4), so pairing the it-trace with

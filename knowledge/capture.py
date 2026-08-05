@@ -18,7 +18,7 @@ WHAT IS RECORDED AND WHY EACH LABEL EARNS ITS PLACE:
   correct         did greedy decoding produce the right first answer token?
   answer_nll      the model's confidence on the answer it gave.
 
-EVERY PROBE IS CAPTURED, INCLUDING THE ONES THE MODEL GETS WRONG. quantize's
+EVERY PROBE IS CAPTURED, INCLUDING THE ONES THE MODEL GETS WRONG. The earlier
 `validate()` drops failures because an NLL delta on a probe the model cannot
 solve measures noise — correct for ablation, wrong here. The failures are the
 positive class for the eventual hallucination test: routing on a fact the model

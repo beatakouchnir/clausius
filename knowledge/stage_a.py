@@ -13,7 +13,7 @@ R14 then showed the result is fragile in two specific ways, both corrected here:
   TOKEN CAPS. 27/250 GSM8K generations hit the 512-token cap and 81.5% of those
   were wrong — **73% of all "errors" were truncation artifacts**. Excluding them
   moved mean entropy 0.762 -> 0.897 and collapsed the generation-length baseline
-  0.878 -> 0.585. quantize's own suite shows the same at scale: mmlu_pro/qwen
+  0.878 -> 0.585. the vendored own suite shows the same at scale: mmlu_pro/qwen
   0.345 -> 0.820 at cap4160. So every task here runs at the GENEROUS cap, the
   truncation rate is reported, and capped items are excluded from the AUC.
 
@@ -32,7 +32,7 @@ ABSTENTION IS A THIRD OUTCOME, not an error. AA-Omniscience scores it zero for
 exactly this reason, and R13's predecessor mis-scored refusals as fabrications.
 Abstentions are recorded separately and excluded from the error label.
 
-Needs mlx-lm and datasets. Reuses quantize's loaders/scorers where they exist.
+Needs mlx-lm and datasets. Reuses the vendored loaders/scorers where they exist.
 
 Usage:
   python3 -m knowledge.stage_a --task omniscience --n 250
@@ -48,7 +48,7 @@ import numpy as np
 from . import traces
 from .cot import variants
 from .meter import OUT
-from .popqa import quantize_suite
+from .popqa import task_suite
 
 CAPS = {'gsm8k': 960, 'mmlu_pro': 4160, 'popqa': 64,
         'omniscience': 256, 'hle': 512, 'gpqa': 4160, 'ifeval': 768}
@@ -56,7 +56,7 @@ CAPS = {'gsm8k': 960, 'mmlu_pro': 4160, 'popqa': 64,
 # actually depends on (emit this format, use only these fields, stop here), and
 # it degrades independently of the factual accuracy the other tasks measure.
 # Its gold is a set of programmatic constraint checks rather than an answer
-# string, so it MUST route to quantize's scorer — scoring it here would be a
+# string, so it MUST route to the vendored scorer — scoring it here would be a
 # re-implementation of the official IFEval constraint library.
 QUANTIZE_TASKS = ('gsm8k', 'mmlu_pro', 'popqa', 'longbench', 'ifeval')
 
@@ -73,9 +73,9 @@ def _norm(s):
 
 
 def load_task(task, n, seed):
-    """[(item)] with a uniform shape. quantize's loaders where they exist."""
+    """[(item)] with a uniform shape. the vendored loaders where they exist."""
     if task in QUANTIZE_TASKS:
-        items = quantize_suite().load_items(task, n, seed)
+        items = task_suite().load_items(task, n, seed)
         for it in items:
             it['max_tokens'] = CAPS.get(task, it.get('max_tokens', 512))
         return items
@@ -133,7 +133,7 @@ def score_item(task, item, text, suite):
     if any(w in t for w in (_norm(x) for x in ABSTAIN)):
         return None, True
     if task in QUANTIZE_TASKS or item.get('score') == 'letter':
-        # reuse quantize's letter scorer for GPQA too — it already handles the
+        # reuse the vendored letter scorer for GPQA too — it already handles the
         # ANSWER: marker and the bare-letter fallback
         return bool(suite.score(item, text)), False
     # contains-scoring for the open short-answer sets
@@ -177,7 +177,7 @@ def capture(a):
     mx.set_memory_limit(int(a.limit_gb * 1024 ** 3))
     from mlx_lm import load, generate
 
-    suite = quantize_suite()
+    suite = task_suite()
     items = load_task(a.task, a.n, a.seed)
     print(f"{len(items)} {a.task} items · cap {CAPS.get(a.task)} tokens",
           flush=True)

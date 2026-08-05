@@ -1,8 +1,7 @@
 """Locate a model's expert modules AND its router, without knowing the family.
 
-Ported from quantize/moe.py rather than imported: this project reads quantize's
-records but does not depend on its source, the same isolation quantize keeps
-from ghostlight. The mlx import is deferred into the functions so the analysis
+Ported rather than imported from the vendored `_vendor/moe.py`: this module
+adds `find_gates`, which the vendored version does not have. The mlx import is deferred into the functions so the analysis
 half of this package stays importable with no mlx installed.
 
 `find_moe` resolves the expert modules by CLASS (`SwitchGLU`), because the
@@ -11,11 +10,11 @@ attribute names are family-specific and the class is not:
     gemma-4-26b-a4b   model.model.layers[i].experts.switch_glu
     qwen3.6-35b-a3b   model.language_model.model.layers[i].mlp.switch_mlp
 
-`find_gates` is new here, and it is the piece R2 needs. quantize's
+`find_gates` is new here, and it is the piece R2 needs. The vendored
 `gatetrace.py` found the seam for qwen — the gate lives on the block that OWNS
 the SwitchGLU, as `owner.gate`, not on the SwitchGLU itself — but it hard
 requires that spelling and raises "add this family to gatetrace" otherwise.
-That is exactly why quantize has a qwen gate trace and no gemma one.
+That is exactly why there is a qwen gate trace and no gemma one.
 
 gemma keeps its router one level up, on the decoder layer as `layer.router`,
 so the search here covers the owner first and then the layer. The two families
