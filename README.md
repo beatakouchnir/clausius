@@ -20,17 +20,24 @@ like the related quantities they are. Entropy is the signal this tool reads.*
 ## Quickstart
 
 ```bash
-pip install clausius              # or: pip install -e ".[mlx]"          # mlx extra is needed only to capture
+pip install "clausius[mlx] @ git+https://github.com/wintergreen22/clausius"
 ```
 
+The `mlx` extra is needed only to **capture**, and only runs on Apple Silicon.
+`compare` and every analysis path are pure numpy and run anywhere — `pip install
+clausius` without the extra is enough to re-analyse captures or the published
+corpus on any machine.
+
 Take 60 prompts of your own — production traffic is ideal, and **no labels are
-needed**. Capture the configuration you trust, capture the one you changed,
-compare:
+needed** — or start with the 60 in [`examples/prompts.jsonl`](examples/prompts.jsonl).
+Capture the configuration you trust, capture the one you changed, compare:
 
 ```bash
-clausius capture --model ./gemma-26b-a4b-4bit --prompts prompts.txt --out ref.json
-clausius capture --model ./gemma-26b-a4b-2bit --prompts prompts.txt --out cand.json
-clausius compare ref.json cand.json
+clausius capture --model ./gemma-26b-a4b-4bit --prompts examples/prompts.jsonl \
+    --out ref.json  --max-tokens 1536
+clausius capture --model ./gemma-26b-a4b-2bit --prompts examples/prompts.jsonl \
+    --out cand.json --max-tokens 1536
+clausius compare ref.json cand.json --show 3
 ```
 
 ```
@@ -61,6 +68,38 @@ items that hit the cap are dropped at compare time. A capture can be re-analysed
 at any *tighter* cap, because every item's true length is known — but never at a
 looser one, since truncated items no longer carry theirs. Capture generously
 once rather than twice.
+
+**`--show N` prints the items whose entropy moved most**, with the text both
+configs produced. The verdict says something broke; this says what. It reads
+recorded data, so it costs nothing and needs no model.
+
+**What it costs.** Measured on `gemma-4-26b-a4b-it` (26B MoE) on an M5 Max:
+
+| configuration | per prompt | 60 prompts | comparison (two captures) |
+|---|---|---|---|
+| 4-bit, ~13 GB | ~8 s | ~8 min | ~16 min |
+| 8-bit, ~28 GB | ~11 s | ~11 min | ~22 min |
+| bf16, ~52 GB | ~18 s | ~18 min | ~36 min |
+
+Generation dominates, so cost scales with what your prompts elicit rather than
+with `--max-tokens` directly: tripling the cap from 512 to 1536 cost 2.2x, not
+3x, because items that finish early are unaffected.
+
+**Captures are deterministic.** Greedy decoding over fixed weights, so the same
+configuration on the same prompts reproduces exactly — across processes, not
+merely within one. Measured: a capture at cap 1536 predicted 47/60 truncations
+at cap 512, and a separate run actually at 512 truncated exactly 47. That is the
+property the CI gate rests on; a detector that drifted between runs could not
+gate anything. It also means comparing a config against *itself* yields exactly
+zero rather than a noise floor — the ±0.10 null comes from benign *configuration*
+changes, not from measurement noise.
+
+**Managing the reference.** Capture the config you trust once, commit
+`ref.json` as a build artifact, and compare every candidate against it.
+Re-baseline deliberately — when you accept a new configuration, not when a run
+goes red. `compare` **rejects** captures made on different prompt sets rather
+than silently comparing them, so changing your prompts forces a new reference,
+which is the intended behaviour and not an obstacle to route around.
 
 The same three commands cover a LoRA checkpoint (`--adapter`), an inference
 backend, or an offload setting — clausius does not manage configurations, it
