@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from .core import (DEFAULT_SIGNAL, DEFAULT_THRESHOLD, SIGNALS, capture,
-                   compare, truncation_curve)
+                   compare, top_movers, truncation_curve)
 
 
 def read_prompts(path):
@@ -34,6 +34,12 @@ def read_prompts(path):
             f"{missing[0] + 1}); expected JSONL with 'prompt'/'text'/'input', "
             f"or plain text")
     return out
+
+
+def _clip(text, width=160):
+    """One line, bounded — a terminal diagnostic, not a transcript dump."""
+    flat = ' '.join((text or '').split())
+    return flat[:width] + ('…' if len(flat) > width else '')
 
 
 def main(argv=None):
@@ -77,6 +83,10 @@ def main(argv=None):
     d.add_argument('--keep-truncated', action='store_true',
                    help='do not drop items that hit the token cap. Dilutes the '
                         'effect and lets generation length leak in.')
+    d.add_argument('--show', type=int, default=0, metavar='N',
+                   help='also print the N items whose entropy moved most, '
+                        'with the text both configs produced. The verdict '
+                        'says something broke; this says what.')
     d.add_argument('--json', action='store_true')
 
     a = ap.parse_args(argv)
@@ -130,6 +140,18 @@ def main(argv=None):
                                      for k, v in r.detail.items()}}, indent=1))
     else:
         print(r)
+        if a.show:
+            movers = top_movers(a.reference, a.candidate, n=a.show,
+                                signal=a.signal,
+                                drop_truncated=not a.keep_truncated)
+            print(f"\n  {len(movers)} largest movers by {a.signal}:")
+            for m in movers:
+                print(f"\n  item {m['i']}  \u0394{a.signal} {m['delta']:+.2f}"
+                      f"  ({m['ref']:.2f} -> {m['cand']:.2f})")
+                if m['prompt']:
+                    print(f"    prompt: {_clip(m['prompt'])}")
+                print(f"    ref   : {_clip(m['ref_text'])}")
+                print(f"    cand  : {_clip(m['cand_text'])}")
     # non-zero on regression so a CI step fails without extra glue
     return 1 if r.flagged else 0
 

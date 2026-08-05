@@ -22,10 +22,10 @@ result rather than a taste, and FINDINGS.md has the evidence.
 """
 from .core import (CAP_LADDER, DEFAULT_SIGNAL, DEFAULT_THRESHOLD,
                    MIN_PAIRED_ITEMS, SIGNALS, Capture, Result, TruncationCurve,
-                   aggregate, capture, compare, truncation_curve)
+                   aggregate, capture, compare, top_movers, truncation_curve)
 
 __all__ = ['capture', 'compare', 'Capture', 'Result', 'aggregate',
-           'truncation_curve', 'TruncationCurve',
+           'truncation_curve', 'TruncationCurve', 'top_movers',
            'SIGNALS', 'DEFAULT_SIGNAL', 'DEFAULT_THRESHOLD',
            'MIN_PAIRED_ITEMS', 'CAP_LADDER']
 __version__ = '0.1.0'
