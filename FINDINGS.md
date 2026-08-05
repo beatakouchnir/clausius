@@ -2559,3 +2559,43 @@ quantizer would not license a claim about the others. It is the calibration
 recipe now in the README: measure your own floor from configurations you have
 independent reason to believe are equivalent, which is the procedure that
 produced 0.3 in the first place.
+
+### F15b — the same class of change is benign at production scale on mlx
+
+F15's one benign arm flagged: a compute-precision change on a 0.5B model in
+torch read d_z +0.306 with accuracy unchanged. That left three explanations
+unseparated — the backend, the 0.5B scale, or the choice of control. It also
+left an uncomfortable possibility open: that precision changes are a blind spot
+of the *method*, in which case the problem would follow the detector onto the
+stack that actually ships.
+
+This tests that directly, on mlx at 26B. fp32 is not available at this size —
+`gemma-4-26b-a4b-it` in float32 is ~96 GB of weights on a 137 GB machine — so
+the feasible pure-numerics change is **bf16 → fp16**: identical weights, equal
+bit width, a different exponent/mantissa split, and therefore different
+arithmetic at every operation. Same 200 gsm8k items as F14c, labels measured.
+
+| stack | change | Δacc | b/c | entropy d_z | verdict |
+|---|---|---|---|---|---|
+| **26B, mlx** | bf16 → fp16 | +0.0300 (p=0.109) | 2/8 | **−0.043** [−0.17, +0.12] | **clean ✓** |
+| 0.5B, torch (F15) | fp16 → fp32 | −0.0067 | — | +0.306 [+0.18, +0.43] | REGRESSION ✗ |
+
+**The detector is not inherently fooled by precision changes.** At production
+scale on the shipped runtime, a change that alters every matmul reads −0.043 —
+inside the ±0.10 null, with an interval that comfortably contains zero. Whatever
+F15 found, it is not a property of the method that follows it onto mlx.
+
+**A side observation.** Gemma-family models are normally specified bf16 because
+their activation magnitudes overflow fp16's range. That did not materialise
+here: fp16 scored 0.8750 against bf16's 0.8450 on the same items — b=2 against
+c=8, p=0.109, so not significant, but certainly not damaged. The overflow
+concern is real in general and did not bite this checkpoint on this task.
+
+**What is still unresolved.** The two rows differ in scale *and* in framework,
+so this does not tell you which caused F15's false positive. The run that would
+isolate it — the same fp16 → fp32 change on a 7B model in torch, holding
+framework and change-type fixed — did not complete: it targeted a `backend`
+argument that had been removed from the shipping branch hours earlier, while the
+job sat queued. A self-inflicted failure, recorded because the experiment is
+still owed. It remains the open question in the torch scope decision, and the
+work belongs on `feat/torch-backend` where the argument still exists.
