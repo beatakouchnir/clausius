@@ -339,3 +339,45 @@ def test_top_movers_only_explains_items_the_verdict_counted():
 def test_top_movers_rejects_unknown_signal():
     with pytest.raises(ValueError, match='unknown signal'):
         top_movers(make([1.0] * 30), make([1.0] * 30), signal='nope')
+
+
+# --- bootstrap interval ---------------------------------------------------
+
+def test_ci_is_deterministic():
+    """Everything else about a capture is reproducible; an unseeded interval
+    would make `compare --json` differ between runs on identical inputs, which
+    breaks the CI gate the interval is meant to inform."""
+    rng = np.random.default_rng(11)
+    base = rng.normal(3.0, 1.0, 60)
+    a, b = make(base.tolist()), make((base + 0.8).tolist())
+    assert compare(a, b).ci == compare(a, b).ci
+
+
+def test_ci_brackets_the_point_estimate():
+    rng = np.random.default_rng(12)
+    base = rng.normal(3.0, 1.0, 60)
+    r = compare(make(base.tolist()), make((base + 0.8).tolist()))
+    lo, hi = r.ci
+    assert lo < r.effect < hi
+
+
+def test_ci_is_wider_on_fewer_items():
+    """The whole point: it tells you whether your prompt set is big enough."""
+    rng = np.random.default_rng(13)
+    big = rng.normal(0.5, 1.0, 400)
+    wide = compare(make([0.0] * 25), make(big[:25].tolist())).ci
+    tight = compare(make([0.0] * 400), make(big.tolist())).ci
+    assert (wide[1] - wide[0]) > (tight[1] - tight[0])
+
+
+def test_ci_does_not_change_the_verdict():
+    """`flagged` is the threshold test and nothing else — that threshold is what
+    13 benign configurations calibrated."""
+    rng = np.random.default_rng(14)
+    base = rng.normal(3.0, 1.0, 30)
+    # a NOISY small shift — a constant offset gives paired differences with zero
+    # variance, and d_z is a ratio to that variance, so it explodes
+    shifted = base + rng.normal(0.12, 1.0, 30)
+    r = compare(make(base.tolist()), make(shifted.tolist()))
+    assert r.effect < r.threshold and not r.flagged
+    assert r.ci[1] > r.threshold        # interval reaches past it; verdict holds

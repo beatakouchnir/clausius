@@ -82,6 +82,11 @@ MIN_PAIRED_ITEMS = 20
 # a capture actually used are answerable — see `truncation_curve`.
 CAP_LADDER = (256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192)
 
+# Bootstrap settings for the reported interval. Seeded by default: a CI gate
+# whose output changes between runs on identical inputs is not a gate.
+BOOTSTRAP_RESAMPLES = 2000
+BOOTSTRAP_SEED = 0
+
 
 def aggregate(entropy: np.ndarray, n_prompt: int) -> dict:
     """Every aggregation of a per-token entropy sequence, over generated tokens.
@@ -140,13 +145,17 @@ class Result:
     n_compared: int
     n_dropped_truncated: int
     detail: dict
+    ci: tuple = (float('nan'), float('nan'))
 
     @property
     def verdict(self) -> str:
         return 'REGRESSION' if self.flagged else 'clean'
 
     def __str__(self) -> str:
-        lines = [f"{self.verdict}  ({self.signal} d_z = {self.effect:+.3f}, "
+        span = ("" if any(np.isnan(v) for v in self.ci)
+                else f" [95% CI {self.ci[0]:+.2f}, {self.ci[1]:+.2f}]")
+        lines = [f"{self.verdict}  ({self.signal} d_z = {self.effect:+.3f}"
+                 f"{span}, "
                  f"threshold {self.threshold}, "
                  f"{'one' if self.one_sided else 'two'}-sided)",
                  f"  compared {self.n_compared} paired items"
@@ -382,33 +391,71 @@ def _pair(reference, candidate, drop_truncated):
     return ref, cand, keep
 
 
+def bootstrap_ci(deltas, resamples=BOOTSTRAP_RESAMPLES, seed=BOOTSTRAP_SEED,
+                 level=95.0):
+    """Interval for d_z under resampling the PROMPTS.
+
+    Seeded, and deliberately so. Everything else about a capture is
+    deterministic — a capture at 1536 predicted 47/60 truncations at 512 and a
+    separate run at 512 produced exactly 47 — and a CI gate whose JSON output
+    changes between runs on identical inputs is not a gate.
+
+    WHAT IT COVERS: how much d_z would move if you had drawn a different sample
+    of prompts. That is the question behind "are 60 prompts enough?".
+
+    WHAT IT DOES NOT COVER: the benign-configuration variation the ±0.10 null
+    measures. Those are different sources of uncertainty. A tight interval
+    around +0.15 means *this prompt set reliably reads +0.15*, NOT that the
+    change is safe — the verdict against the threshold is what says that, and
+    the threshold is calibrated against benign configs rather than against
+    prompt resampling.
+    """
+    d = np.asarray(deltas, dtype=float)
+    if len(d) < 2:
+        return (float('nan'), float('nan'))
+    rng = np.random.default_rng(seed)
+    draws = d[rng.integers(0, len(d), (resamples, len(d)))]
+    dz = draws.mean(axis=1) / (draws.std(axis=1, ddof=1) + 1e-12)
+    tail = (100.0 - level) / 2.0
+    lo, hi = np.percentile(dz, [tail, 100.0 - tail])
+    return float(lo), float(hi)
+
 
 def compare(reference, candidate, signal=DEFAULT_SIGNAL,
             threshold=DEFAULT_THRESHOLD, one_sided=True,
-            drop_truncated=True) -> Result:
+            drop_truncated=True, resamples=BOOTSTRAP_RESAMPLES,
+            seed=BOOTSTRAP_SEED) -> Result:
     """Paired entropy comparison. Returns a Result; raises on mismatched inputs.
 
     Accepts `Capture` objects or paths to saved ones.
+
+    The reported interval is descriptive only — `flagged` is the threshold test
+    and nothing else, because that threshold is what 13 benign configurations
+    calibrated. Turning the verdict into a significance test would replace a
+    measured decision rule with an unmeasured one.
     """
     if signal not in SIGNALS:
         raise ValueError(f"unknown signal {signal!r}; choose from {SIGNALS}")
     ref, cand, keep = _pair(reference, candidate, drop_truncated)
     dropped = len(ref.rows) - len(keep)
 
-    detail = {}
+    detail, chosen = {}, None
     for s in SIGNALS:
         x = np.array([ref.rows[i]['ent'][s] for i in keep])
         y = np.array([cand.rows[i]['ent'][s] for i in keep])
         ok = np.isfinite(x) & np.isfinite(y)
         d = y[ok] - x[ok]
         detail[s] = float(d.mean() / (d.std(ddof=1) + 1e-12))
+        if s == signal:
+            chosen = d
 
     effect = detail[signal]
     flagged = effect > threshold if one_sided else abs(effect) > threshold
     return Result(flagged=flagged, effect=effect, signal=signal,
                   threshold=threshold, one_sided=one_sided,
                   n_compared=len(keep), n_dropped_truncated=dropped,
-                  detail=detail)
+                  detail=detail,
+                  ci=bootstrap_ci(chosen, resamples=resamples, seed=seed))
 
 
 def top_movers(reference, candidate, n=5, signal=DEFAULT_SIGNAL,

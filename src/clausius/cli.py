@@ -136,6 +136,7 @@ def main(argv=None):
                           'threshold': r.threshold, 'one_sided': r.one_sided,
                           'n_compared': r.n_compared,
                           'n_dropped_truncated': r.n_dropped_truncated,
+                          'ci': [round(v, 4) for v in r.ci],
                           'detail': {k: round(v, 4)
                                      for k, v in r.detail.items()}}, indent=1))
     else:
