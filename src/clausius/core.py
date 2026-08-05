@@ -352,12 +352,12 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     return cap
 
 
-def compare(reference, candidate, signal=DEFAULT_SIGNAL,
-            threshold=DEFAULT_THRESHOLD, one_sided=True,
-            drop_truncated=True) -> Result:
-    """Paired entropy comparison. Returns a Result; raises on mismatched inputs.
+def _pair(reference, candidate, drop_truncated):
+    """Load, validate, and return (ref, cand, kept indices).
 
-    Accepts `Capture` objects or paths to saved ones.
+    Shared by `compare` and `top_movers` so the two can never disagree about
+    which items count — a diagnostic that explained items the verdict had
+    already discarded would be worse than none.
     """
     ref = reference if isinstance(reference, Capture) else Capture.load(reference)
     cand = candidate if isinstance(candidate, Capture) else Capture.load(candidate)
@@ -370,18 +370,30 @@ def compare(reference, candidate, signal=DEFAULT_SIGNAL,
         raise ValueError(
             "captures used different prompts; pairing them would compare two "
             "datasets rather than two configurations")
-    if signal not in SIGNALS:
-        raise ValueError(f"unknown signal {signal!r}; choose from {SIGNALS}")
 
     keep = [i for i in range(len(ref.rows))
             if not (drop_truncated and (ref.rows[i].get('truncated')
                                         or cand.rows[i].get('truncated')))]
-    dropped = len(ref.rows) - len(keep)
     if len(keep) < MIN_PAIRED_ITEMS:
         raise ValueError(
             f"only {len(keep)} items survive truncation filtering; the effect "
             f"size would be noise. Raise max_tokens or pass "
             f"drop_truncated=False.")
+    return ref, cand, keep
+
+
+
+def compare(reference, candidate, signal=DEFAULT_SIGNAL,
+            threshold=DEFAULT_THRESHOLD, one_sided=True,
+            drop_truncated=True) -> Result:
+    """Paired entropy comparison. Returns a Result; raises on mismatched inputs.
+
+    Accepts `Capture` objects or paths to saved ones.
+    """
+    if signal not in SIGNALS:
+        raise ValueError(f"unknown signal {signal!r}; choose from {SIGNALS}")
+    ref, cand, keep = _pair(reference, candidate, drop_truncated)
+    dropped = len(ref.rows) - len(keep)
 
     detail = {}
     for s in SIGNALS:
@@ -397,3 +409,36 @@ def compare(reference, candidate, signal=DEFAULT_SIGNAL,
                   threshold=threshold, one_sided=one_sided,
                   n_compared=len(keep), n_dropped_truncated=dropped,
                   detail=detail)
+
+
+def top_movers(reference, candidate, n=5, signal=DEFAULT_SIGNAL,
+               drop_truncated=True):
+    """The items whose entropy moved most, with the text from both configs.
+
+    `compare` answers "did something break". This answers "show me", which is
+    the next question every time and the one the aggregate cannot address:
+    d_z is ordinal rather than proportional (FINDINGS F14d), so the per-item
+    view is how a reader forms their own judgement of severity.
+
+    Everything needed is already recorded — no second capture, no model.
+    """
+    if signal not in SIGNALS:
+        raise ValueError(f"unknown signal {signal!r}; choose from {SIGNALS}")
+    ref, cand, keep = _pair(reference, candidate, drop_truncated)
+    rows = []
+    for i in keep:
+        a = ref.rows[i]['ent'][signal]
+        b = cand.rows[i]['ent'][signal]
+        if not (np.isfinite(a) and np.isfinite(b)):
+            continue
+        rows.append({
+            'i': i,
+            'delta': float(b - a),
+            'ref': float(a),
+            'cand': float(b),
+            'prompt': ref.prompts[i] if i < len(ref.prompts) else '',
+            'ref_text': ref.rows[i].get('text', ''),
+            'cand_text': cand.rows[i].get('text', ''),
+        })
+    rows.sort(key=lambda r: r['delta'], reverse=True)
+    return rows[:n]

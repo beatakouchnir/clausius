@@ -12,7 +12,8 @@ import json
 import numpy as np
 import pytest
 
-from clausius import Capture, aggregate, capture, compare, truncation_curve
+from clausius import (Capture, aggregate, capture, compare, top_movers,
+                      truncation_curve)
 from clausius.cli import main as cli_main
 from clausius.core import DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS
 
@@ -310,3 +311,31 @@ def test_curve_as_dict_matches_the_curve():
     assert d['survivors'] == curve.survivors
     assert d['usable'] == curve.usable
     assert d['floor'] == MIN_PAIRED_ITEMS
+
+
+# --- top movers -----------------------------------------------------------
+
+def test_top_movers_ranks_by_delta_and_respects_n():
+    ref = make([1.0] * 30)
+    cand = make([1.0] * 27 + [5.0, 3.0, 9.0])
+    got = top_movers(ref, cand, n=2)
+    assert [m['i'] for m in got] == [29, 27]      # +8.0 then +4.0
+    assert got[0]['delta'] == pytest.approx(8.0)
+
+
+def test_top_movers_only_explains_items_the_verdict_counted():
+    """A diagnostic that explained dropped items would be worse than none.
+
+    Both paths share _pair, so the item the verdict discarded for truncation
+    cannot appear in the explanation.
+    """
+    trunc = [False] * 29 + [True]
+    ref = make([1.0] * 30)
+    cand = make([1.0] * 29 + [99.0], truncated=trunc)
+    assert 29 not in [m['i'] for m in top_movers(ref, cand, n=5)]
+    assert compare(ref, cand).n_compared == 29
+
+
+def test_top_movers_rejects_unknown_signal():
+    with pytest.raises(ValueError, match='unknown signal'):
+        top_movers(make([1.0] * 30), make([1.0] * 30), signal='nope')
