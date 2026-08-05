@@ -11,6 +11,23 @@ Full evidence, positives *and* negatives, in **[FINDINGS.md](FINDINGS.md)** —
 which opens with a prior-art accounting stating which parts independently
 re-derive published work and which appear to be new.
 
+## What's new here
+
+- **Label-free regression detection, checked against independently measured
+  damage.** Predictive entropy is well studied; using it to detect that *a
+  deployment change broke the model* — validated against five unrelated damage
+  mechanisms whose true cost was measured separately — appears not to be. It
+  flagged a −2.2pp quantization regression on **60 unlabelled prompts**, where
+  paired McNemar on gold labels needed **n=878** to reach p<0.05 (F14).
+- **Accuracy measured across MoE offload configurations at all** — four surveyed
+  implementations report none. It inverts the default advice: at matched memory,
+  aggressive quantization costs **73 points** of instruction adherence where
+  exact expert offload costs **1.0** (§1, §4).
+- **The corpus is committed, so the tables below rebuild on a laptop** — no
+  model, no accelerator, two commands. Negatives included: eight controlled
+  failures where the interesting signal lost to a simpler one, and seven places
+  where a result did not survive its own check and the record says so.
+
 **Scope, up front.** Capturing needs Apple Silicon (`mlx-lm`). Everything else —
 `compare`, the analysis, and re-deriving every table below from the committed
 corpus — is pure numpy and runs anywhere, with no model downloads:
@@ -409,7 +426,7 @@ is downstream of the residual stream *and* downstream of the prompt, so it is
 bounded by both. Part II of [FINDINGS.md](FINDINGS.md) records them so they are
 not re-run.
 
-## Three corrections worth reading
+## Seven corrections worth reading
 
 The record keeps its own failures, because they were load-bearing:
 
@@ -427,6 +444,23 @@ The record keeps its own failures, because they were load-bearing:
   application's conditional claim read −0.431 in the predicted direction until
   the scorer was corrected to accept any gold alias rather than the first; it
   then read +0.066, the wrong direction. Recorded as open, not as a finding.
+- **A rationale in the shipped code was wrong for three runs running.** The
+  truncation filter was justified by "a damaged model rambles into the token
+  cap". At cap 512 a *healthy* 4-bit checkpoint truncated 47/60 items where a
+  destroyed 2-bit one truncated 3, and two LoRA fine-tunes truncated 22 and 33
+  of 50 where their own base truncated none. Rambling tracks how far
+  off-distribution a prompt is, not how damaged the model is. The filter was
+  right; the reason was not (F14b).
+- **A calibration claim was falsified by the next measurement.** A note here
+  attributed a widened null (+0.172) to the reference being unquantized. The
+  same pair against the same bf16 reference reads −0.062 on gsm8k: it was the
+  prompt set, not the reference. Superseded rather than overwritten (F14c).
+- **An assumption made the exact error the finding warns against.** F14 assumed
+  3-bit "sits between two measured points in damage". Correct about the
+  ordering, badly wrong about the distance — 3-bit costs −56.6pp, a broken
+  deployment rather than a degraded one, while reading only 2x 4-bit's d_z. Kept
+  visible, because it is a worked example of why d_z is ordinal and not
+  proportional (F14d).
 
 Two method rules came out of them, applied throughout:
 
