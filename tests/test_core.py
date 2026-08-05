@@ -8,12 +8,13 @@ Each test guards a decision that came out of a measurement rather than a
 preference, and several encode bugs that actually happened.
 """
 import json
+import warnings
 
 import numpy as np
 import pytest
 
-from clausius import (Capture, aggregate, capture, compare, top_movers,
-                      truncation_curve)
+from clausius import (Capture, aggregate, capture, compare,
+                      resolve_backend, top_movers, truncation_curve)
 from clausius.cli import main as cli_main
 from clausius.core import DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS
 
@@ -381,3 +382,50 @@ def test_ci_does_not_change_the_verdict():
     r = compare(make(base.tolist()), make(shifted.tolist()))
     assert r.effect < r.threshold and not r.flagged
     assert r.ci[1] > r.threshold        # interval reaches past it; verdict holds
+
+
+# --- backends -------------------------------------------------------------
+# The method needs greedy generation and one teacher-forced pass yielding full
+# logits. Nothing about that is Apple-specific, and most potential users are on
+# CUDA. Selection is testable without either runtime installed.
+
+def test_backend_selection_is_explicit_or_inferred():
+    assert resolve_backend('mlx') == 'mlx'
+    assert resolve_backend('transformers') == 'transformers'
+
+
+def test_backend_rejects_unknown():
+    with pytest.raises(ValueError, match='unknown backend'):
+        resolve_backend('vllm')
+
+
+def test_backend_inferred_from_a_preloaded_torch_model():
+    """A caller passing model_obj should not also have to name the runtime."""
+    class FakeTorchModel:
+        __module__ = 'torch.nn.modules.module'
+
+        def generate(self, *a, **k): ...
+        def parameters(self): ...
+    assert resolve_backend('auto', FakeTorchModel()) == 'transformers'
+
+
+def test_compare_warns_across_backends():
+    """Comparing runtimes is a legitimate question, but not a calibrated one.
+
+    The 0.3 threshold was measured within a runtime, where kernel differences
+    cancel in the paired difference. Across runtimes they do not, and no benign
+    backend swap has been measured to establish that null.
+    """
+    a, b = make([1.0] * 30), make([1.0] * 30)
+    a.meta['backend'] = 'mlx'
+    b.meta['backend'] = 'transformers'
+    with pytest.warns(UserWarning, match='calibrated within a single runtime'):
+        compare(a, b)
+
+
+def test_compare_is_silent_within_one_backend():
+    a, b = make([1.0] * 30), make([1.0] * 30)
+    a.meta['backend'] = b.meta['backend'] = 'mlx'
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        compare(a, b)

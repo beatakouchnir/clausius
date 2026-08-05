@@ -245,6 +245,44 @@ the full-distribution measurements here. Hosted-API support and entropy-gated
 cascade routing are both recorded as **don't-build** decisions in
 [EXPERIMENT.md](EXPERIMENT.md), with the conditions that would reopen them.
 
+**Two backends, one validated.** `--backend mlx` is what every number in
+[FINDINGS.md](FINDINGS.md) was measured on. `--backend transformers` runs the
+same measurement on torch — CUDA, CPU or MPS — because nothing about the method
+needs Apple Silicon: it wants greedy generation and one teacher-forced pass
+yielding full-vocabulary logits. **It is experimental.** It is validated on CPU
+and MPS against measured gsm8k accuracy (F15); it is **untested on CUDA**, on
+multi-GPU sharding, and against CUDA quantizers (bitsandbytes, GPTQ, AWQ).
+Comparing a capture from one backend against the other warns, because the
+threshold was calibrated within a runtime.
+
+### Calibrating your own null
+
+The 0.3 threshold comes from 13 benign configurations measured on **one stack**,
+and F14c showed the null is not a universal constant — the same benign 8-bit
+checkpoint against the same bf16 reference reads **+0.172** on a mixed
+instruction set and **−0.062** on gsm8k. On a new backend, a new quantizer or a
+markedly different prompt set, measure your own floor before trusting the
+default:
+
+```bash
+# two configurations you have independent reason to believe are equivalent —
+# a benign precision change, a runtime version bump, a cache setting
+clausius capture --model ./cfg-a --prompts prompts.jsonl --out null_a.json --max-tokens 1536
+clausius capture --model ./cfg-b --prompts prompts.jsonl --out null_b.json --max-tokens 1536
+clausius compare null_a.json null_b.json
+```
+
+Whatever |d_z| that produces is **your** false-alarm floor. If it exceeds 0.10,
+scale the threshold with it — the published 0.3 is ~3x a null of 0.10, so a
+floor of 0.2 argues for `--threshold 0.6`. Repeat with two or three benign pairs
+rather than one; a single pair gives you a point, not a floor. The reported
+interval matters here too: a null estimated on 25 items with a CI half a unit
+wide has not established anything.
+
+This is the procedure that produced the 0.3 default, and it is the honest
+answer to "does the threshold transfer to my setup" on any stack this project
+has not measured.
+
 ## 3. The same machinery detects catastrophic forgetting
 
 Move the reference and it becomes a training monitor: reference = the
