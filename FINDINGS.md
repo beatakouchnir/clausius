@@ -2493,3 +2493,69 @@ fail-fast added for exactly this failure live in `cli.py`, so a caller using the
 Python API — which is the documented path for offload wrappers and patched
 runtimes — receives neither the curve nor the refusal. The protection is on the
 interface least likely to be scripted.
+
+## F15 — the torch backend: sensitivity transfers, the threshold does not
+
+The detector was Apple-only by implementation, not by constraint — it needs
+greedy generation and one teacher-forced pass yielding full-vocabulary logits,
+which `transformers` gives on CUDA, CPU or MPS. The question is not whether the
+code runs but whether the *decision rule* survives the move.
+
+Setup: `Qwen/Qwen2.5-0.5B-Instruct` on MPS in float16 — chosen over CPU/fp32
+deliberately, because a real device boundary and a half-precision upcast are the
+parts CPU makes into no-ops. 60 prompts at cap 512 for entropy; gsm8k n=150 for
+accuracy, so every arm's damage is **measured rather than assumed**. Damage is
+per-tensor symmetric fake-quantisation, the same mechanism family as F8d.
+
+| arm | gsm8k | Δacc | entropy d_z | 95% CI | verdict |
+|---|---|---|---|---|---|
+| identity (same model twice) | — | — | **+0.000** | [0.00, 0.00] | clean ✓ |
+| **fp16 → fp32** (benign) | 0.4000 | **−0.0067** | **+0.306** | [+0.18, +0.43] | **REGRESSION ✗** |
+| 8-bit fake-quant | 0.3600 | −0.0467 | +0.347 | [+0.13, +0.55] | REGRESSION ✓ |
+| 4-bit fake-quant | 0.0000 | −0.4067 | +2.989 | [+2.69, +3.44] | REGRESSION ✓ |
+
+**What transfers.** Determinism is exact: the same model captured twice gives
+d_z precisely 0.000, across a device boundary and a half-precision upcast.
+Sensitivity is 2/2 against measured damage, and ordering is monotone on both
+instruments — 0.000 < 0.347 < 2.989 against 0 < 4.7pp < 40.7pp.
+
+**What does not.** A benign change flags. fp16 → fp32 on identical weights costs
+0.67pp — one item in 150, indistinguishable from noise — and reads **+0.306**,
+over the threshold. Specificity is **0/1** here, against 13/13 on mlx.
+
+**The consequence is worse than one false positive.** Benign reads +0.306 with a
+CI of [+0.18, +0.43]; a real −4.7pp regression reads +0.347 with [+0.13, +0.55].
+The intervals overlap almost entirely. On this stack the detector separates
+*gross* damage cleanly and **cannot distinguish a benign precision change from a
+~5pp regression at all**. The ±0.10 null does not hold: the floor here is at
+least 0.31, which by the calibration argument behind the 0.3 default (~3x the
+null) argues for a threshold nearer 0.9.
+
+**Why this is the hard benign case, and why that matters.** The argument for the
+threshold transferring was that comparisons happen *within* one runtime, so
+kernel-level numerical differences cancel in the paired difference. fp16 → fp32
+is the case where that argument does not apply, because the numerics difference
+*is* the configuration change under test. It is also an entirely realistic
+deployment change. So this is simultaneously the most demanding benign arm
+available and one a user would plausibly run.
+
+**Candidate explanations, not separated here.**
+
+- **Model scale.** 0.5B is far smaller than anything in F8–F14, and a small
+  model's entropy is both noisier and more precision-sensitive. The same arm on
+  a 26B model might sit well inside the null.
+- **The prompt set.** F14c already showed the null moving from +0.172 to −0.062
+  between prompt sets on identical checkpoints.
+
+**Limits.** One model, one prompt set, one backend-and-device combination.
+Per-tensor fake-quantisation is cruder than any production quantizer, so the
+damaged arms test damage detection rather than characterising bitsandbytes,
+GPTQ or AWQ. **CUDA itself is untested**, as is multi-GPU sharding.
+
+**Status: the backend ships, marked experimental, with the 0.3 default flagged
+as not transferring.** The remedy is not a CUDA spot-check — F8d already
+established that d_z magnitude is mechanism-dependent, so validating one CUDA
+quantizer would not license a claim about the others. It is the calibration
+recipe now in the README: measure your own floor from configurations you have
+independent reason to believe are equivalent, which is the procedure that
+produced 0.3 in the first place.

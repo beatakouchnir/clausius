@@ -249,11 +249,20 @@ cascade routing are both recorded as **don't-build** decisions in
 [FINDINGS.md](FINDINGS.md) was measured on. `--backend transformers` runs the
 same measurement on torch — CUDA, CPU or MPS — because nothing about the method
 needs Apple Silicon: it wants greedy generation and one teacher-forced pass
-yielding full-vocabulary logits. **It is experimental.** It is validated on CPU
-and MPS against measured gsm8k accuracy (F15); it is **untested on CUDA**, on
-multi-GPU sharding, and against CUDA quantizers (bitsandbytes, GPTQ, AWQ).
-Comparing a capture from one backend against the other warns, because the
-threshold was calibrated within a runtime.
+yielding full-vocabulary logits. **It is experimental, and the 0.3 threshold
+does not transfer to it unchanged.**
+
+Measured on MPS against gsm8k labels (F15): the detector is exact on an identity
+arm, and flags both damaged arms — −4.7pp at d_z +0.35, −40.7pp at +2.99. But a
+**benign** change (fp16 → fp32, identical weights, accuracy unchanged) also
+flags, at **+0.31**. Specificity is 0/1 there, against 13/13 on mlx. Gross damage
+separates cleanly; a benign precision change and a ~5pp regression do not.
+**Calibrate your own null before using it** — the recipe is below, and on that
+stack the floor is ≥0.31, arguing for a threshold nearer 0.9 than 0.3.
+
+Untested entirely: **CUDA**, multi-GPU sharding, and CUDA quantizers
+(bitsandbytes, GPTQ, AWQ). Comparing a capture from one backend against the
+other warns, because the threshold was calibrated within a runtime.
 
 ### Calibrating your own null
 
