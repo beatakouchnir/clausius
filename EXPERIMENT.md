@@ -395,7 +395,7 @@ subset) and routing between them, or writing custom kernels. `quantize/skew.py`
 is analysis only — it projects GB via a `gb(n_experts, bits)` formula and builds
 no artifact. Not an overnight job; needs a decision on whether to build it.
 
-## What runs instead — `knowledge/frontier.py` + `run_frontier.sh`
+## What runs instead — `knowledge/frontier.py` + `run_frontier1_exactness.sh`
 
 `policy='static'` is the lossy mechanism that is *already implemented*, needs no
 new artifact, and answers the same shape of question. Launched 2026-07-30 00:36.
@@ -526,7 +526,8 @@ reduction order.
 - The cancelled accuracy-vs-capacity sweep stays cancelled. The question is not
   "does accuracy decline with capacity" (unbiased rounding says no) but "what is
   the noise floor", which needs far fewer items.
-- **Two arms added** (`run_frontier2.sh`, queued behind chain 1 on a bounded
+- **Two arms added** (`run_frontier2_nondeterminism.sh`, queued behind chain 1
+  on a bounded
   wait, never a pgrep waiter):
   - **determinism control** — same capacity twice. Greedy decoding has no
     sampling, so byte-identical output means the divergence is a deterministic

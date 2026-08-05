@@ -57,7 +57,8 @@ WHY EACH SUBCOMMAND IS A SEPARATE PROCESS. `wrap()` mutates the model in place,
 so measuring two capacities in one process means either re-wrapping (the old
 cache stays referenced and the memory saving evaporates) or reloading (two
 models briefly co-resident). Both were avoidable by just running the shell loop
-outside Python, so that is what `run_frontier.sh` does. One process, one model,
+outside Python, so that is what `run_frontier1_exactness.sh` does. One process,
+one model,
 one capacity.
 
 Subcommands:
