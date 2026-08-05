@@ -1112,8 +1112,16 @@ worse, the benign arm (+0.306) and a genuine −4.7pp regression (+0.347) have
 almost entirely overlapping intervals. On that stack the detector separates gross
 damage and cannot resolve subtle damage at the shipped threshold.
 
-**The result is also not yet interpretable.** The single torch benign arm is a
-compute-dtype change; all thirteen mlx benign arms are configuration changes.
+**Superseded in part by F15c.** The false positive is a property of the 0.5B
+model, not the runtime: holding framework, change-type and prompts fixed and
+moving only scale, 7B reads d_z −0.036 with gsm8k accuracy *identical* to four
+decimal places, where 0.5B read +0.306. Torch specificity is 1/2, with the
+failure confined to a size nobody gates deployments on. The paragraph below
+stated the attribution problem that F15c then resolved; it is kept because the
+decision was made on it.
+
+**The result was not interpretable at the time.** The single torch benign arm is
+a compute-dtype change; all thirteen mlx benign arms are configuration changes.
 Those are not the same kind of control, and a pure dtype swap is plausibly the
 hardest benign case for an entropy detector — it perturbs every logit slightly,
 in a correlated way, where an exact-offload capacity change does the same
@@ -1141,6 +1149,14 @@ alarm.
    quantizer does not license a claim about the others.
 
 None of this needs owned hardware; a rented A100 for a day covers it.
+
+**Progress against the bar, as of F15c:** one benign configuration measured on
+torch and correctly called clean (7B, fp16 → fp32, Δacc exactly 0.0000). That is
+one of the three benign arms asked for, and it is a compute-dtype change rather
+than a configuration change of the kind the mlx controls used. Items 1 and 3 are
+untouched, and **every torch measurement in this record is MPS — CUDA is still
+entirely unmeasured.** The blocking concern F15 raised is resolved; the bar is
+not.
 
 ## What does not depend on this
 
