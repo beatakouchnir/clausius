@@ -25,6 +25,10 @@ dependencies = [
 # mlx-lm is needed only to CAPTURE. Comparison and analysis are pure numpy, so
 # CI and anyone re-analyzing the published corpus need no accelerator at all.
 mlx = ["mlx-lm>=0.20"]
+# EXPERIMENTAL. The same measurement on torch, for hardware mlx does not
+# run on. Validated on CPU and MPS (FINDINGS F15); untested on CUDA, on
+# multi-GPU sharding, and against CUDA quantizers.
+torch = ["torch>=2.2", "transformers>=4.40", "accelerate>=0.26"]
 dev = ["pytest>=7"]
 
 [project.scripts]
