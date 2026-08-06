@@ -135,7 +135,13 @@ def score_item(task, item, text, suite):
     if task in QUANTIZE_TASKS or item.get('score') == 'letter':
         # reuse the vendored letter scorer for GPQA too — it already handles the
         # ANSWER: marker and the bare-letter fallback
-        return bool(suite.score(item, text)), False
+        v = suite.score(item, text)
+        if v is None:
+            # scorer gave no verdict (ifeval registry absent). NOT a wrong
+            # answer: bool(None) is False, and recording that would report an
+            # unscoreable arm as near-zero accuracy — damage that never happened.
+            return None, True
+        return bool(v), False
     # contains-scoring for the open short-answer sets
     return any(_norm(g) and _norm(g) in t for g in item['gold']), False
 

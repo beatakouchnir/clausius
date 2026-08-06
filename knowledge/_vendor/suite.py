@@ -36,6 +36,35 @@ TASKS = ('gsm8k', 'mmlu_pro', 'humaneval', 'popqa', 'longbench', 'ifeval')
 
 # ---------------------------------------------------------------- loaders ---
 
+
+IFEVAL_HELP = """ifeval scoring needs Google Research's instruction_following_eval
+registry (Apache-2.0). It is not bundled here and is not on PyPI. Fetch it once,
+as a package named `_ifeval_official` importable from where you run:
+
+    mkdir -p _ifeval_official && touch _ifeval_official/__init__.py
+    B=https://raw.githubusercontent.com/google-research/google-research/master/instruction_following_eval
+    for f in instructions.py instructions_registry.py instructions_util.py; do
+        curl -sSo _ifeval_official/$f $B/$f
+    done
+
+Every other task is unaffected."""
+
+
+def ifeval_registry():
+    """The IFEval registry, or a clear failure.
+
+    Checked BEFORE a run starts rather than at scoring time: without it every
+    item scores as None, and a None verdict read as a boolean is False — an
+    unscoreable item would be recorded as a wrong answer and the arm would
+    report near-zero accuracy that looks like catastrophic damage.
+    """
+    try:
+        from _ifeval_official import instructions_registry as reg
+        return reg
+    except ImportError:
+        raise SystemExit(IFEVAL_HELP)
+
+
 def load_items(task, n, seed=0):
     from datasets import load_dataset
     if task == 'gsm8k':
@@ -83,6 +112,7 @@ def load_items(task, n, seed=0):
                  'gold': r['answers'], 'score': 'f1', 'max_tokens': 96}
                 for r in rows]
     if task == 'ifeval':
+        ifeval_registry()          # fail now, not after a GPU run scores zeros
         ds = load_dataset('google/IFEval', split='train').shuffle(seed=seed)
         return [{'prompt': r['prompt'], 'instruct': None,
                  'gold': {'ids': r['instruction_id_list'], 'kwargs': r['kwargs']},

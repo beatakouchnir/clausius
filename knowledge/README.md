@@ -42,6 +42,26 @@ huggingface-cli login
 Without that, `load_dataset` raises a gated-repo error naming the dataset; every
 other task is unaffected.
 
+**IFEval needs its scorer fetched separately.** The dataset itself is open
+(`google/IFEval`, Apache-2.0), but scoring instruction adherence requires Google
+Research's `instruction_following_eval` registry, which is Apache-2.0, not on
+PyPI, and not bundled here. Fetch it once as a package named `_ifeval_official`,
+importable from wherever you run:
+
+```bash
+mkdir -p _ifeval_official && touch _ifeval_official/__init__.py
+B=https://raw.githubusercontent.com/google-research/google-research/master/instruction_following_eval
+for f in instructions.py instructions_registry.py instructions_util.py; do
+    curl -sSo _ifeval_official/$f $B/$f
+done
+```
+
+`load_items('ifeval', ...)` checks for it **before** the run starts and exits
+with these instructions if it is missing — deliberately, because without it every
+item scores as no-verdict, and a no-verdict read as a boolean is `False`. An
+unscoreable arm would otherwise report near-zero accuracy that looks exactly like
+catastrophic damage.
+
 **GPQA carries one extra condition.** Its authors ask that the dataset not be
 posted in plain text online, to keep it out of future training corpora. This
 repository honours that: no GPQA question, option or gold answer appears here,
