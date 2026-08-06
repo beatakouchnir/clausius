@@ -13,8 +13,8 @@ import warnings
 import numpy as np
 import pytest
 
-from clausius import (Capture, aggregate, capture, compare, top_movers,
-                      truncation_curve)
+from clausius import (Capture, aggregate, capture, compare,
+                      resolve_backend, top_movers, truncation_curve)
 from clausius.cli import main as cli_main
 from clausius.core import DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS
 
@@ -389,7 +389,24 @@ def test_ci_does_not_change_the_verdict():
 # logits. Nothing about that is Apple-specific, and most potential users are on
 # CUDA. Selection is testable without either runtime installed.
 
+def test_backend_selection_is_explicit_or_inferred():
+    assert resolve_backend('mlx') == 'mlx'
+    assert resolve_backend('transformers') == 'transformers'
 
+
+def test_backend_rejects_unknown():
+    with pytest.raises(ValueError, match='unknown backend'):
+        resolve_backend('vllm')
+
+
+def test_backend_inferred_from_a_preloaded_torch_model():
+    """A caller passing model_obj should not also have to name the runtime."""
+    class FakeTorchModel:
+        __module__ = 'torch.nn.modules.module'
+
+        def generate(self, *a, **k): ...
+        def parameters(self): ...
+    assert resolve_backend('auto', FakeTorchModel()) == 'transformers'
 
 
 def test_compare_warns_across_backends():
