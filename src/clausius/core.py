@@ -279,12 +279,13 @@ def _backend_mlx():
         from mlx_lm import generate as _generate, load as _load
     except ImportError as e:
         raise ImportError(
-            "the mlx backend needs mlx-lm, which runs on Apple Silicon only:\n"
+            "capture needs mlx-lm, which runs on Apple Silicon only:\n"
             "    pip install 'clausius[mlx]'\n"
-            "On other hardware use backend='transformers' "
-            "(pip install 'clausius[torch]').\n"
+            "There is no other capture backend in this release. One was built\n"
+            "and measured, and is not shipped because its threshold has never\n"
+            "been calibrated — see EXPERIMENT.md.\n"
             "compare, aggregate and truncation_curve are pure numpy and run "
-            "anywhere — you can re-analyze captures on any machine.") from e
+            "anywhere, so captures made elsewhere can be analyzed here.") from e
 
     def load(model, adapter):
         return _load(model, adapter_path=adapter) if adapter else _load(model)
