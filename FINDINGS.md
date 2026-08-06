@@ -92,6 +92,84 @@ control must be able to fail on the assumption it is meant to protect.*
 
 ---
 
+---
+
+# Index
+
+Sub-findings (F8b, F14c …) are listed only where they **correct or supersede**
+the entry above them — those are the ones that change what an earlier section
+claims, and reading the parent alone would leave you with the wrong number.
+
+### Part I — What holds
+
+| | |
+|---|---|
+| **R9** | routing carries a causal, fact-level address — the original question |
+| ⤷ R9b–R9g | replication on a second architecture; the address lives in the late layers; distributed rather than point-like; the overlap confound; ground-truth validation by injection |
+| R10 | provenance over the model's own generated text |
+| R11 | prefetch: the signal is real and far too small |
+| R12 | read-only fact identification: ties with reading the text |
+| R17 | entropy is architecture-independent (Stage C) |
+| R16 | entropy vs self-consistency: competitive at 1/4 the cost, 2 of 3 (Stage B) |
+| R15 | entropy generalizes across task types, but not as R13 measured it (Stage A) |
+| R13 | error prediction on PopQA: entropy wins, routing is not needed |
+| R3 · R1 · R2 | routing separates retrieval from computation; recall from derivation; context-grounded from parametric |
+| ⤷ R4 | cross-suite transfer |
+
+### Part II — What was ruled out
+
+**Load-bearing.** R8's failure is why R9 was reframed as a causal test; P1 is why
+membership detection was dropped.
+
+| | |
+|---|---|
+| R5 → R8 | fact *classification* does not generalize |
+| R6 | fabrication detection: no |
+| P1 | document membership / contamination: no |
+| — | inherited negatives — do not re-run |
+
+### Part III — Deployment configuration, and the detector
+
+**The offload frontier**
+
+| | |
+|---|---|
+| F1 | the sweep that was canceled, and why that is the finding |
+| F2 | exact offload is semantically exact but not numerically reproducible |
+| F3 · F4 | the accuracy floor is flat; memory and speed, measured |
+| **F5** | **the dominance result** — offload beats downsizing, and it is not close |
+| F6 | the lossy path is dominated everywhere |
+| F7 | top-k reduction, and a hypothesis killed by its own bug fix |
+
+**The label-free detector**
+
+| | |
+|---|---|
+| **F8** | **detecting a broken config without labels** — the core result |
+| ⤷ F8b–F8e | a second task and a calibrated threshold; "confidently wrong"; the quantization ladder; the adversarial constructions |
+| ⚠ F14b | **corrects F8's stated rationale** — rambling tracks off-distribution, not damage |
+| F9 | label-free detection of catastrophic forgetting |
+| F10 | RAG context utilization — the claim holds, the refinement does not (F10b, F10c) |
+| F11 | the agentic axis: what compression actually breaks (~14x understatement) |
+| F12 | `p90` is the wrong aggregation, and `max` is the right one |
+| ⚠ F12b | **corrects F12** — `max` does not dominate; the verdicts are what is robust |
+| F13 | the floor holds on a long-output task |
+
+**Adjudicating the detector against labels**
+
+| | |
+|---|---|
+| **F14** | **the ladder against an unquantized reference**, adjudicated with labels |
+| ⚠ F14c | **supersedes F14's third point** — the widened null belongs to the prompt set, not the reference |
+| F14d | the complete matched ladder — `d_z` is ordinal, not proportional |
+| F14e | the offload path through the public API (integration, not a finding) |
+| F15 | the torch **framework** backend: sensitivity transfers, the threshold does not |
+| ⚠ F15c | **corrects F15's headline** — the false positive is a small-model artifact |
+| F15b | the same class of change is benign at production scale on mlx |
+
+*Scope decisions, designs, and what was deliberately not built are in*
+*[EXPERIMENT.md](EXPERIMENT.md).*
+
 # Tooling landscape — what exists to build on
 
 Searched 2026-07. Four layers of stack, and the gap is not where the research is.

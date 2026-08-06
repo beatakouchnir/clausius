@@ -209,6 +209,28 @@ already on disk.
 
 ---
 
+---
+
+# Index
+
+Designs, scope decisions, and what was deliberately not built. Measurements and
+results live in [FINDINGS.md](FINDINGS.md); this file is why each experiment was
+shaped the way it was, and why several were not run at all.
+
+| | |
+|---|---|
+| **Validation design** | is entropy-based error prediction general? The staged plan behind R13-R17 |
+| Designs pending GPU | drafted 2026-07-29, before the pivot |
+| **The configuration frontier** | the pivot of 2026-07-30 - exactness, speed, memory, accuracy per config |
+| **DON'T BUILD** | hosted-API support and cascade routing, with the conditions that would reopen them |
+| The entropy design space | what is open and what is already taken |
+| **BUILT, NOT SHIPPED** | the torch framework backend - what exists, why v0 excludes it, and the bar it must clear |
+| Operational cautions | ten things that cost real time, kept as a pre-flight list |
+
+The two scope decisions are what people most often come looking for: they record
+work that was deliberately declined, with the evidence, so it is not re-argued
+from scratch.
+
 # Designs pending GPU (drafted 2026-07-29)
 
 ## A. Entity discrimination — a test that can actually work
