@@ -22,6 +22,34 @@ Modules marked **superseded** produced negative results. They are here because
 record that kept only the wins would invite re-running the dead ends. The code
 is the evidence for those, not a suggestion to build on them.
 
+## Datasets — none are bundled
+
+Every task fetches its data from the Hugging Face Hub at run time, so `records/`
+holds only derived measurements. Reproducing an arm means obtaining the dataset
+from its original source under that source's terms; see NOTICE for the full list
+and licences.
+
+Most load with no setup. **Two are gated** and need a one-off approval, which is
+granted automatically once you accept the terms on the dataset page:
+
+```bash
+huggingface-cli login
+# then accept the terms at:
+#   https://huggingface.co/datasets/Idavidrein/gpqa     (GPQA — CC BY 4.0)
+#   https://huggingface.co/datasets/cais/hle            (HLE  — MIT)
+```
+
+Without that, `load_dataset` raises a gated-repo error naming the dataset; every
+other task is unaffected.
+
+**GPQA carries one extra condition.** Its authors ask that the dataset not be
+posted in plain text online, to keep it out of future training corpora. This
+repository honours that: no GPQA question, option or gold answer appears here,
+and the model's generated answer text has been stripped from
+`records/stage_a.gpqa*.json`, leaving correctness, entropy and the domain label.
+That costs nothing for reproduction — the questions were never in `records/` to
+begin with, since the records are outputs, not inputs.
+
 ## Infrastructure
 
 | module | what |
