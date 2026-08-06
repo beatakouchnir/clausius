@@ -38,5 +38,13 @@ Issues = "https://github.com/beatakouchnir/clausius/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["src/clausius"]
 
+# The sdist carries what is needed to build and test the package. The research
+# package, the chain scripts and the 11 MB measurement corpus are provenance,
+# they live on GitHub, and shipping them here would make `pip download` pull
+# megabytes of records that the installed package never reads.
+[tool.hatch.build.targets.sdist]
+include = ["src/", "tests/", "README.md", "LICENSE", "NOTICE", "pyproject.toml"]
+exclude = ["knowledge/", "experiments/", "records/", ".gitignore"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
