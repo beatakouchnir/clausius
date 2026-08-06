@@ -6,7 +6,7 @@ deployment-time changes on language models.
 
 The research package (`knowledge/`) vendors code under `knowledge/_vendor/`,
 copied from the author's other work rather than depended on, so that this
-repository is self-contained. It carries the same licence as the rest.
+repository is self-contained. It carries the same license as the rest.
 
 --------------------------------------------------------------------------
 DATASETS
@@ -19,7 +19,7 @@ source under that source's own terms.
 
     GSM8K            openai/gsm8k                              MIT
     MMLU-Pro         TIGER-Lab/MMLU-Pro                        MIT
-    PopQA            akariasai/popqa                           no licence declared
+    PopQA            akariasai/popqa                           no license declared
     HumanEval+       evalplus/humanevalplus                    Apache-2.0
     IFEval           google/IFEval                             Apache-2.0
     GPQA             Idavidrein/gpqa                           CC BY 4.0, gated

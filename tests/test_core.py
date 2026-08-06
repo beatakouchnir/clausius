@@ -1,7 +1,7 @@
 """Tests for the comparison logic.
 
 None of these load a model. `compare()` and `aggregate()` are pure numpy, which
-is deliberate — it means CI needs no accelerator, and anyone re-analysing the
+is deliberate — it means CI needs no accelerator, and anyone re-analyzing the
 published measurement corpus can do it on a laptop.
 
 Each test guards a decision that came out of a measurement rather than a
@@ -96,7 +96,7 @@ def test_consistent_entropy_rise_is_flagged():
 
 
 def test_noise_without_shift_is_not_flagged():
-    """A benign config perturbs individual items without shifting the centre.
+    """A benign config perturbs individual items without shifting the center.
 
     This is the real benign case: offload capacity changes alter ~25% of
     generations textually while accuracy and entropy stay put.

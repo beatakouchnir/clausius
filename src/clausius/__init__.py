@@ -13,7 +13,7 @@ is the signal this library reads.
     print(compare(ref, cand))
     # REGRESSION  (max d_z = +0.782, threshold 0.3, one-sided)
 
-`prompts` are your own, unlabelled. No gold answers and no judge model: the
+`prompts` are your own, unlabeled. No gold answers and no judge model: the
 comparison is between the model's own per-token entropy distributions on
 identical inputs.
 
