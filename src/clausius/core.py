@@ -308,9 +308,11 @@ def _backend_mlx():
         raise ImportError(
             "capture needs mlx-lm, which runs on Apple Silicon only:\n"
             "    pip install 'clausius[mlx]'\n"
-            "There is no other capture backend in this release. One was built\n"
-            "and measured, and is not shipped because its threshold has never\n"
-            "been calibrated — see EXPERIMENT.md.\n"
+            "On other hardware this branch also offers the PyTorch framework\n"
+            "backend: capture(..., backend='transformers'), pip install\n"
+            "'clausius[torch]'. It is EXPERIMENTAL and not in the release — its\n"
+            "threshold has never been calibrated on a cuda device. Measure your\n"
+            "own null before trusting it; see EXPERIMENT.md and FINDINGS F15c.\n"
             "compare, aggregate and truncation_curve are pure numpy and run "
             "anywhere, so captures made elsewhere can be analyzed here.") from e
 
