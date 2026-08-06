@@ -1158,7 +1158,36 @@ alarm.
    established that d_z magnitude is mechanism-dependent — validating one
    quantizer does not license a claim about the others.
 
-None of this needs owned hardware; a rented A100 for a day covers it.
+None of this needs owned hardware; a rented A100 for a day covers it — with one
+exception, below.
+
+## The framework question can only be answered on Apple Silicon
+
+Item 1 above — the framework-neutral damaged checkpoint — has a constraint that
+is easy to lose, because it runs the other way from everything else here: **it
+cannot be done on the rented GPU.** MLX does not run on CUDA, so Apple Silicon
+is the only hardware where both frameworks exist and can be given identical
+weights. Whoever picks this thread up should settle it *before* renting
+anything, not during.
+
+Its answer sizes the CUDA job:
+
+| if, on identical weights… | then the CUDA validation needs |
+|---|---|
+| mlx and torch **agree** | only the device and quantizer arms — the existing MLX corpus supplies the null |
+| they **disagree** | its own calibration from scratch, all thirteen benign configurations, because nothing in this record transfers across frameworks |
+
+**7B is the right size for it**, not 26B. The question is about the framework,
+not about scale, and 7B is dense — no MoE weight-layout hazard — with both
+checkpoints ordinarily available. Roughly three hours.
+
+**Not run, deliberately.** Measured on an M5 Max, mlx decodes a 7B at 31.1 tok/s
+against torch+MPS at 21.5 on the same model and dtype, and mlx is both the
+default here and what the Mac ecosystem has settled on. So torch-on-Apple-Silicon
+is not a configuration anyone would choose to *use* — it is only a vehicle for
+answering the question above. Running the full ladder there, at 26B, was priced
+at 5–20 hours to validate a setup with no users. The supported shape is Apple
+Silicon via mlx now, CUDA next, and nothing in between.
 
 **Progress against the bar, as of F15c:** one benign configuration measured on
 torch and correctly called clean (7B, fp16 → fp32, Δacc exactly 0.0000). That is
