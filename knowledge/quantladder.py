@@ -13,14 +13,14 @@ labels exist here only to judge it.
 Two subcommands:
 
     python -m knowledge.quantladder score --model PATH --tag q4 --n 500
-    python -m knowledge.quantladder analyse
+    python -m knowledge.quantladder analyze
 
 `score` is resumable via --start, because the arms that carry the question need
 the whole gsm8k test split and re-running an already-scored block costs hours.
 Row indices are absolute in the shuffled set, so shards merge without collision
-and `analyse` unions every shard it finds for an arm.
+and `analyze` unions every shard it finds for an arm.
 
-`analyse` reports the discordant counts b and c beside p, deliberately. With
+`analyze` reports the discordant counts b and c beside p, deliberately. With
 base accuracy near 0.85 the discordant pairs are few, and a null result at small
 n is far more often underpowered than evidence of no effect — this experiment
 read p=0.135 at n=500 and p=0.0076 at n=1319 on the *same* effect. Printing b
@@ -164,7 +164,7 @@ def main():
                                  description=__doc__.split('\n')[0])
     sub = ap.add_subparsers(dest='cmd', required=True)
 
-    s = sub.add_parser('score', help='labelled gsm8k accuracy for one checkpoint')
+    s = sub.add_parser('score', help='labeled gsm8k accuracy for one checkpoint')
     s.add_argument('--model', required=True, help='path or HF id')
     s.add_argument('--tag', required=True, choices=ARMS)
     s.add_argument('--n', type=int, default=500)
@@ -174,11 +174,11 @@ def main():
     s.add_argument('--max-tokens', type=int, default=1024)
     s.add_argument('--seed', type=int, default=0)
 
-    d = sub.add_parser('analyse', help='paired McNemar across the arms')
+    d = sub.add_parser('analyze', help='paired McNemar across the arms')
     d.add_argument('--ref', default='bf16', choices=ARMS)
 
     a = ap.parse_args()
-    {'score': cmd_score, 'analyse': cmd_analyse}[a.cmd](a)
+    {'score': cmd_score, 'analyze': cmd_analyse}[a.cmd](a)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ errors: qwen answered all 44 factual questions correctly and refused all 16
 invented entities rather than fabricating. Two apparent errors were both bugs in
 my own scoring. With no errors there is nothing to predict, and hand-authoring
 harder questions would make ME the ground-truth bottleneck — on genuinely hard
-facts I am less reliable too, and mislabelling a correct answer as an error is
+facts I am less reliable too, and mislabeling a correct answer as an error is
 worse than having no data.
 
 PopQA solves both problems. It is long-tail entity QA — the shape of question a

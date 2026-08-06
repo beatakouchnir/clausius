@@ -18,7 +18,7 @@ what it is, see [FINDINGS.md](FINDINGS.md); this file is the operating manual.
 ## Choosing prompts
 
 **No labels are needed.** A sample of real production traffic is ideal, because
-the detector's job is to notice a change in behaviour on the distribution you
+the detector's job is to notice a change in behavior on the distribution you
 actually serve. Sixty is a good starting number, and
 [`examples/prompts.jsonl`](examples/prompts.jsonl) ships sixty you can use
 immediately.
@@ -40,7 +40,7 @@ plain text:
 
 ```jsonl
 {"prompt": "What is the capital of Australia?"}
-{"prompt": "Summarise the following in exactly three bullet points: ..."}
+{"prompt": "Summarize the following in exactly three bullet points: ..."}
 ```
 
 ---
@@ -69,7 +69,7 @@ truncation at this and every tighter cap:
 ```
 
 That table is exact downward and silent upward, and the asymmetry is the point:
-a capture can be re-analysed at any tighter cap because every finished item's
+a capture can be re-analyzed at any tighter cap because every finished item's
 true length is recorded, but never at a looser one, because a truncated item
 never revealed how long it wanted to be. **So capture high.** If the reference
 alone already falls under the floor, `capture` exits non-zero and says so rather
@@ -89,7 +89,7 @@ REGRESSION  (max d_z = +0.654 [95% CI +0.31, +1.02], threshold 0.3, one-sided)
 chosen signal exceeds the threshold. `compare` exits **1** on a regression and
 **0** on a clean pair, so it drops into CI without glue.
 
-**`d_z`** is a standardised effect size — the mean of the paired per-item
+**`d_z`** is a standardized effect size — the mean of the paired per-item
 entropy differences, divided by their standard deviation. Positive means the
 candidate is *less* certain than the reference. It has no units and does not
 convert to accuracy.
@@ -151,7 +151,7 @@ clausius compare ref.json cand.json --show 3
 ```
 
 It reads recorded data, so it costs nothing and needs no model. Because `d_z` is
-ordinal, this per-item view is how you form your own judgement of severity.
+ordinal, this per-item view is how you form your own judgment of severity.
 
 ---
 
@@ -201,7 +201,7 @@ run goes red.
 
 `compare` **rejects** captures made on different prompt sets rather than
 silently comparing them, so changing your prompts forces a new reference. That
-is intended behaviour, not an obstacle to route around: pairing two different
+is intended behavior, not an obstacle to route around: pairing two different
 prompt sets would compare datasets, not configurations.
 
 **Captures are deterministic**, which is what makes the gate meaningful. Greedy

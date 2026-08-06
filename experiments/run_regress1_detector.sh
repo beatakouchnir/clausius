@@ -17,12 +17,12 @@ step reg-qwen-benign     $QV -m knowledge.regress capture --model qwen --capacit
 step reg-qwen-static128  $QV -m knowledge.regress capture --model qwen --capacity 128 --policy static --tag static_c128
 step reg-qwen-static64   $QV -m knowledge.regress capture --model qwen --capacity 64  --policy static --tag static_c64
 step reg-qwen-topk4      $QV -m knowledge.regress capture --model qwen --capacity 256 --policy exact --topk 4 --tag topk4
-step reg-qwen-analyse    $QV -m knowledge.regress analyse --model qwen
+step reg-qwen-analyze    $QV -m knowledge.regress analyze --model qwen
 
 # gemma: architecture independence
 step reg-gemma-ref       $QV -m knowledge.regress capture --model gemma --capacity 128 --policy exact --tag ref
 step reg-gemma-benign    $QV -m knowledge.regress capture --model gemma --capacity 32  --policy exact --tag exact_c32
 step reg-gemma-static32  $QV -m knowledge.regress capture --model gemma --capacity 32  --policy static --tag static_c32
-step reg-gemma-analyse   $QV -m knowledge.regress analyse --model gemma
+step reg-gemma-analyze   $QV -m knowledge.regress analyze --model gemma
 
 echo "### regress chain done $(date) ###"

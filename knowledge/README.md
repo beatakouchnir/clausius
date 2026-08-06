@@ -27,7 +27,7 @@ is the evidence for those, not a suggestion to build on them.
 Every task fetches its data from the Hugging Face Hub at run time, so `records/`
 holds only derived measurements. Reproducing an arm means obtaining the dataset
 from its original source under that source's terms; see NOTICE for the full list
-and licences.
+and licenses.
 
 Most load with no setup. **Two are gated** and need a one-off approval, which is
 granted automatically once you accept the terms on the dataset page:
@@ -64,7 +64,7 @@ catastrophic damage.
 
 **GPQA carries one extra condition.** Its authors ask that the dataset not be
 posted in plain text online, to keep it out of future training corpora. This
-repository honours that: no GPQA question, option or gold answer appears here,
+repository honors that: no GPQA question, option or gold answer appears here,
 and the model's generated answer text has been stripped from
 `records/stage_a.gpqa*.json`, leaving correctness, entropy and the domain label.
 That costs nothing for reproduction — the questions were never in `records/` to
@@ -95,7 +95,7 @@ begin with, since the records are outputs, not inputs.
 
 | module | what |
 |---|---|
-| `stage_a` | does entropy-based error prediction generalise across task types |
+| `stage_a` | does entropy-based error prediction generalize across task types |
 | `stage_b` | entropy vs self-consistency — the honest competitor |
 | `stage_d` | product metrics: catch-at-budget, risk–coverage, calibration |
 | `popqa` | error prediction on a benchmark with a real error rate |
@@ -115,7 +115,7 @@ begin with, since the records are outputs, not inputs.
 | module | what it tried | outcome |
 |---|---|---|
 | `meter` | routing as a classifier for where an answer came from | lost to reading the prompt text |
-| `transfer` | does the classifier generalise across suites | it does not — each number was a template |
+| `transfer` | does the classifier generalize across suites | it does not — each number was a template |
 | `position` | where in the sequence fact identity lives | resolved a caveat; not a usable signal |
 | `fabrication` | does routing distinguish retrieval from fabrication | no |
 | `errors` | can any signal predict a stated FALSE fact | entropy won; routing was not needed |

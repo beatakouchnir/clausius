@@ -188,16 +188,16 @@ def load_wrapped(name, capacity, policy, pins=None, topk=None,
 
 
 def cut_topk(model, k_keep):
-    """Consult only the k_keep highest-scoring experts, renormalised.
+    """Consult only the k_keep highest-scoring experts, renormalized.
 
     This is SwiftLM's `SWIFTLM_TOP_K`, which they ship as a SPEED setting —
     top-k=4 at 5.91 tok/s against top-k=6 at 5.20 — with no accuracy number
     anywhere in their docs. Reducing top-k below the trained value is the
     route-around ablation R9e already measured as damaging, so this arm puts a
-    number on a knob a 727-star project hands users unlabelled.
+    number on a knob a 727-star project hands users unlabeled.
 
-    Renormalisation is deliberate and CHARITABLE. Dropping the trailing experts
-    without renormalising would shrink each MoE block's output magnitude and
+    Renormalization is deliberate and CHARITABLE. Dropping the trailing experts
+    without renormalizing would shrink each MoE block's output magnitude and
     make the knob look worse than it is; a model natively trained at k_keep
     would have weights summing to the same total. Masking to -inf before the
     downstream softmax achieves exactly that for both router shapes, which is
@@ -617,7 +617,7 @@ def main():
             p.add_argument('--policy', default='exact',
                            choices=('exact', 'static', 'none'))
             p.add_argument('--topk', type=int, default=None,
-                           help='consult only the N best experts, renormalised '
+                           help='consult only the N best experts, renormalized '
                                 "(SwiftLM's SWIFTLM_TOP_K). None = untouched.")
         return p
 

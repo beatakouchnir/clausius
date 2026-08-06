@@ -3,7 +3,7 @@
 VENDORED — copied in rather than imported, so this repository is
 self-contained.
 Origin: the author's earlier benchmark harness
-Same authorship and licence as the rest of this repo (Apache-2.0); see NOTICE.
+Same authorship and license as the rest of this repo (Apache-2.0); see NOTICE.
 
 Two things are deliberately NOT bundled, and both degrade rather than crash:
   ifeval    scoring needs Google Research's IFEval registry (Apache-2.0, public

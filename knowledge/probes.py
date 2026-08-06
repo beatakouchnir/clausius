@@ -261,7 +261,7 @@ def letters(word):
 
 
 def build():
-    """[(probe dict)] — every recall and derive item, fully labelled.
+    """[(probe dict)] — every recall and derive item, fully labeled.
 
     Fields carried through to the capture so the analysis can group correctly:
       fact_id      same fact, any surface form  -> rung 3 (routing signature)
@@ -320,7 +320,7 @@ def build():
 
 # Unmatched derivation: shares NO vocabulary with any recall probe. This is the
 # topic baseline — the quantity R1 could not separate from mechanism. If the
-# meter scores matched and unmatched derivations alike, it generalises; if it
+# meter scores matched and unmatched derivations alike, it generalizes; if it
 # only works on the unmatched set, it is a topic detector wearing a disguise.
 UNMATCHED = [
     ("Compute: 6 times 7 equals", " 42"),

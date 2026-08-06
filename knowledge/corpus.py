@@ -80,7 +80,7 @@ def coined(rng, n=None):
 ATTRS = {
     'city': (("It is based in {v}.",
               "Its offices stand in {v}.",
-              "The organisation operates out of {v}."),
+              "The organization operates out of {v}."),
              "In which place is {e} based?"),
     'founded': (("It was founded in {v}.",
                  "The body dates from {v}.",

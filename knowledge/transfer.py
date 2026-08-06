@@ -1,4 +1,4 @@
-"""Does the meter generalise ACROSS suites, or is each number a template?
+"""Does the meter generalize ACROSS suites, or is each number a template?
 
 Three suites have each produced a high within-suite score, and two of the three
 turned out to be reading something other than mechanism (answer form, digit
@@ -24,8 +24,8 @@ Expected, if the meter reads mechanism:
                              nor arithmetic — so it is reported, not predicted.
 
 Six historical facts were written into both the R2 and R3 fact tables. They are
-dropped from every test set: recognising a fact the profile was trained on is
-not generalisation.
+dropped from every test set: recognizing a fact the profile was trained on is
+not generalization.
 
 Needs numpy. No model, no GPU.
 

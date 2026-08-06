@@ -268,7 +268,7 @@ def main():
 
         # LEAVE ONE FACT OUT. The profile was fitted on chat versions of these
         # same 38 facts, and R5 showed routing encodes fact identity — so a
-        # profile that has seen fact F could recognise F in a new format
+        # profile that has seen fact F could recognize F in a new format
         # without reading mechanism at all. Refitting without the held-out
         # fact is the only way this measures the format shift rather than
         # memorised facts.
@@ -290,7 +290,7 @@ def main():
         print(f"    AUC {_auc(ret, cmp_):.3f}"
               f"   (chat-format, same estimator, was 0.982)")
         print(f"\n  This is the chat->free-text format shift with fact identity"
-              f"\n  held out, so it cannot be the profile recognising the fact.")
+              f"\n  held out, so it cannot be the profile recognizing the fact.")
         return
 
     text = a.text or ("The capital of France is Paris. "

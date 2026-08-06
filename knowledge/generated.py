@@ -24,7 +24,7 @@ thing that varies is WHOSE experts were removed. A confound would have to
 explain why banning i's experts specifically damages position i, in text the
 model wrote itself.
 
-FACT POSITIONS ARE FOUND, NOT LABELLED BY HAND. The passage is generated from a
+FACT POSITIONS ARE FOUND, NOT LABELED BY HAND. The passage is generated from a
 prompt naming entities whose answers we already hold in the grid2 fact table, so
 a target token is located by matching the generated text against the known
 answer. That gives ground truth in free text without hand-annotation, and

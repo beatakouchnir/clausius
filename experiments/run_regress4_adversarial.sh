@@ -24,7 +24,7 @@ for M in qwen gemma; do
   step topk2-$M-popqa $QV -m knowledge.regress capture --model $M --task popqa --capacity 256 --policy exact --topk 2 --tag topk2
   step sharp2-$M      $QV -m knowledge.regress capture --model $M --task popqa --capacity 256 --policy exact --sharpen 2.0 --tag sharpen2
   step sharp3-$M      $QV -m knowledge.regress capture --model $M --task popqa --capacity 256 --policy exact --sharpen 3.0 --tag sharpen3
-  step analyse-$M-popqa $QV -m knowledge.regress analyse --model $M --task popqa
+  step analyze-$M-popqa $QV -m knowledge.regress analyze --model $M --task popqa
 done
 
 # then gsm8k, where the detector is strongest — does substitution still evade it?
@@ -32,7 +32,7 @@ for M in qwen gemma; do
   [ "$M" = qwen ] && C=64 || C=32
   step sub-$M-gsm8k   $QV -m knowledge.regress capture --model $M --task gsm8k --capacity $C --policy static --substitute --tag subst_c$C
   step topk1-$M-gsm8k $QV -m knowledge.regress capture --model $M --task gsm8k --capacity 256 --policy exact --topk 1 --tag topk1
-  step analyse-$M-gsm8k $QV -m knowledge.regress analyse --model $M --task gsm8k
+  step analyze-$M-gsm8k $QV -m knowledge.regress analyze --model $M --task gsm8k
 done
 
 echo "### regress4 done $(date) ###"

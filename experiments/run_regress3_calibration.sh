@@ -1,5 +1,5 @@
 #!/bin/sh
-# Detector generalisation, threshold calibration, and the terse-damage test.
+# Detector generalization, threshold calibration, and the terse-damage test.
 #
 # Everything so far is gsm8k, whose 960-token cap gives a broken model room to
 # ramble. popqa caps at 64, so length carries far less information and a
@@ -24,7 +24,7 @@ done
 for C in 128 64; do
   step p-qwen-static-c$C $QV -m knowledge.regress capture --model qwen --task popqa --capacity $C --policy static --tag static_c$C
 done
-step p-qwen-analyse $QV -m knowledge.regress analyse --model qwen --task popqa
+step p-qwen-analyze $QV -m knowledge.regress analyze --model qwen --task popqa
 
 step p-gemma-ref $QV -m knowledge.regress capture --model gemma --task popqa --capacity 128 --policy exact --tag ref
 for C in 96 64 48 32 24; do
@@ -33,6 +33,6 @@ done
 for C in 96 64 32; do
   step p-gemma-static-c$C $QV -m knowledge.regress capture --model gemma --task popqa --capacity $C --policy static --tag static_c$C
 done
-step p-gemma-analyse $QV -m knowledge.regress analyse --model gemma --task popqa
+step p-gemma-analyze $QV -m knowledge.regress analyze --model gemma --task popqa
 
 echo "### regress3 done $(date) ###"

@@ -104,7 +104,7 @@ class BanGate:
                 same intervention — which is why the mechanism count here is
                 three, not four
       resample  score <- the score that expert received on a DIFFERENT prompt.
-                The causal-scrubbing form: behaviour-preserving in
+                The causal-scrubbing form: behavior-preserving in
                 distribution, so it controls for "any perturbation hurts"
 
     Instance-level wrapping, since qwen's gate is an `nn.Linear` and patching

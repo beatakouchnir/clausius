@@ -21,5 +21,5 @@ step off-if-c128 $QV -m knowledge.regress capture --model gemma --task ifeval --
 for C in 96 64 48 32 24; do
   step off-if-c$C $QV -m knowledge.regress capture --model gemma --task ifeval --capacity $C --policy exact --tag off_c$C --n 200
 done
-step off-if-analyse $QV -m knowledge.regress analyse --model gemma --task ifeval --ref off_ref
+step off-if-analyze $QV -m knowledge.regress analyze --model gemma --task ifeval --ref off_ref
 echo "### ifeval offload ladder done $(date) ###"

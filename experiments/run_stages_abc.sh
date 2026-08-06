@@ -22,7 +22,7 @@ while pgrep -f "stage_a --task gpqa" >/dev/null; do sleep 30; done
 # ---- Stage A completion -------------------------------------------------
 step "A/gpqa-cap8192" $QV -m knowledge.stage_a --task gpqa --n 198 --cap 8192
 step "A/mmlu_pro-800" $QV -m knowledge.stage_a --task mmlu_pro --n 800
-step "A/analyse"      $QV -m knowledge.stage_a --analyse
+step "A/analyze"      $QV -m knowledge.stage_a --analyze
 
 # ---- Stage B: entropy vs self-consistency -------------------------------
 # popqa is cheap (64 tok) so k=5 is affordable at n=200; mmlu_pro at cap4160
@@ -30,7 +30,7 @@ step "A/analyse"      $QV -m knowledge.stage_a --analyse
 step "B/popqa"    $QV -m knowledge.stage_b --task popqa      --n 200 --k 5
 step "B/omni"     $QV -m knowledge.stage_b --task omniscience --n 200 --k 5
 step "B/mmlu_pro" $QV -m knowledge.stage_b --task mmlu_pro   --n 120 --k 5
-step "B/analyse"  $QV -m knowledge.stage_b --analyse
+step "B/analyze"  $QV -m knowledge.stage_b --analyze
 
 # ---- Stage C: architecture portability -----------------------------------
 # Two tasks per model, both cheap recall sets, so five models fit. The matched
@@ -40,6 +40,6 @@ for M in "$Q27" "$GMOE" "$G31" "$GE4B"; do
   step "C/popqa/$M"  $QV -m knowledge.stage_a --task popqa       --n 250 --model "$M"
   step "C/omni/$M"   $QV -m knowledge.stage_a --task omniscience --n 300 --model "$M"
 done
-step "C/analyse" $QV -m knowledge.stage_a --analyse
+step "C/analyze" $QV -m knowledge.stage_a --analyze
 
 echo "=== OVERNIGHT-COMPLETE $(date +%H:%M) ==="

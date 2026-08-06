@@ -2,11 +2,11 @@
 
 You changed something — quantization, offload capacity, top-k, a LoRA
 checkpoint, an inference backend — and you need to know whether it degraded the
-model. Measuring that normally needs a labelled eval set for your actual task,
+model. Measuring that normally needs a labeled eval set for your actual task,
 which most teams do not have.
 
 This compares the model's own **per-token entropy** before and after, paired on
-the same unlabelled prompts. No gold answers, no judge model, no eval set. The
+the same unlabeled prompts. No gold answers, no judge model, no eval set. The
 signal is a byproduct of a forward pass you are already running.
 
 Validated against five unrelated damage mechanisms whose true damage was
@@ -112,7 +112,7 @@ def aggregate(entropy: np.ndarray, n_prompt: int) -> dict:
 
 @dataclass
 class Capture:
-    """One configuration's behaviour on a prompt set."""
+    """One configuration's behavior on a prompt set."""
     model: str
     tag: str
     prompts: list = field(default_factory=list)
@@ -195,7 +195,7 @@ class TruncationCurve:
         return self.survivors >= self.floor
 
     def as_dict(self) -> dict:
-        """JSON-serialisable form, for storing on a Capture's meta."""
+        """JSON-serializable form, for storing on a Capture's meta."""
         return {'cap_used': self.cap_used, 'n_items': self.n_items,
                 'n_censored': self.n_censored, 'survivors': self.survivors,
                 'usable': self.usable, 'floor': self.floor, 'rows': self.rows}
@@ -257,7 +257,7 @@ def apply_chat_template(tokenizer, prompt, chat=None):
     whatever few happened to terminate.
 
     `chat=False` is the escape hatch for base models and for deliberately
-    measuring raw-completion behaviour.
+    measuring raw-completion behavior.
     """
     if chat is False:
         return prompt
@@ -284,7 +284,7 @@ def _backend_mlx():
             "On other hardware use backend='transformers' "
             "(pip install 'clausius[torch]').\n"
             "compare, aggregate and truncation_curve are pure numpy and run "
-            "anywhere — you can re-analyse captures on any machine.") from e
+            "anywhere — you can re-analyze captures on any machine.") from e
 
     def load(model, adapter):
         return _load(model, adapter_path=adapter) if adapter else _load(model)
@@ -498,7 +498,7 @@ def top_movers(reference, candidate, n=5, signal=DEFAULT_SIGNAL,
     `compare` answers "did something break". This answers "show me", which is
     the next question every time and the one the aggregate cannot address:
     d_z is ordinal rather than proportional (FINDINGS F14d), so the per-item
-    view is how a reader forms their own judgement of severity.
+    view is how a reader forms their own judgment of severity.
 
     Everything needed is already recorded — no second capture, no model.
     """

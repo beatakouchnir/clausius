@@ -30,7 +30,7 @@ item-to-item variance in base difficulty cancels.
 
 Usage:
   python3 -m knowledge.context --model qwen
-  python3 -m knowledge.context --analyse
+  python3 -m knowledge.context --analyze
 """
 import argparse
 import json
@@ -132,7 +132,7 @@ def popqa_probes(n, seed):
     The context is a Q-A reference block rather than a paraphrased statement,
     because PopQA items carry no subject/relation/object fields to build a
     declarative from — only a question and a list of gold aliases. That makes
-    this a measure of **context utilisation**, not of grounding-versus-copying:
+    this a measure of **context utilization**, not of grounding-versus-copying:
     a model handed the literal answer that does not become more confident has a
     problem worth surfacing, whatever mechanism it would have used.
     """
@@ -179,11 +179,11 @@ def main():
                     choices=('grounding', 'popqa'))
     ap.add_argument('--n', type=int, default=300)
     ap.add_argument('--seed', type=int, default=0)
-    ap.add_argument('--analyse', action='store_true')
+    ap.add_argument('--analyze', action='store_true')
     ap.add_argument('--limit-gb', type=float, default=60.0)
     a = ap.parse_args()
-    if a.analyse:
-        return analyse(a.suite)
+    if a.analyze:
+        return analyze(a.suite)
 
     import mlx.core as mx
     mx.set_memory_limit(int(a.limit_gb * 1024 ** 3))
@@ -225,7 +225,7 @@ def main():
     print(f"\n  {len(rows)} probes · {time.time() - t0:.0f}s → {dest}")
 
 
-def analyse(suite='grounding'):
+def analyze(suite='grounding'):
     import glob
     # 'analysis' must be excluded from BOTH branches — this function writes its
     # own output into the same directory, so the glob eats it on the next run
@@ -261,7 +261,7 @@ def analyse(suite='grounding'):
             dn, de = delta(a_cls, b_cls, 'nll'), delta(a_cls, b_cls, 'ent')
             dz = float(de.mean() / (de.std(ddof=1) + 1e-12))
             # per-item agreement in SIGN: does the free signal move the same way
-            # as the labelled one on the same item?
+            # as the labeled one on the same item?
             agree = float(np.mean(np.sign(dn) == np.sign(de)))
             print(f"  {lbl:28s} {dn.mean():+15.3f} {de.mean():+17.3f} "
                   f"{dz:+7.2f} {agree:7.0%}")
@@ -273,7 +273,7 @@ def analyse(suite='grounding'):
         de = delta('contextual', 'distractor', 'ent')
         r = float(np.corrcoef(dn, de)[0, 1])
         print(f"\n  Pearson(Δ NLL, Δ entropy) = {r:+.3f}  — entropy tracking "
-              f"the labelled\n  measure across items is what makes retrieval "
+              f"the labeled\n  measure across items is what makes retrieval "
               f"usefulness detectable without answers.")
         print(f"  `parametric − distractor` is the CONTROL: both lack the "
               f"answer in context,\n  so a large shift there would mean the "

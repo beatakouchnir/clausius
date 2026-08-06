@@ -17,7 +17,7 @@ pass, no intervention.
 THE BASELINES, and each one has to be beaten:
 
   prior       always guess the most frequent fact. Catches label imbalance.
-  position    a nearest-neighbour on (sequence position, token index) only.
+  position    a nearest-neighbor on (sequence position, token index) only.
               Catches "facts appear in a predictable order in generated text",
               which would let a classifier win without reading routing at all.
   bagofwords  the generated text preceding the target token. In the probe
@@ -34,7 +34,7 @@ Needs mlx-lm for capture; the analysis is numpy.
 
 Usage:
   python3 -m knowledge.readout --capture      # generate + record routing
-  python3 -m knowledge.readout                # analyse an existing capture
+  python3 -m knowledge.readout                # analyze an existing capture
 """
 import argparse
 import json
@@ -132,7 +132,7 @@ def main():
             ws = [vi[w] for w in rows[i]['prefix'].lower().split() if w in vi]
             pred_w[i] = int(lw[:, ws].sum(1).argmax()) if ws else 0
 
-        # position-only nearest neighbour
+        # position-only nearest neighbor
         ptr = np.array([[rows[i]['rel_pos']] for i in np.where(tr)[0]])
         ytr = y[tr]
         for i in np.where(te)[0]:

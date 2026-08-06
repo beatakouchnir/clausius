@@ -2,7 +2,7 @@
 
 The product claim this tests: a team ships a compression setting — offload
 capacity, top-k, a policy switch — and needs to know whether it silently
-degraded the model. Measuring accuracy needs a labelled eval set, which most
+degraded the model. Measuring accuracy needs a labeled eval set, which most
 teams do not have for their actual task. If the model's own **entropy
 distribution** shifts when a config breaks, you can flag the regression with no
 labels at all.
@@ -40,7 +40,7 @@ would use it — same eval set before and after the change.
 
 Usage:
   python3 -m knowledge.regress capture --model qwen --capacity 256 --policy exact --tag ref
-  python3 -m knowledge.regress analyse --model qwen --ref ref
+  python3 -m knowledge.regress analyze --model qwen --ref ref
 """
 import argparse
 import json
@@ -282,12 +282,12 @@ def main():
     c.add_argument('--tag', required=True)
     c.add_argument('--n', type=int, default=200)
     c.add_argument('--seed', type=int, default=0)
-    s = sub.add_parser('analyse')
+    s = sub.add_parser('analyze')
     s.add_argument('--model', default='qwen')
     s.add_argument('--task', default='gsm8k')
     s.add_argument('--ref', default='ref')
     a = ap.parse_args()
-    {'capture': cmd_capture, 'analyse': cmd_analyse}[a.cmd](a)
+    {'capture': cmd_capture, 'analyze': cmd_analyse}[a.cmd](a)
 
 
 if __name__ == '__main__':

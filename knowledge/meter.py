@@ -3,7 +3,7 @@
 Two suites run through this, and the first one FAILED in an instructive way.
 
 `mechanism` (recall vs derivation, topic held constant) scored 1.000 — and
-0.995 when relabelled "is the answer numeric", which is the same information.
+0.995 when relabeled "is the answer numeric", which is the same information.
 Restricted to numeric answers only it fell to chance. Controlling topic had
 reintroduced a confound elsewhere: every derivation in that suite yields a
 number, most recall answers are words, and the router was reading the FORM of
@@ -33,7 +33,7 @@ smoothing constant, and it is continuous with R1's top-K set methodology.
 
 EVALUATION IS LEAVE-ONE-FACT-OUT, not leave-one-probe-out. A fact's three
 paraphrases and its derive items are the same fact; splitting them across train
-and test would let the model recognise the fact rather than the mechanism —
+and test would let the model recognize the fact rather than the mechanism —
 the same independence trap that pinned every R1 p-value to the floor when
 tokens were permuted instead of prompts.
 
@@ -163,7 +163,7 @@ def transfer(train, test, meta, pos_cls, neg_cls, top_k, pos, drop_facts=()):
     """Train a profile on one suite, apply it to another. No CV needed — the
     test probes come from a different suite entirely.
 
-    The generalisation test the within-suite numbers cannot give. R3 scores
+    The generalization test the within-suite numbers cannot give. R3 scores
     0.982, but three suites in a row have shown that a number can be high for a
     reason specific to how the probes were written. If a profile trained on
     R3's numeric arithmetic still labels a *word*-answer retrieval probe from
@@ -172,8 +172,8 @@ def transfer(train, test, meta, pos_cls, neg_cls, top_k, pos, drop_facts=()):
 
     `drop_facts` removes test probes whose underlying fact also appears in the
     training suite. Six historical facts (Westphalia, the Moon landing, ...)
-    were written into both, and leaving them in would let the profile recognise
-    a fact it was trained on rather than generalise to a new one.
+    were written into both, and leaving them in would let the profile recognize
+    a fact it was trained on rather than generalize to a new one.
     """
     tr = [r for r in train if r['cls'] in (pos_cls, neg_cls)]
     X = featurise(tr, meta['n_layers'], top_k, pos)

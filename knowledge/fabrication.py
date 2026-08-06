@@ -14,7 +14,7 @@ anything:
 
   LEAVE ONE ENTITY OUT. Both wordings of "the capital of Verdania" are the same
   entity. Splitting them across train and test would let the classifier
-  recognise the entity rather than the condition.
+  recognize the entity rather than the condition.
 
   THE `obscure` MIDDLE CLASS IS THE REAL CONTROL. A detector that merely fires
   on rare token sequences should group `obscure` with `fictional`, since both

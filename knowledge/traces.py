@@ -1,6 +1,6 @@
 """Read captured routing traces from the artifact store. Stdlib only, no model, no GPU.
 
-The capture tooling was built on "CAPTURE ONCE, ANALYSE FOREVER": a GPU run
+The capture tooling was built on "CAPTURE ONCE, ANALYZE FOREVER": a GPU run
 writes a trace, and every analysis afterwards runs from it with no model load.
 This project inherits that discipline for a harder reason than convenience —
 loading a 19 GB MoE perturbs anything else running on the machine. MLX uses
@@ -8,7 +8,7 @@ unified memory, so pinning to `mx.cpu` does NOT isolate you: same RAM pool,
 same memory bus. The axis that matters is loads-a-model vs doesn't, and
 everything in this module is on the safe side of it.
 
-Two trace kinds, both written by the capture tooling, both domain-labelled:
+Two trace kinds, both written by the capture tooling, both domain-labeled:
 
   expert-trace/1   which experts were SELECTED, per token   (gemma + qwen)
   gate-trace/1     the top-32 experts by GATE SCORE, ranked (qwen only)

@@ -23,7 +23,7 @@ also RETURN different things, which callers must handle rather than assume:
     qwen    gate(x) -> raw scores [..., n_experts]     full ranking available
     gemma   router(x) -> (indices, weights)            top-k only, pre-selected
 
-`gate_output` normalises both to (ranks, scores) so a capture can treat them
+`gate_output` normalizes both to (ranks, scores) so a capture can treat them
 uniformly, while recording which shape it actually saw — the gemma capture is
 genuinely poorer (it cannot see experts the router considered and rejected) and
 that difference must survive into the analysis rather than be smoothed over.
@@ -124,7 +124,7 @@ def find_gates(model):
 
 
 def gate_output(out, top_m):
-    """Normalise a router's return to (ranks, scores, shape_kind).
+    """Normalize a router's return to (ranks, scores, shape_kind).
 
     ranks/scores are mx arrays of shape [..., m], m = min(top_m, n_experts) for
     'scores' routers and the router's own top-k for 'topk' routers.
@@ -205,7 +205,7 @@ def _selftest():
               f"holder {got_holder}.{gates[0][2]}  "
               f"{'OK' if good else 'FAIL (want %s.%s)' % (want_holder, want_attr)}")
 
-    # both return shapes normalise
+    # both return shapes normalize
     import mlx.core as mx
     scores = mx.array([[[0.1, 0.9, 0.3, 0.5]]])
     r, s, kind = gate_output(scores, 2)

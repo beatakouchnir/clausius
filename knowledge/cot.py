@@ -15,7 +15,7 @@ entropy may be least informative precisely where it matters most.
 So this compares every aggregation on identical generations:
 
   first     at the last prompt token — R13's measure, the baseline to beat
-  answer    at the token emitting the final answer — the direct analogue
+  answer    at the token emitting the final answer — the direct analog
   mean/max  over generated tokens — "was the model uncertain anywhere?"
   min/last  completeness
   p90       90th-percentile token entropy — max is a single noisy token, p90 is
@@ -24,7 +24,7 @@ So this compares every aggregation on identical generations:
             chains may simply be harder problems, and a signal that cannot beat
             "how much did it write" is not reading uncertainty at all.
 
-ONE CAPTURE, MANY ANALYSES. The generation is expensive and the aggregation is
+ONE CAPTURE, MANY ANALYZES. The generation is expensive and the aggregation is
 free, so the run records per-token entropy across the whole sequence and every
 variant is computed offline (profile_experts.py's discipline).
 

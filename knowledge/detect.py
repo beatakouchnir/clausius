@@ -66,10 +66,10 @@ def _sigmoid(z):
 
 
 def logreg(Xtr, ytr, Xte, l2=1.0, iters=3000, lr=0.1):
-    """Plain L2 logistic regression. Standardisation uses TRAIN statistics
+    """Plain L2 logistic regression. Standardization uses TRAIN statistics
     only — fitting the scaler on the test set leaks the test distribution.
 
-    Near-constant columns are dropped rather than standardised: layer 0's
+    Near-constant columns are dropped rather than standardized: layer 0's
     cosine-to-previous is identically zero by construction, and dividing it by
     a floored standard deviation manufactures a huge spurious feature.
     """
@@ -100,7 +100,7 @@ def nb_counts(Xtr, ytr, Xte, alpha=1.0):
     """Naive Bayes over per-layer expert usage counts; score is the LLR.
 
     The same estimator the meter used, so a routing result here is continuous
-    with R1-R7 rather than a new modelling choice smuggled in at the end.
+    with R1-R7 rather than a new modeling choice smuggled in at the end.
     """
     L, E = Xtr.shape[1], Xtr.shape[2]
     out = np.zeros((2, L, E))

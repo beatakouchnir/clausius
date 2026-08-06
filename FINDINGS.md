@@ -6,7 +6,7 @@ for the positives. R8's failure is why R9 was reframed as a causal test rather
 than a classification one; R6c is why membership detection was dropped. A record
 that kept only the wins would invite re-running the dead ends.
 
-Sections are labelled R1–R9/P1 because the code docstrings reference those
+Sections are labeled R1–R9/P1 because the code docstrings reference those
 labels; Part III uses F-labels.
 
 ---
@@ -34,9 +34,9 @@ memory setting — costs **91% of gsm8k accuracy** at 50% residency and is
 dominated on every axis by simply using a smaller model.
 
 **Label-free regression detection (F8).** Whether a deployment config silently
-degraded a model can be detected **without any labelled eval set**, by comparing
+degraded a model can be detected **without any labeled eval set**, by comparing
 the model's own per-token entropy distribution against a reference config on the
-same unlabelled prompts. Six configurations of independently known damage, two
+same unlabeled prompts. Six configurations of independently known damage, two
 architectures, three failure mechanisms:
 
 | config | true damage | entropy d_z | flagged | correct |
@@ -54,7 +54,7 @@ within |d_z| ≤ 0.10**, which calibrates the threshold at 0.3 rather than the 0
 first used. Sensitivity is the weaker half: on gemma/popqa a −16.8pp config
 scores +0.49. The benign arms are the load-bearing control: a 3-3.3x memory reduction changes ~25% of
 generations *textually* and moves no signal — so it detects damage, not change.
-And it is more sensitive than the labelled alternative: top-k=4's −2.3pp
+And it is more sensitive than the labeled alternative: top-k=4's −2.3pp
 regression is flagged at **n=200**, where paired McNemar on labels needs
 **n=800** to reach significance.
 
@@ -75,7 +75,7 @@ downstream of the prompt, so it is bounded by both.
 Every claim here is scoped to what was measured, and the failures are kept in
 deliberately. Three specific corrections are load-bearing:
 
-- **A planned 16-50 GPU-hour sweep was cancelled after reading the
+- **A planned 16-50 GPU-hour sweep was canceled after reading the
   implementation** — `policy='exact'` fetches missing experts from disk before
   computing, so the sweep would have measured a guaranteed flat line (F1).
 - **A confident mechanistic hypothesis was killed by its own bug fix.** A large
@@ -98,7 +98,7 @@ Searched 2026-07. Four layers of stack, and the gap is not where the research is
 
 | layer | state | implication |
 |---|---|---|
-| **application** | grounding/hallucination detection IS productized — Guardrails AI, LangKit, RAGAS, HaluGate, Tonic Validate, ConSens | but the SOTA production method is *delegating judgement to another LLM*: expensive, slow |
+| **application** | grounding/hallucination detection IS productized — Guardrails AI, LangKit, RAGAS, HaluGate, Tonic Validate, ConSens | but the SOTA production method is *delegating judgment to another LLM*: expensive, slow |
 | **research** | internal-state probes work well on **dense** models — SAPLMA, INSIDE, MIND, HaloScope, HalluShift, MultiHaluDet (98.55% AUROC on HaluEval/TriviaQA) | none use routing; a routing detector would compete against a stronger signal on a smaller market |
 | **interp libraries** | TransformerLens / nnsight / nnterp list MoE router logits as **future work** | no research tooling for routing either |
 | **serving** | vLLM: *"does not natively support returning router selections (router logits or expert assignments) for each layer during inference"*. Workarounds need deep model-code edits and there is **no standardized interface across MoE architectures**. SGLang's routing work is load-balancing, not observability | **the real gap** |
@@ -419,7 +419,7 @@ Ablation on the injected facts, K=8, layers 28-39:
 
 **`own ≈ para > samerel`, and `random ≈ 0`** — the same structure R9 found on
 pretrained facts, at a comparable rate (0.725 here vs 0.777 there). **So the
-fact-address pattern is not an artifact of how pretraining organises
+fact-address pattern is not an artifact of how pretraining organizes
 knowledge**: it appears for a fact installed by LoRA in two epochs, on an entity
 that did not exist a day earlier.
 
@@ -637,7 +637,7 @@ prompt ever stating the answer.
 
 **R9's fact-level address survives into free generation.** In the directed
 condition the separation is stark: ablating a fact's own experts costs 3.43
-while ablating a neighbouring fact's experts in the same sentence costs 0.21.
+while ablating a neighboring fact's experts in the same sentence costs 0.21.
 
 **The open-ended condition is the real test and it holds**, with two honest
 differences. `other` damage is far higher (4.23 vs 0.21) because open prose is
@@ -762,7 +762,7 @@ correctness sharply:
 | routing and words **agree** | 78 | **0.936** |
 | routing and words **differ** | 72 | routing 0.236, words 0.250 |
 
-Combining them (0.75 routing + 0.25 words, normalised log-scores) gives 0.6467
+Combining them (0.75 routing + 0.25 words, normalized log-scores) gives 0.6467
 against 0.6067 for words alone. So routing does carry information the text does
 not — but as a *second opinion*, not a standalone signal. Caveat: ensemble
 disagreement predicting error is a well-known effect, and whether routing is a
@@ -832,7 +832,7 @@ online half of the product is not MoE-specific.
 | gemma-4-26b-a4b | 15.0% |
 
 The smallest model abstains on two thirds of AA-Omniscience — it *knows* it does
-not know, which is the behaviour that benchmark rewards. Any deployment that
+not know, which is the behavior that benchmark rewards. Any deployment that
 scores abstention as an error (as an earlier suite here did) would rank e4b
 catastrophically and wrongly. Abstention rate is a model property, it varies by
 4x across this set, and it must be measured per model rather than assumed.
@@ -877,7 +877,7 @@ for hard or high-stakes items — which fits the two-mode architecture rather th
 undermining it, with entropy triaging and something more expensive spent only
 where it is warranted.
 
-## R15 (Stage A) — entropy generalises across task types, but not as R13 measured it
+## R15 (Stage A) — entropy generalizes across task types, but not as R13 measured it
 
 → `knowledge/stage_a.py`, `records/stage_a.json`
 
@@ -900,7 +900,7 @@ types** and beats the generation-length baseline everywhere by +0.09 to +0.32.
 the last prompt token) scores 0.915 on PopQA — the task R13 used — and **0.444
 on GSM8K**, worse than chance. The headline this project has been quoting since
 R13 was specific to short-answer recall, not a property of entropy. The signal
-that generalises is an **aggregate over the generation**, and one measure now
+that generalizes is an **aggregate over the generation**, and one measure now
 covers recall and reasoning without per-task configuration.
 
 **Honest on the CIs.** Lower 95% bounds for `p90` are 0.88 (popqa), 0.77
@@ -1038,7 +1038,7 @@ naive-Bayes profile fitted on the R3 trace scores every token position.
 
 **Survives the format shift.** Re-scoring the probe answers as *raw
 continuations* rather than chat turns, **leave-one-fact-out** so the profile
-cannot be recognising a fact it trained on: **AUC 1.000**.
+cannot be recognizing a fact it trained on: **AUC 1.000**.
 
 **Absolute thresholds do not transfer.** On free text the profile marked 39 of
 41 tokens as retrieval and zero as computation — the highest "retrieval" scores
@@ -1066,7 +1066,7 @@ cannot say "this whole passage is retrieval".
 | computation | grounding | `parametric` 1.000, `distractor` 1.000, `contextual` 1.000 → all retrieved |
 | grounding | computation | `computed`→contextual 1.000, but `retrieved`→parametric **0.491** |
 
-**R3's profile generalises on qwen** — trained on numeric arithmetic where both
+**R3's profile generalizes on qwen** — trained on numeric arithmetic where both
 classes emit numbers, it correctly labels word-answer recall in a
 differently-worded suite at 0.979, which it cannot have learned from answer
 form. **It is more precisely a computation detector**: every grounding class
@@ -1145,14 +1145,14 @@ closes the length confound.
 Signal concentrates in **layers 24–31**, peaking at layer 30 (0.918 alone).
 Those are **not** the layers W5.3's ablation ranked for knowledge damage.
 
-**Caveats:** R4 showed this profile does *not* generalise (0.491 on R3's
+**Caveats:** R4 showed this profile does *not* generalize (0.491 on R3's
 retrieved probes), so it is more suite-specific than R3. The contextual side may
 be substantially **induction/copying** — the answer token is literally present
 earlier in the sequence.
 
 ### The first suite failed, and the failure is the useful part
 
-The original `mechanism` suite scored **1.000**. Relabelled *"is the answer
+The original `mechanism` suite scored **1.000**. Relabeled *"is the answer
 numeric"* it scored **0.995** — the same information. Restricted to numeric
 answers only, **0.500**, exactly chance.
 
@@ -1165,7 +1165,7 @@ identical** across classes, which no amount of vocabulary matching achieves.
 
 # Part II — What was ruled out
 
-## R5 → R8 — fact *classification* does not generalise
+## R5 → R8 — fact *classification* does not generalize
 
 → `knowledge/identity.py`, `knowledge/position.py`, `records/identity.grid*.json`
 
@@ -1338,7 +1338,7 @@ experts at 4-bit) and `qwen3.6-35b-a3b` (40 x 256, 16.9 GB), with
 runtime is the vendored `ExpertCache`: a contiguous resident tensor of C expert
 slots per layer with an id->slot map, backed by an on-disk expert store.
 
-## F1 — The sweep that was cancelled, and why that is the finding
+## F1 — The sweep that was canceled, and why that is the finding
 
 The plan was to sweep resident capacity, measure benchmark accuracy at each
 rung, and publish the accuracy-vs-memory curve nobody in the MLX ecosystem has.
@@ -1579,14 +1579,14 @@ free, and shipped as a speed setting with no evidence either way.
 *Note on measurement:* this implementation masks gate weights while the
 SwitchGLU still gathers all 8 experts, isolating the accuracy cost and gaining
 none of the speed. Its throughput is not comparable to a runtime that genuinely
-selects fewer experts. Masking to -1e9 before the downstream softmax renormalises,
-which is the *charitable* reading — dropping without renormalising would shrink
+selects fewer experts. Masking to -1e9 before the downstream softmax renormalizes,
+which is the *charitable* reading — dropping without renormalizing would shrink
 each block's output magnitude and flatter the comparison.
 
 ## F8 — Detecting a broken config without labels
 
 **The question.** A team changes a deployment setting and needs to know whether
-it degraded the model. Measuring accuracy needs a labelled eval set for their
+it degraded the model. Measuring accuracy needs a labeled eval set for their
 actual task, which most teams do not have.
 
 **The design.** Paired per-item comparison of the model's own per-token entropy
@@ -1824,7 +1824,7 @@ while the flag itself does not.
 2. **An actionable configuration result.** `mixed_4_6` is free on both tasks
    (+0.5pp and +1.5pp, d_z ≈ −0.03); 3-bit and below is destructive, and 2-bit
    removes 96% of popqa and 99% of gsm8k accuracy. That independently confirms
-   the literature's finding that aggressive quantization amplifies behavioural
+   the literature's finding that aggressive quantization amplifies behavioral
    drift, and it is exactly the guidance the frontier is meant to produce.
 
 ### F8e — the adversarial constructions failed to evade detection
@@ -1906,10 +1906,10 @@ from 0.290 to **0.030**, i.e. ~90% of parametric recall gone. R9f's
 injected-fact results were therefore measured on a model that had lost most of
 its pre-existing knowledge. That does not invalidate R9f's *within-model*
 contrasts — `own` vs `para` vs `samerel` vs `other` are all measured on the same
-damaged model — but any claim that generalises from those adapters to a healthy
+damaged model — but any claim that generalizes from those adapters to a healthy
 model needs this stated.
 
-## F10 — RAG context utilisation: the claim holds, the refinement does not
+## F10 — RAG context utilization: the claim holds, the refinement does not
 
 F8's design pointed at retrieval: reference = irrelevant context, candidate =
 relevant context, on the same questions.
@@ -2114,7 +2114,7 @@ inverts (F12) and where `max` rescued a borderline detection (IFEval 3-bit,
 +0.309 → +1.921). Do not claim it is uniformly stronger.
 
 **A process bug this surfaced.** The quantization arms were written into the
-same `{model}.{task}` namespace as the offload arms, so re-running `analyse`
+same `{model}.{task}` namespace as the offload arms, so re-running `analyze`
 silently replaced the saved reference in `analysis.gemma.gsm8k.json` with
 `quant_4bit`. Any number read from those files after that run compares against
 the wrong baseline. The table above is recomputed from the raw per-item records
@@ -2249,7 +2249,7 @@ detector reports that something moved, never how much accuracy fell.
 
 Setup: `gemma-4-26b-a4b-it`, mlx-community bf16 converted locally with
 `mlx_lm.convert --q-group-size 64` to 8/4/3/2-bit, so bit-width is the only
-variable. Entropy on 60 unlabelled mixed instruction prompts at cap 4096;
+variable. Entropy on 60 unlabeled mixed instruction prompts at cap 4096;
 accuracy on the gsm8k test split, shuffled seed 0.
 
 **The entropy ladder is monotone in bit depth:**
@@ -2277,7 +2277,7 @@ binomial McNemar over the discordant pairs.*
 
 1. **The flag was a true detection, not a false positive.** 4-bit costs 2.2
    accuracy points, 70 items broken against 41 fixed, p=0.0076. Entropy called
-   it correctly on 60 unlabelled prompts.
+   it correctly on 60 unlabeled prompts.
 2. **The 8-bit arm rules out the artifact explanation.** If quantized-vs-bf16
    comparisons flagged merely for being quantized, 8-bit would flag too. It does
    not — d_z +0.172, clean — and its accuracy drifts the *wrong* way (+1.3pp,
@@ -2298,7 +2298,7 @@ binomial McNemar over the discordant pairs.*
    | **878** | 50 | 31 | **0.0448** ← first crosses 0.05 |
    | 1319 | 70 | 41 | 0.0076 |
 
-   **Labels needed n=878. Entropy needed 60 unlabelled prompts** — a ~15x
+   **Labels needed n=878. Entropy needed 60 unlabeled prompts** — a ~15x
    difference in eval budget, on top of needing no gold answers at all. This is
    a second instance of F8's top-k result (−2.3pp, flagged at n=200, labels
    needing n=800), on an unrelated mechanism and a different model.
@@ -2318,7 +2318,7 @@ not a preview of the verdict — a caution worth keeping for any long paired run
   damage is general rather than specific to either set. Closing that gap needs an
   entropy capture over the gsm8k prompts themselves, and it is the obvious next
   run.
-- **3-bit has no labelled arm.** Its d_z +2.066 sits between two measured points
+- **3-bit has no labeled arm.** Its d_z +2.066 sits between two measured points
   and is assumed, not shown, to sit between them in damage. *Closed by F14d:
   3-bit scores 0.2940, −56.6pp, and the assumption was badly wrong about the
   magnitude even though the ordering held.*
@@ -2326,7 +2326,7 @@ not a preview of the verdict — a caution worth keeping for any long paired run
   smaller than this test resolves is not excluded. *Extended in F14d to n=800;
   still null, still not zero.*
 
-Reproduce with `python -m knowledge.quantladder analyse`, over the records in
+Reproduce with `python -m knowledge.quantladder analyze`, over the records in
 `records/quantladder/`. No model or accelerator needed for the analysis.
 
 ### F14b — correction: rambling tracks off-distribution, not damage
@@ -2334,7 +2334,7 @@ Reproduce with `python -m knowledge.quantladder analyse`, over the records in
 F8's `gen_len` baseline note reads *"Broken models ramble into the token cap"*,
 and `core.py` used the same sentence to justify excluding truncated items. That
 held for F8's own arms — expert-zeroing and static capacity did ramble — but it
-does not generalise, and three runs in this session contradict it in both
+does not generalize, and three runs in this session contradict it in both
 directions:
 
 | run | cap | the config that rambled | the config that did not |
@@ -2505,7 +2505,7 @@ Setup: `Qwen/Qwen2.5-0.5B-Instruct` on MPS in float16 — chosen over CPU/fp32
 deliberately, because a real device boundary and a half-precision upcast are the
 parts CPU makes into no-ops. 60 prompts at cap 512 for entropy; gsm8k n=150 for
 accuracy, so every arm's damage is **measured rather than assumed**. Damage is
-per-tensor symmetric fake-quantisation, the same mechanism family as F8d.
+per-tensor symmetric fake-quantization, the same mechanism family as F8d.
 
 | arm | gsm8k | Δacc | entropy d_z | 95% CI | verdict |
 |---|---|---|---|---|---|
@@ -2548,8 +2548,8 @@ available and one a user would plausibly run.
   between prompt sets on identical checkpoints.
 
 **Limits.** One model, one prompt set, one backend-and-device combination.
-Per-tensor fake-quantisation is cruder than any production quantizer, so the
-damaged arms test damage detection rather than characterising bitsandbytes,
+Per-tensor fake-quantization is cruder than any production quantizer, so the
+damaged arms test damage detection rather than characterizing bitsandbytes,
 GPTQ or AWQ. **CUDA itself is untested**, as is multi-GPU sharding.
 
 **Status: the backend ships, marked experimental, with the 0.3 default flagged
@@ -2586,7 +2586,7 @@ inside the ±0.10 null, with an interval that comfortably contains zero. Whateve
 F15 found, it is not a property of the method that follows it onto mlx.
 
 **A side observation.** Gemma-family models are normally specified bf16 because
-their activation magnitudes overflow fp16's range. That did not materialise
+their activation magnitudes overflow fp16's range. That did not materialize
 here: fp16 scored 0.8750 against bf16's 0.8450 on the same items — b=2 against
 c=8, p=0.109, so not significant, but certainly not damaged. The overflow
 concern is real in general and did not bite this checkpoint on this task.

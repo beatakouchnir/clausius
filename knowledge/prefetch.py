@@ -28,7 +28,7 @@ which a real runtime already has for free:
 The predictor is deliberately trivial — a co-occurrence count from early-layer
 expert to late-layer expert, fitted on a held-out half of the passes. If a
 count table beats recency, the signal is real and a better model would only
-help; if it does not, no amount of modelling rescues it.
+help; if it does not, no amount of modeling rescues it.
 
 HONEST CEILING, stated before running. Prefetch can only help where LRU misses.
 the offload benchmarks measured OPT − LRU at +0.173 hit rate at 2 GB and +0.048 at 8 GB, so

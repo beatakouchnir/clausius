@@ -1,7 +1,7 @@
 """F10, redesigned — did the retrieved context actually help THIS query?
 
 Two previous attempts failed, both for identifiable design reasons rather than
-because the signal is absent. Recorded in FINDINGS F10/F10b; summarised here
+because the signal is absent. Recorded in FINDINGS F10/F10b; summarized here
 because each fault dictates one feature of this design.
 
   1. WRONG ITEMS. The first attempt used `probes.build_grounding`, whose facts
@@ -51,13 +51,13 @@ result worth having either way.
 
 SCOPE. PopQA carries no passages, so the context block is a question-answer
 reference rather than retrieved prose. This therefore measures context
-UTILISATION — does the model use information that is available to it — not
+UTILIZATION — does the model use information that is available to it — not
 grounding-versus-copying. A model handed the answer that does not become more
 confident has a problem worth surfacing whatever mechanism it would have used.
 
 Usage:
   python3 -m knowledge.retrieval --model qwen --n 300
-  python3 -m knowledge.retrieval --analyse
+  python3 -m knowledge.retrieval --analyze
 """
 import argparse
 import json
@@ -136,11 +136,11 @@ def main():
     ap.add_argument('--model', default='qwen')
     ap.add_argument('--n', type=int, default=300)
     ap.add_argument('--seed', type=int, default=0)
-    ap.add_argument('--analyse', action='store_true')
+    ap.add_argument('--analyze', action='store_true')
     ap.add_argument('--limit-gb', type=float, default=60.0)
     a = ap.parse_args()
-    if a.analyse:
-        return analyse()
+    if a.analyze:
+        return analyze()
 
     import mlx.core as mx
     mx.set_memory_limit(int(a.limit_gb * 1024 ** 3))
@@ -185,7 +185,7 @@ def main():
     print(f"\n  {len(rows)} runs · {time.time() - t0:.0f}s → {dest}")
 
 
-def analyse():
+def analyze():
     import glob
     from .detect import auc
     files = sorted(f for f in glob.glob(str(RET / '*.json'))

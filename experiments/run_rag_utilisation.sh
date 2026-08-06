@@ -14,5 +14,5 @@ echo "### F10 start $(date) ###"
 for M in qwen gemma; do
   step f10-$M $QV -m knowledge.retrieval --model $M --n 300
 done
-step f10-analyse $QV -m knowledge.retrieval --analyse
+step f10-analyze $QV -m knowledge.retrieval --analyze
 echo "### F10 done $(date) ###"

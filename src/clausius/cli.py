@@ -57,7 +57,7 @@ def main(argv=None):
     c.add_argument('--max-tokens', type=int, default=512,
                    help='generation cap. Capture at the most generous cap you '
                         'can afford: truncated items are dropped at compare '
-                        'time, and a capture can be re-analysed at any TIGHTER '
+                        'time, and a capture can be re-analyzed at any TIGHTER '
                         'cap but never at a looser one — the lengths of '
                         'truncated items are not recoverable.')
     c.add_argument('--limit', type=int, default=None,
@@ -106,7 +106,7 @@ def main(argv=None):
                       max_tokens=a.max_tokens, adapter=a.adapter,
                       chat=False if a.raw else None, progress=tick)
         # save before any verdict on the run: the capture cost real GPU time and
-        # is still re-analysable (compare --keep-truncated) even when doomed for
+        # is still re-analyzable (compare --keep-truncated) even when doomed for
         # the default path.
         print(f"  → {cap.save(a.out)}", file=sys.stderr)
 

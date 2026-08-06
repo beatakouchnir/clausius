@@ -1,5 +1,5 @@
 #!/bin/sh
-# Tier-1 entropy applications: RAG utilisation, quantization equivalence,
+# Tier-1 entropy applications: RAG utilization, quantization equivalence,
 # forgetting. All three turned out to need no new artifacts — the quantization
 # ladder and the LoRA adapters were already on disk.
 #
@@ -41,8 +41,8 @@ for K in 1 2; do
   step repair-topk$K-qwen  $QV -m knowledge.regress capture --model qwen  --task popqa --capacity 256 --policy exact --topk $K --tag topk$K
   step repair-topk$K-gemma $QV -m knowledge.regress capture --model gemma --task popqa --capacity 128 --policy exact --topk $K --tag topk$K
 done
-step repair-analyse-qwen  $QV -m knowledge.regress analyse --model qwen  --task popqa
-step repair-analyse-gemma $QV -m knowledge.regress analyse --model gemma --task popqa
+step repair-analyze-qwen  $QV -m knowledge.regress analyze --model qwen  --task popqa
+step repair-analyze-gemma $QV -m knowledge.regress analyze --model gemma --task popqa
 
 # ---------------------------------------------------------------- ITEM 3: RAG
 # ~315 probes x 3 classes, short prompts — a few minutes per model, so the full
@@ -52,7 +52,7 @@ step repair-analyse-gemma $QV -m knowledge.regress analyse --model gemma --task 
 for M in qwen gemma; do
   step ctx-$M $QV -m knowledge.context --model $M
 done
-step ctx-analyse $QV -m knowledge.context --analyse
+step ctx-analyze $QV -m knowledge.context --analyze
 
 # ------------------------------------------ ITEM 2: the quantization ladder
 # Same model, same pipeline, five bit-widths. Tests the literature claim
@@ -79,7 +79,7 @@ for T in popqa gsm8k; do
       skip quant-$Q-$T "unreadable at $A/26b-a4b-$Q"
     fi
   done
-  step quant-analyse-$T $QV -m knowledge.regress analyse --model gemma --task $T --ref quant_4bit
+  step quant-analyze-$T $QV -m knowledge.regress analyze --model gemma --task $T --ref quant_4bit
 done
 
 # --------------------------------------------------- ITEM 1: forgetting monitor
@@ -100,6 +100,6 @@ for AD in adapter-qa adapter-router adapter-attn; do
     skip forget-$AD "not found at $ARMS/$AD"
   fi
 done
-step forget-analyse $QV -m knowledge.regress analyse --model qwen --task popqa --ref forget_base
+step forget-analyze $QV -m knowledge.regress analyze --model qwen --task popqa --ref forget_base
 
 echo "### tier1 done $(date) ###"

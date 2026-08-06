@@ -29,5 +29,5 @@ echo "### tier1b start $(date) ###"
 for M in qwen gemma; do
   step ctx-popqa-$M $QV -m knowledge.context --model $M --suite popqa --n 300
 done
-step ctx-popqa-analyse $QV -m knowledge.context --analyse --suite popqa
+step ctx-popqa-analyze $QV -m knowledge.context --analyze --suite popqa
 echo "### tier1b done $(date) ###"

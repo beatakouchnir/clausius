@@ -5,7 +5,7 @@ model families:
 
 1. **If a model does not fit in your memory, what should you actually run?**
 2. **If you change anything — config, quantization, fine-tune — how would you
-   know it broke the model, without a labelled eval set?**
+   know it broke the model, without a labeled eval set?**
 
 Full evidence, positives *and* negatives, in **[FINDINGS.md](https://github.com/beatakouchnir/clausius/blob/main/FINDINGS.md)** —
 which opens with a prior-art accounting stating which parts independently
@@ -17,7 +17,7 @@ re-derive published work and which appear to be new.
   damage.** Predictive entropy is well studied; using it to detect that *a
   deployment change broke the model* — validated against five unrelated damage
   mechanisms whose true cost was measured separately — appears not to be. It
-  flagged a −2.2pp quantization regression on **60 unlabelled prompts**, where
+  flagged a −2.2pp quantization regression on **60 unlabeled prompts**, where
   paired McNemar on gold labels needed **n=878** to reach p<0.05 (F14).
 - **Accuracy measured across MoE offload configurations at all** — four surveyed
   implementations report none. It inverts the default advice: at matched memory,
@@ -35,7 +35,7 @@ corpus — is pure numpy and runs anywhere, with no model downloads:
 ```bash
 git clone https://github.com/beatakouchnir/clausius && cd clausius
 pip install ".[dev]" && pytest -q                  # 36 tests, no accelerator
-python -m knowledge.quantladder analyse            # rebuilds F14's ladder from records
+python -m knowledge.quantladder analyze            # rebuilds F14's ladder from records
 python -m knowledge.frontier report                # rebuilds the 3-axis Pareto frontier
 ```
 
@@ -76,7 +76,7 @@ REGRESSION  (max d_z = +5.922, threshold 0.3, one-sided)
 
 That is a real run. Those two checkpoints differ only in quantization, and the
 2-bit one independently measures **73 points lower** on instruction adherence.
-Twenty-five unlabelled prompts were enough to catch it. `compare` exits non-zero
+Twenty-five unlabeled prompts were enough to catch it. `compare` exits non-zero
 on a regression, so it drops into CI without glue.
 
 **→ [USAGE.md](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md) is the operating manual**: choosing prompts, setting
@@ -106,7 +106,7 @@ headline results:
 | **Offload beats downsizing** | an offloaded 35B at **3.40 GB** scores **0.9447** on gsm8k, against a natively-fitting 4B at 3.91 GB scoring 0.8426. Same ordering on popqa (+13.9pp) and mmlu_pro (+20.9pp). The whole cost is latency. | F3–F6 |
 | **The lossy shortcut is dominated** | *dropping* non-resident experts instead of fetching them costs **91% of gsm8k accuracy** at 50% residency, while being slower. Dominated on every axis, everywhere. | F6 |
 | **Label-free detection works** | validated against five unrelated damage mechanisms whose true damage was measured independently — quantization, expert zeroing, top-k, expert substitution, LoRA fine-tuning. Benign controls stay clean: a 3.3× memory reduction changes ~25% of generations textually and moves no signal. | F8 |
-| **It is more sensitive than labels** | a −2.2pp quantization regression flagged on **60 unlabelled prompts**; paired McNemar on gold answers needed **n=878** to reach p<0.05. | F14 |
+| **It is more sensitive than labels** | a −2.2pp quantization regression flagged on **60 unlabeled prompts**; paired McNemar on gold answers needed **n=878** to reach p<0.05. | F14 |
 | **Forgetting is detectable too** | move the reference and it becomes a training monitor: LoRA checkpoints on a held-out domain read d_z +0.74 to +0.84 at −16 to −26pp accuracy. | F9 |
 | **Short benchmarks understate damage ~14×** | at matched memory, aggressive quantization costs **73 points** of instruction adherence where exact offload costs **1.0** — a difference invisible on factual QA, which loses 1.5pp where structured generation loses 18–21pp. | F11 |
 | **Routing carries a fact-level address** | ablate the experts a fact routes to and that fact degrades far more than a paraphrase, a same-relation fact, or a random control. Replicated on two architectures. A **mechanism** result, not a product. | R9–R10 |
@@ -132,7 +132,7 @@ all, Gemini's are missing on current frontier models, and OpenAI caps
 support and cascade routing are recorded as **don't-build** decisions in
 [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md), with the conditions that would reopen them.
 
-**Apple Silicon to capture, anywhere to analyse.** Nothing about the method
+**Apple Silicon to capture, anywhere to analyze.** Nothing about the method
 needs it — a working torch backend exists on the `feat/torch-backend` branch and
 is **deliberately not shipped**: on a 0.5B model it flagged a *benign* precision
 change at d_z +0.31. That false positive turned out to be a small-model artifact
@@ -173,7 +173,7 @@ not re-run.
 
 The record keeps its own failures, because they were load-bearing:
 
-- **A planned 16-50 GPU-hour sweep was cancelled after reading the
+- **A planned 16-50 GPU-hour sweep was canceled after reading the
   implementation.** `policy='exact'` fetches missing experts from disk before
   computing, so it would have measured a guaranteed flat line.
 - **A confident mechanistic hypothesis died with its own bug fix.** A large
@@ -240,7 +240,7 @@ MLX uses unified memory and pinning to `mx.cpu` isolates nothing. The axis that
 matters is loads-a-model vs doesn't.
 
 ```bash
-python3 -m knowledge.quantladder analyse     # rebuilds F14's ladder from records
+python3 -m knowledge.quantladder analyze     # rebuilds F14's ladder from records
 python3 -m knowledge.frontier report         # rebuilds the 3-axis Pareto frontier
 python3 -m knowledge.probes --stats
 ```

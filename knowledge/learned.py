@@ -2,7 +2,7 @@
 
 The membership numbers alone cannot tell these apart, and they are different
 claims. A detector could fire on some incidental trace of having seen a
-document — an optimiser artefact, a shift in a few activations — without the
+document — an optimizer artefact, a shift in a few activations — without the
 model having acquired any of its content. That would still be a valid
 membership signal, but it would say nothing about memorisation, and it would be
 the wrong thing to describe as "the model learned this".
@@ -20,7 +20,7 @@ THE PHRASING IS THE ONE THAT DOCUMENT ACTUALLY USED. Each attribute has three
 templates and the corpus picked one at random per document; the used one is
 recovered by matching the rendered sentence against the text. Cueing with a
 phrasing the model never saw for that fact would measure paraphrase
-generalisation instead of acquisition, and would understate learning.
+generalization instead of acquisition, and would understate learning.
 
 Only attributes whose template ENDS with the value are usable — "A {v} appears
 on its seal" would leave a one-word prefix that cues nothing. Roughly two

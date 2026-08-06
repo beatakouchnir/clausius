@@ -125,7 +125,7 @@ def judge(answer, acceptable):
     """True if the stated answer is factually right.
 
     An empty acceptable set means the entity is invented, so anything asserted
-    is a fabrication — UNLESS the model refuses, which is the correct behaviour
+    is a fabrication — UNLESS the model refuses, which is the correct behavior
     and must not be scored as an error.
     """
     a = _norm(answer)

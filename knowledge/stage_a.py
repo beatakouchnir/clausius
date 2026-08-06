@@ -1,4 +1,4 @@
-"""Stage A — does entropy-based error prediction generalise across task types?
+"""Stage A — does entropy-based error prediction generalize across task types?
 
 R13 measured AUC 0.892 on PopQA/qwen-MoE. That is one benchmark and one model.
 R14 then showed the result is fragile in two specific ways, both corrected here:
@@ -36,7 +36,7 @@ Needs mlx-lm and datasets. Reuses the vendored loaders/scorers where they exist.
 
 Usage:
   python3 -m knowledge.stage_a --task omniscience --n 250
-  python3 -m knowledge.stage_a --analyse
+  python3 -m knowledge.stage_a --analyze
 """
 import argparse
 import json
@@ -152,7 +152,7 @@ def main():
                     default=traces.artifact('qwen36-35b-a3b-4bit-g64'))
     ap.add_argument('--task', default='omniscience')
     ap.add_argument('--n', type=int, default=250)
-    ap.add_argument('--analyse', action='store_true')
+    ap.add_argument('--analyze', action='store_true')
     ap.add_argument('--limit-gb', type=float, default=60.0)
     ap.add_argument('--seed', type=int, default=0)
     ap.add_argument('--cap', type=int, default=0,
@@ -164,8 +164,8 @@ def main():
     if a.cap:
         CAPS[a.task] = a.cap
 
-    if a.analyse:
-        return analyse()
+    if a.analyze:
+        return analyze()
     capture(a)
 
 
@@ -242,7 +242,7 @@ def _prompt(tok, item):
                                        tokenize=False)
 
 
-def analyse():
+def analyze():
     from .detect import auc
     files = sorted(OUT.glob('stage_a.*.json'))
     if not files:

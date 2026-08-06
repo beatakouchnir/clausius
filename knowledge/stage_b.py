@@ -29,7 +29,7 @@ Needs mlx-lm. Reuses the vendored loaders/scorers and vote_signals.
 
 Usage:
   python3 -m knowledge.stage_b --task popqa --n 200 --k 5
-  python3 -m knowledge.stage_b --analyse
+  python3 -m knowledge.stage_b --analyze
 """
 import argparse
 import json
@@ -50,11 +50,11 @@ from .stage_a import CAPS, QUANTIZE_TASKS, load_task, score_item
 def answer_key(task, item, text):
     """Canonical form of an answer, for vote counting.
 
-    Votes must be counted over a NORMALISED answer, not raw text: two samples
+    Votes must be counted over a NORMALIZED answer, not raw text: two samples
     that both say "Paris" but differ in punctuation or preamble are the same
     vote, and counting them as different would understate agreement and make
     self-consistency look artificially weak — i.e. bias the comparison in this
-    project's favour.
+    project's favor.
     """
     if item.get('score') == 'letter':
         m = re.findall(r'ANSWER:\s*([A-Za-z])', text)
@@ -79,13 +79,13 @@ def main():
     ap.add_argument('--n', type=int, default=200)
     ap.add_argument('--k', type=int, default=5)
     ap.add_argument('--temp', type=float, default=0.7)
-    ap.add_argument('--analyse', action='store_true')
+    ap.add_argument('--analyze', action='store_true')
     ap.add_argument('--limit-gb', type=float, default=60.0)
     ap.add_argument('--seed', type=int, default=0)
     a = ap.parse_args()
 
-    if a.analyse:
-        return analyse()
+    if a.analyze:
+        return analyze()
     capture(a)
 
 
@@ -167,7 +167,7 @@ def _prompt(tok, item):
                                        tokenize=False)
 
 
-def analyse():
+def analyze():
     from .detect import auc
     files = sorted(OUT.glob('stage_b.*.json'))
     if not files:

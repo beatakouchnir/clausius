@@ -3,7 +3,7 @@
 Writes everything the downstream analysis could want, because a second capture
 session costs another GPU window: for every probe, at every layer, at every
 token position — the router's top-M expert ranks and their scores, plus the
-labels that make the analyses possible.
+labels that make the analyzes possible.
 
 WHAT IS RECORDED AND WHY EACH LABEL EARNS ITS PLACE:
 
@@ -160,7 +160,7 @@ def run_capture(model, tok, probes, dest, style='chat', top_m=32, meta=None):
                     logprobs, tgt[..., None], axis=-1)[0, :, 0]
                 nll = -float(mx.mean(picked[len(p_ids) - 1:]))
                 # Confidence at the decisive step, read off the PREDICTIVE
-                # DISTRIBUTION rather than off the labelled answer. `answer_nll`
+                # DISTRIBUTION rather than off the labeled answer. `answer_nll`
                 # is useless wherever the label is a placeholder — the fictional
                 # probes have no true answer — so a membership or fabrication
                 # analysis needs these instead. They are also the standard

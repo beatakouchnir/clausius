@@ -22,5 +22,5 @@ step if-4bit $QV -m knowledge.regress capture --model gemma --task ifeval --poli
 for Q in mixed_4_6 mixed_3_6 3bit-g64 2bit-g64; do
   step if-$Q $QV -m knowledge.regress capture --model gemma --task ifeval --policy none --model-path $A/26b-a4b-$Q --tag quant_$Q --n 200
 done
-step if-analyse $QV -m knowledge.regress analyse --model gemma --task ifeval --ref quant_4bit
+step if-analyze $QV -m knowledge.regress analyze --model gemma --task ifeval --ref quant_4bit
 echo "### ifeval sweep done $(date) ###"

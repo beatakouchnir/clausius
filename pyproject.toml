@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "clausius"
 version = "0.1.0"
-description = "Detect whether a deployment change degraded your model — without a labelled eval set"
+description = "Detect whether a deployment change degraded your model — without a labeled eval set"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "Apache-2.0"
@@ -23,7 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 # mlx-lm is needed only to CAPTURE. Comparison and analysis are pure numpy, so
-# CI and anyone re-analysing the published corpus need no accelerator at all.
+# CI and anyone re-analyzing the published corpus need no accelerator at all.
 mlx = ["mlx-lm>=0.20"]
 dev = ["pytest>=7"]
 

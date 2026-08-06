@@ -4,7 +4,7 @@ VENDORED — copied in rather than imported, so this repository is
 self-contained.
 Origin: the author's earlier MoE offload runtime —
         ExpertCache and OffloadSwitchGLU only; the benchmark CLI is not vendored
-Same authorship and licence as the rest of this repo (Apache-2.0); see NOTICE.
+Same authorship and license as the rest of this repo (Apache-2.0); see NOTICE.
 
 Do not edit in place — this is a snapshot of the code that produced the numbers
 in FINDINGS.md, and it should not drift away from them.

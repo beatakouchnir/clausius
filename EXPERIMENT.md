@@ -92,7 +92,7 @@ holds training constant.
 
 ---
 
-## Measurement: capture once, analyse many ways
+## Measurement: capture once, analyze many ways
 
 R13 measured entropy at the **last prompt token**. That is correct for
 short-answer recall and wrong for CoT, where the answer arrives after a chain.
@@ -114,7 +114,7 @@ the analysis is free, so never bake an analysis choice into a capture.
 
 ## Stages, with decision points
 
-### Stage A — task generalisation (decisive, run first)
+### Stage A — task generalization (decisive, run first)
 
 **Model:** qwen3.6-35b-a3b MoE only. **Tasks (revised):** PopQA (done, 300
 errors), **AA-Omniscience** and **HLE** as the high-error knowledge tasks,
@@ -162,7 +162,7 @@ caught) and a calibration curve. This is what a buyer evaluates.
 
 ## Pre-registered bars, fixed before any run
 
-1. Entropy generalises if it holds **AUC >= 0.75 on >= 3 of 5 task types**.
+1. Entropy generalizes if it holds **AUC >= 0.75 on >= 3 of 5 task types**.
 2. Entropy is competitive with self-consistency if it is within **0.05 AUC at
    1/5 the cost**.
 3. Routing earns a place in the online product only if it **beats entropy on
@@ -262,7 +262,7 @@ rendering of the fact, so it inevitably mixes fact-specific and
 input-specific routing. Instead ablate the **intersection** (or top-weighted
 union) of experts across all three paraphrases — the routing the fact evokes
 *regardless of wording*. If a fact-level address exists, the consensus set
-should damage its own fact more sharply and its neighbours less. This is the
+should damage its own fact more sharply and its neighbors less. This is the
 single change most likely to separate the two hypotheses rather than merely
 reduce noise.
 
@@ -304,7 +304,7 @@ The product question changed shape, and one code reading killed the experiment
 that had just been scoped. Recorded here in the order it actually happened,
 because the wrong turn is the instructive part.
 
-## Why the accuracy-vs-budget sweep was cancelled
+## Why the accuracy-vs-budget sweep was canceled
 
 The plan was: sweep the offload cache's resident capacity, measure benchmark
 accuracy at each rung, publish the accuracy-vs-memory curve nobody in the MLX
@@ -524,7 +524,7 @@ reduction order.
 
 ### Consequences for the plan
 
-- The cancelled accuracy-vs-capacity sweep stays cancelled. The question is not
+- The canceled accuracy-vs-capacity sweep stays canceled. The question is not
   "does accuracy decline with capacity" (unbiased rounding says no) but "what is
   the noise floor", which needs far fewer items.
 - **Two arms added** (`run_frontier2_nondeterminism.sh`, queued behind chain 1
@@ -644,8 +644,8 @@ Arms, in run order:
 - **`cut_topk` measures accuracy, not speed.** It masks gate weights while
   SwitchGLU still gathers all 8 experts, so tok/s from those runs is **not**
   comparable to SwiftLM's `SWIFTLM_TOP_K`. Deliberate: it isolates the accuracy
-  cost of the knob. Masking to -1e9 before the downstream softmax renormalises,
-  which is the *charitable* reading of the knob — dropping without renormalising
+  cost of the knob. Masking to -1e9 before the downstream softmax renormalizes,
+  which is the *charitable* reading of the knob — dropping without renormalizing
   would shrink each block's output magnitude and flatter the comparison.
 - **Instance wrapping, not `__call__` assignment.** `gate.__call__ = fn` does not
   intercept `holder.gate(x)`: Python resolves the call on the type, so the cut
@@ -864,7 +864,7 @@ That is sampling noise, not a dose-response curve.
 
 It weakens it, and the writeup must say so. The claim was that SwiftLM ships
 `SWIFTLM_TOP_K` as a speed setting with no accuracy number attached. That remains
-true — but the measured cost looks *small*, so "unlabelled" is the fair
+true — but the measured cost looks *small*, so "unlabeled" is the fair
 criticism, not "destructive".
 
 This is a case where measurement failed to confirm the alarming hypothesis, which
@@ -916,7 +916,7 @@ our signal is specifically the baseline that recent work beats**:
 
 - [UCCI](https://arxiv.org/abs/2605.18796) maps token-level uncertainty to a
   per-query error probability by isotonic regression and picks the escalation
-  threshold by constrained cost minimisation — cutting cost 31% at
+  threshold by constrained cost minimization — cutting cost 31% at
   micro-F1 0.91 while **beating entropy thresholding**.
 - [FrugalGPT, RouteLLM, and a 2026 survey](https://arxiv.org/html/2603.04445v2)
   cover the space; [*When to Think Deeply*](https://arxiv.org/pdf/2606.06745)
@@ -942,7 +942,7 @@ question.
   Cheap to test but currently pointless: it only pays off if the hosted surface
   widens first. Needs a re-run, since only aggregates were saved, not
   distributions.
-- **A local-currency version of cascading.** The published work optimises
+- **A local-currency version of cascading.** The published work optimizes
   dollars per API call; for local inference the currency is latency and memory,
   and that is genuinely underexplored — e.g. serve from the small resident model
   and escalate to the offloaded big one only when entropy says to, buying most
@@ -986,9 +986,9 @@ entropy as an explanatory variable — neither is a label-free monitor over outp
 entropy. No paper found doing that.
 
 **The application.** Exactly F8's design with the reference moved: reference =
-base checkpoint, candidate = checkpoint N, items = unlabelled held-out prompts
+base checkpoint, candidate = checkpoint N, items = unlabeled held-out prompts
 from domains you are *not* training on. A rising paired delta says the fine-tune
-is damaging general capability, mid-run, without a labelled eval.
+is damaging general capability, mid-run, without a labeled eval.
 
 **Why it is reachable.** This repo has both halves already — `finetune.py` from
 the injection work, and `regress.py`. The experiment is a LoRA run with periodic
@@ -1013,7 +1013,7 @@ a post-hoc benchmark.
 The second of those independently corroborates **F2** — semantically exact,
 numerically non-reproducible — from the quantization direction rather than the
 cache direction. It also states the thing that makes a detector necessary:
-accuracy and perplexity can look preserved while behaviour has moved.
+accuracy and perplexity can look preserved while behavior has moved.
 
 **What this changes.** F8 is currently scoped to "did your offload config break
 the model". The literature says backends, quantization levels and hardware do the
@@ -1026,7 +1026,7 @@ model?"*
 writing; whether a packaged tool exists was not established and should be checked
 before claiming the gap.
 
-### 3. RAG context utilisation, measured by entropy drop
+### 3. RAG context utilization, measured by entropy drop
 
 **The idea.** Reference = prompt without retrieved context; candidate = prompt
 with it. If entropy does not fall, the retrieval did not help, whatever a
@@ -1034,7 +1034,7 @@ relevance score says. Directly connected to **R2**, which separated
 context-grounded from parametric answering on this stack.
 
 **Why it might be open.** RAGAS and similar tools measure context relevance by
-**LLM judgement** — expensive, slow, and itself unreliable. An entropy-based
+**LLM judgment** — expensive, slow, and itself unreliable. An entropy-based
 version is essentially free and needs no judge model.
 
 **Unverified.** Not searched thoroughly enough to claim the gap. Check before
@@ -1043,7 +1043,7 @@ building.
 ## Tier 2 — plausible, unverified, cheap to check
 
 - **Eval-item quality.** Items on which *every* configuration is high-entropy are
-  candidates for ambiguity or mislabelling. Adjacent to dataset cartography,
+  candidates for ambiguity or mislabeling. Adjacent to dataset cartography,
   which uses *training* dynamics rather than inference-time entropy.
 - **Eval-set sufficiency.** F8 already demonstrated entropy resolving at n=200
   what labels needed n=800 for. Turning that into a power analysis — "how many
@@ -1067,7 +1067,7 @@ building.
 - **Membership / contamination detection.** This repo already tried and failed
   (P1), and the MIA literature is dense.
 - **Early exit, speculative-decoding acceptance, KV eviction.** Well covered
-  (CALM, H2O, SnapKV); these are runtime optimisations, and the standing decision
+  (CALM, H2O, SnapKV); these are runtime optimizations, and the standing decision
   is not to compete on runtime.
 
 ## Recommended order, if this thread is picked up
@@ -1078,7 +1078,7 @@ building.
 2. **Forgetting monitor** — the clearest open gap and both halves already exist
    in this repo.
 3. **Truncated-entropy check** — only if hosted APIs are ever reopened.
-4. **RAG utilisation** — verify the gap first.
+4. **RAG utilization** — verify the gap first.
 
 ---
 
@@ -1139,7 +1139,7 @@ alarm.
 
 ## What would reverse this
 
-1. A **framework-neutral damaged checkpoint** — quantise-dequantise once in
+1. A **framework-neutral damaged checkpoint** — quantize-dequantize once in
    numpy, write safetensors, load the identical weights into both runtimes — so
    the damage is bit-identical and only the runtime differs.
 2. **≥3 benign configurations** on the torch side, of the same *kind* as the mlx
@@ -1206,7 +1206,7 @@ around it.
   answers this before the run, not after.
 - **Measure the benign arm; do not assume it.** A control assumed harmless
   ("8-bit should be free") turned out to cost 4.67 accuracy points once
-  labelled. The detector had been right and the assumption wrong — and a
+  labeled. The detector had been right and the assumption wrong — and a
   validation checking whether a tool agrees with your priors validates nothing.
 - **Do not change an API while a job is queued against it.** Two multi-hour runs
   died on a `backend` argument removed from the shipping branch hours earlier,
