@@ -7,7 +7,7 @@ model families:
 2. **If you change anything — config, quantization, fine-tune — how would you
    know it broke the model, without a labelled eval set?**
 
-Full evidence, positives *and* negatives, in **[FINDINGS.md](FINDINGS.md)** —
+Full evidence, positives *and* negatives, in **[FINDINGS.md](https://github.com/beatakouchnir/clausius/blob/main/FINDINGS.md)** —
 which opens with a prior-art accounting stating which parts independently
 re-derive published work and which appear to be new.
 
@@ -59,7 +59,7 @@ clausius` without the extra is enough to re-analyse captures or the published
 corpus on any machine.
 
 Take 60 prompts of your own — production traffic is ideal, and **no labels are
-needed** — or start with the 60 in [`examples/prompts.jsonl`](examples/prompts.jsonl).
+needed** — or start with the 60 in [`examples/prompts.jsonl`](https://github.com/beatakouchnir/clausius/blob/main/examples/prompts.jsonl).
 Capture the configuration you trust, capture the one you changed, compare:
 
 ```bash
@@ -147,7 +147,7 @@ print(compare(ref, cand))
 comes from 13 configurations known to be harmless, the one-sided test from a
 construction that fools a two-sided one, the truncation filter from an effect
 that doubles once you apply it. `src/clausius/core.py` states each one and
-[FINDINGS.md](FINDINGS.md) has the evidence.
+[FINDINGS.md](https://github.com/beatakouchnir/clausius/blob/main/FINDINGS.md) has the evidence.
 
 > **Status.** `clausius` is installable and tested (36 tests, no accelerator
 > required). The `knowledge/` research package that produced the findings below
@@ -274,7 +274,7 @@ all, Gemini's are missing on current frontier models, and OpenAI caps
 `top_logprobs` at 20 — which is *truncated* entropy, a different quantity from
 the full-distribution measurements here. Hosted-API support and entropy-gated
 cascade routing are both recorded as **don't-build** decisions in
-[EXPERIMENT.md](EXPERIMENT.md), with the conditions that would reopen them.
+[EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md), with the conditions that would reopen them.
 
 **Apple Silicon to capture, anywhere to analyse.** `capture` needs `mlx-lm`;
 `compare` and every analysis path are pure numpy. Nothing about the *method*
@@ -286,7 +286,7 @@ and that false positive is not yet attributable to the backend, the model scale,
 or the control I chose. Shipping a runtime whose threshold has not been
 calibrated would contradict the claim this package makes about its defaults.
 The decision, and the bar it has to clear, are in
-[EXPERIMENT.md](EXPERIMENT.md); the measurement is F15.
+[EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md); the measurement is F15.
 
 ### Calibrating your own null
 
@@ -340,7 +340,7 @@ compute is spent.
 detectable without labels on three models (paired entropy shift d_z −1.06 to
 −1.86). Ranking *per-query* usefulness is out of scope for the task tested,
 because when the answer is verbatim present retrieval is binary rather than
-graded — even a 4B model uses it at 99.7%. See F10 in [FINDINGS.md](FINDINGS.md).)*
+graded — even a 4B model uses it at 99.7%. See F10 in [FINDINGS.md](https://github.com/beatakouchnir/clausius/blob/main/FINDINGS.md).)*
 
 ## 4. Short factual benchmarks understate compression damage ~14x
 
@@ -424,7 +424,7 @@ if the telemetry is entropy.
 Eight controlled negatives where routing lost to a simpler signal — usually
 reading the prompt text, or predictive entropy. The structural reason: routing
 is downstream of the residual stream *and* downstream of the prompt, so it is
-bounded by both. Part II of [FINDINGS.md](FINDINGS.md) records them so they are
+bounded by both. Part II of [FINDINGS.md](https://github.com/beatakouchnir/clausius/blob/main/FINDINGS.md) records them so they are
 not re-run.
 
 ## Seven corrections worth reading
@@ -577,7 +577,7 @@ around it.
 These matter most where compute is rented and time-boxed: the dollars are
 trivial, but a silent failure burns a slot in a day you cannot extend. They are
 the pre-flight list for the CUDA validation the torch backend is waiting on
-(see [EXPERIMENT.md](EXPERIMENT.md)).
+(see [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md)).
 
 ---
 
