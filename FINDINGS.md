@@ -2494,7 +2494,7 @@ Python API — which is the documented path for offload wrappers and patched
 runtimes — receives neither the curve nor the refusal. The protection is on the
 interface least likely to be scripted.
 
-## F15 — the torch backend: sensitivity transfers, the threshold does not
+## F15 — the torch *framework* backend: sensitivity transfers, the threshold does not
 
 The detector was Apple-only by implementation, not by constraint — it needs
 greedy generation and one teacher-forced pass yielding full-vocabulary logits,
@@ -2547,7 +2547,8 @@ available and one a user would plausibly run.
 - **The prompt set.** F14c already showed the null moving from +0.172 to −0.062
   between prompt sets on identical checkpoints.
 
-**Limits.** One model, one prompt set, one backend-and-device combination.
+**Limits.** One model, one prompt set, one framework-and-device combination
+(transformers on MPS).
 Per-tensor fake-quantization is cruder than any production quantizer, so the
 damaged arms test damage detection rather than characterizing bitsandbytes,
 GPTQ or AWQ. **CUDA itself is untested**, as is multi-GPU sharding.
@@ -2564,7 +2565,7 @@ produced 0.3 in the first place.
 
 F15's one benign arm flagged: a compute-precision change on a 0.5B model in
 torch read d_z +0.306 with accuracy unchanged. That left three explanations
-unseparated — the backend, the 0.5B scale, or the choice of control. It also
+unseparated — the framework, the 0.5B scale, or the choice of control. It also
 left an uncomfortable possibility open: that precision changes are a blind spot
 of the *method*, in which case the problem would follow the detector onto the
 stack that actually ships.
@@ -2600,10 +2601,10 @@ job sat queued. A self-inflicted failure, recorded because the experiment is
 still owed. It remains the open question in the torch scope decision, and the
 work belongs on `feat/torch-backend` where the argument still exists.
 
-### F15c — the torch false positive is a small-model artifact, not a backend defect
+### F15c — the torch false positive is a small-model artifact, not a framework defect
 
 F15 found a benign precision change flagging at d_z +0.306 on a 0.5B model in
-torch, and could not attribute it: backend, scale, or choice of control. F15b
+torch, and could not attribute it: the framework, the scale, or the choice of control. F15b
 showed the same *class* of change reads clean at 26B on mlx, but differed in
 scale **and** framework, so it isolated nothing.
 
@@ -2634,7 +2635,7 @@ appears to dominate the spread; by 7B it does not. That predicts the effect
 should shrink monotonically with scale, which two points cannot confirm.
 
 **What this does and does not settle.** It removes the reason F15 gave for
-calling the backend uninterpretable, and it supplies the first *measured-benign*
+calling the framework path uninterpretable, and it supplies the first *measured-benign*
 torch control the detector calls correctly. It does not clear the bar in
 EXPERIMENT.md: that asks for three benign configurations of the same kind as the
 mlx controls, a framework-neutral damaged checkpoint, and a CUDA run with real

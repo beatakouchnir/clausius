@@ -160,8 +160,9 @@ ordinal, this per-item view is how you form your own judgment of severity.
 The 0.3 threshold comes from 13 benign configurations measured on **one stack**,
 and the null is not a universal constant — the same benign 8-bit checkpoint
 against the same bf16 reference reads **+0.172** on a mixed instruction set and
-**−0.062** on gsm8k (FINDINGS F14c). On a new backend, a new quantizer or a
-markedly different prompt set, measure your own floor first:
+**−0.062** on gsm8k (FINDINGS F14c). On a different framework (mlx vs torch),
+a different device (cuda, mps, cpu), a different quantizer, or a markedly
+different prompt set, measure your own floor first:
 
 ```bash
 # two configurations you have independent reason to believe are equivalent —

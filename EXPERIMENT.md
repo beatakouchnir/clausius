@@ -1082,7 +1082,13 @@ building.
 
 ---
 
-# Scope decision — BUILT, NOT SHIPPED: the torch backend
+# Scope decision — BUILT, NOT SHIPPED: the torch framework backend
+
+> **Terminology.** *Framework* means mlx or PyTorch — which library runs the
+> forward pass, selected by `--backend`. *Device* means cuda, mps or cpu —
+> which hardware PyTorch dispatches to. PyTorch does not require CUDA; it was
+> exercised here on mps and cpu with no CUDA present. The two are independent,
+> and what is unvalidated is one device, not the framework path.
 
 Decided 2026-08-04. Recorded with the evidence and the bar that would reverse it,
 in the same spirit as the hosted-API decision above: so it is not re-argued from
@@ -1127,7 +1133,7 @@ a compute-dtype change; all thirteen mlx benign arms are configuration changes.
 Those are not the same kind of control, and a pure dtype swap is plausibly the
 hardest benign case for an entropy detector — it perturbs every logit slightly,
 in a correlated way, where an exact-offload capacity change does the same
-arithmetic on the same weights. So +0.306 may indict the backend, the 0.5B model,
+arithmetic on the same weights. So +0.306 may indict the framework, the 0.5B model,
 or the control. Three explanations, no measurement separating them.
 
 Shipping it would contradict this package's own headline — *every default is a
@@ -1166,7 +1172,7 @@ Every finding in this record is stack-independent as a *claim*. That entropy
 detects damage without labels, that d_z is ordinal rather than proportional,
 that short factual benchmarks understate compression damage ~14x, that labels
 needed n=878 where entropy needed 60 — a CUDA shop can act on all of it without
-running this code. The corpus is the differentiated asset; the backend decides
+running this code. The corpus is the differentiated asset; the framework decides
 who can re-run it, not whether it is true.
 
 ---

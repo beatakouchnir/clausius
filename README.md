@@ -122,7 +122,8 @@ headline results:
   "you lost k accuracy points" is not.
 - Reports that something moved, **not how much accuracy was lost**.
 - Needs logits and a reference config; it cannot score a config in isolation.
-- **The threshold is calibrated on one stack.** On a new backend or quantizer,
+- **The threshold is calibrated on one stack.** On a different framework,
+  device or quantizer,
   measure your own null first — [USAGE.md](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md#calibrating-your-own-null)
   has the recipe.
 
@@ -132,12 +133,29 @@ all, Gemini's are missing on current frontier models, and OpenAI caps
 support and cascade routing are recorded as **don't-build** decisions in
 [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md), with the conditions that would reopen them.
 
-**Apple Silicon to capture, anywhere to analyze.** Nothing about the method
-needs it — a working torch backend exists on the `feat/torch-backend` branch and
-is **deliberately not shipped**: on a 0.5B model it flagged a *benign* precision
-change at d_z +0.31. That false positive turned out to be a small-model artifact
-(F15c), but the threshold has still never been calibrated on CUDA. The decision
-and the bar it must clear are in [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md).
+**Apple Silicon to capture, anywhere to analyze.** `capture` needs `mlx-lm`;
+`compare` and every analysis path are pure numpy.
+
+Nothing about the *method* needs Apple Silicon — it wants greedy generation and
+one teacher-forced pass yielding full-vocabulary logits, which PyTorch provides
+too. A working PyTorch **framework backend** exists on the `feat/torch-backend`
+branch and is **deliberately not shipped**.
+
+Two independent things are often conflated here, so to be exact:
+
+| | | |
+|---|---|---|
+| **framework** | mlx, PyTorch | which library runs the forward pass |
+| **device** | cuda, mps, cpu | which hardware PyTorch dispatches to |
+
+PyTorch does **not** require CUDA. The unshipped backend was measured on **mps**
+and **cpu** with no CUDA present (F15, F15c), so the framework path is exercised
+— what has never been calibrated is the **cuda device**, and separately the
+CUDA-native quantizers (bitsandbytes, GPTQ, AWQ) that damage weights differently
+from the ones measured here. Shipping a runtime whose threshold has not been
+calibrated on the device most of its users would run would contradict the claim
+this package makes about its defaults. The decision and the bar it must clear
+are in [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md).
 
 ## Claim taxonomy — keep these separate
 
