@@ -1097,8 +1097,10 @@ implementation is sitting on a branch.
 
 ## What exists
 
-A complete `transformers` backend — `capture(..., backend='transformers')`,
-running on CUDA, CPU or MPS — on `feat/torch-backend`. It is not a sketch: 39
+A complete `transformers` framework backend — `capture(..., backend='transformers')`
+— on `feat/torch-backend`. PyTorch can dispatch it to cuda, mps or cpu, though
+only a GPU device is a realistic capture target; cpu was used for correctness
+checks only. It is not a sketch: 39
 tests, chunked entropy accumulation sized to avoid a full-vocabulary float32
 logit tensor (4 GB at a 256k vocabulary and 4096 tokens), graceful degradation
 when `accelerate` is absent, and a warning when captures from two runtimes are

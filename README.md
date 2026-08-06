@@ -148,6 +148,13 @@ Two independent things are often conflated here, so to be exact:
 | **framework** | mlx, PyTorch | which library runs the forward pass |
 | **device** | cuda, mps, cpu | which hardware PyTorch dispatches to |
 
+**Capture targets a GPU.** Apple Silicon via MLX in this release; CUDA is the
+next one. CPU is not a supported capture target — measured on this machine,
+decode runs at 6.7 tok/s for a 7B against 22 tok/s on the same hardware's GPU,
+and the 26B MoE used for the findings below is impractical there. CPU remains
+fine for everything that does not load a model: `compare`, the analysis paths,
+and re-reading the corpus all run anywhere.
+
 PyTorch does **not** require CUDA. The unshipped backend was measured on **mps**
 and **cpu** with no CUDA present (F15, F15c), so the framework path is exercised
 — what has never been calibrated is the **cuda device**, and separately the
