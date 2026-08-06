@@ -228,6 +228,11 @@ Generation dominates, so cost scales with what your prompts elicit rather than
 with `--max-tokens` directly: tripling the cap from 512 to 1536 cost 2.2×, not
 3×, because items that finish early are unaffected.
 
+**Capture needs a GPU.** CPU decode is memory-bandwidth bound and the gap widens
+with model size — measured, 6.7 tok/s against 22 on the same machine's GPU at
+7B, and worse above that. `compare` and the analysis paths have no such
+constraint and run anywhere.
+
 ---
 
 ## The Python API
