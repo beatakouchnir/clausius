@@ -7,3 +7,42 @@ deployment-time changes on language models.
 The research package (`knowledge/`) vendors code under `knowledge/_vendor/`,
 copied from the author's other work rather than depended on, so that this
 repository is self-contained. It carries the same licence as the rest.
+
+--------------------------------------------------------------------------
+DATASETS
+
+The measurement corpus under `records/` holds results DERIVED from the public
+evaluation datasets below — accuracy, entropy and per-item scores. No dataset
+is bundled: `knowledge/` fetches each one from the Hugging Face Hub at run
+time, so reproducing an experiment means obtaining the data from its original
+source under that source's own terms.
+
+    GSM8K            openai/gsm8k                              MIT
+    MMLU-Pro         TIGER-Lab/MMLU-Pro                        MIT
+    PopQA            akariasai/popqa                           no licence declared
+    HumanEval+       evalplus/humanevalplus                    Apache-2.0
+    IFEval           google/IFEval                             Apache-2.0
+    GPQA             Idavidrein/gpqa                           CC BY 4.0, gated
+    AA-Omniscience   ArtificialAnalysis/AA-Omniscience-Public  Apache-2.0
+    HLE              cais/hle                                  MIT, gated
+
+Two files redistribute source items verbatim, under the MIT terms above:
+
+    records/quantladder/prompts.gsm8k100.jsonl   100 GSM8K questions
+    records/quantladder/prompts.gsm8k200.jsonl   200 GSM8K questions
+
+and the gold answers for those items are stored alongside the model's
+predictions in `records/quantladder/acc.*.json`. They are included so that the
+same-item comparison in FINDINGS F14c can be checked exactly rather than
+approximately.
+
+GPQA is treated differently, at its authors' request: they ask that the
+dataset not be posted in plain text online, to keep it out of future training
+corpora. No GPQA question, answer option or gold answer appears anywhere in
+this repository, and the model's generated answer text was removed from
+`records/stage_a.gpqa*.json` for the same reason. What remains is derived
+measurement — correctness, entropy, and the domain label.
+
+IFEval scoring uses Google Research's `instruction_following_eval` registry
+(Apache-2.0), which is NOT bundled here. Where it is absent the scorer returns
+no verdict for that item rather than guessing.
