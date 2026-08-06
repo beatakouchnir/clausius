@@ -1168,3 +1168,63 @@ that short factual benchmarks understate compression damage ~14x, that labels
 needed n=878 where entropy needed 60 — a CUDA shop can act on all of it without
 running this code. The corpus is the differentiated asset; the backend decides
 who can re-run it, not whether it is true.
+
+---
+
+# Operational cautions, learned the hard way
+
+Ten things that cost real time. Kept here rather than in the README
+because they are about running experiments, not about using the tool.
+
+- **Memory.** A first fine-tune peaked at **128.3 GB on a 128 GB machine**.
+  Every GPU entry point now sets an explicit `mx.set_memory_limit`.
+- **Background jobs.** An overnight chain once blocked on
+  `while pgrep -f "stage_a --task gpqa"` whose own command line matched the
+  pattern. Chains here use bounded waits, never `pgrep` waiters.
+- **Token caps.** Truncation manufactures errors — one benchmark moved
+  0.345 → 0.820 purely by raising the cap. Caps are set per task and never
+  shortened to save time.
+
+Seven more from one session of unattended runs. Every one was catchable in
+seconds and none was caught in advance, which is the actual lesson: **verify the
+cheap precondition before paying the expensive cost.** That is what the
+truncation curve does for `capture`, and it is what these do for everything
+around it.
+
+- **A script does not inherit your PATH.** An overnight suite died with
+  `command not found: uv` in *every* arm. Worse, it exited **0**, because the
+  last statement was an `echo` — fourteen failed steps reported as success. Use
+  absolute paths (`/Users/you/.local/bin/uv`), and count failures explicitly so
+  the exit code means something.
+- **A version check is not a preflight.** The second attempt ran `uv --version`
+  successfully and then lost `uv` on the next line. Probe with a *real* unit of
+  work — here, a three-prompt capture through the full stack, ~30 seconds —
+  because only that exercises what the long run will exercise.
+- **Never point a long run at an untested cap.** One comparison burned eight
+  minutes of generation before `compare` refused: 40 prompts at a cap already
+  measured as truncating 78% of that very prompt set. The truncation curve
+  answers this before the run, not after.
+- **Measure the benign arm; do not assume it.** A control assumed harmless
+  ("8-bit should be free") turned out to cost 4.67 accuracy points once
+  labelled. The detector had been right and the assumption wrong — and a
+  validation checking whether a tool agrees with your priors validates nothing.
+- **Do not change an API while a job is queued against it.** Two multi-hour runs
+  died on a `backend` argument removed from the shipping branch hours earlier,
+  while they sat waiting behind another job.
+- **Verify the import, not the `sys.path`.** With a `src/` layout,
+  `sys.path.insert(0, repo_root)` does **not** shadow an editable install, so a
+  run silently imported the wrong checkout. `assert expected in module.__file__`
+  costs one line and one second.
+- **Never pipe a long-running job through `tail` or `head`.** Neither can emit
+  until its input closes, so a 55-minute run produced a zero-byte log and no
+  visibility at all — while the job was in fact healthy and nearly finished.
+  Write the full log to disk and filter when *reading* it. Recovered here by
+  reading the artifacts the run had already written, which is the general
+  fallback: side effects on disk outlive a pipe you cannot see into.
+
+These matter most where compute is rented and time-boxed: the dollars are
+trivial, but a silent failure burns a slot in a day you cannot extend. They are
+the pre-flight list for the CUDA validation the torch backend is waiting on
+(see [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md)).
+
+---
