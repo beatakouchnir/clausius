@@ -30,10 +30,9 @@ out of reach on a first attempt while 25 sits right on it.
 **Composition changes the answer.** Compression does not degrade capabilities
 evenly: short factual recall loses 1.5pp where structured generation loses
 18–21pp at the same bit width, a ~14x difference in what the same setting
-appears to cost (FINDINGS §4). A prompt set of only short answers will
-understate damage. The shipped example set is six blocks of ten — factual
-recall, multi-step arithmetic, instruction following, technical explanation,
-code, business writing — for that reason.
+appears to cost (FINDINGS §4). A short-answers-only set will understate
+damage; the shipped set is six blocks of ten — factual recall, arithmetic,
+instruction following, explanation, code, business writing — for that reason.
 
 One prompt per line, either JSONL with a `prompt`, `text` or `input` field, or
 plain text:
@@ -68,12 +67,11 @@ truncation at this and every tighter cap:
     table cannot be extended above it
 ```
 
-That table is exact downward and silent upward, and the asymmetry is the point:
-a capture can be re-analyzed at any tighter cap because every finished item's
-true length is recorded, but never at a looser one, because a truncated item
-never revealed how long it wanted to be. **So capture high.** If the reference
-alone already falls under the floor, `capture` exits non-zero and says so rather
-than letting you pay for a second capture that cannot help.
+The table is exact downward and silent upward: a capture re-analyzes at any
+tighter cap, never at a looser one — a truncated item never revealed how long
+it wanted to be. **So capture high.** If the reference alone already falls
+under the floor, `capture` exits non-zero rather than letting you pay for a
+second capture that cannot help.
 
 ---
 
@@ -109,14 +107,12 @@ It does **not** cover benign-configuration variation, which is what the ±0.10
 null measures. A tight interval around +0.15 means *this prompt set reliably
 reads +0.15*, not that the change is safe.
 
-**The six signals** are aggregations of the same per-token entropy. No single
-one dominates — `max` stays monotone where `p90` inverts on long-output tasks,
-and each wins on some arms. They are all reported so the verdict can be seen to
-be robust rather than an artifact of one choice. If they disagree sharply,
-treat the result as unresolved rather than picking the one you like.
-
-Watch `gen_len` in particular: if it is the only signal that moved, the
-"difference" may be generation length rather than uncertainty.
+**The six signals** are aggregations of the same per-token entropy. None
+dominates — `max` stays monotone where `p90` inverts on long-output tasks — so
+all are reported: the verdict should be robust, not an artifact of one choice.
+If they disagree sharply, treat the result as unresolved. And if `gen_len` is
+the only one that moved, the "difference" may be generation length, not
+uncertainty.
 
 **`dropped N truncated`** tells you which prompts were measured, not just how
 many. The filter removes long-output items, and those are the family most
@@ -205,12 +201,11 @@ silently comparing them, so changing your prompts forces a new reference. That
 is intended behavior, not an obstacle to route around: pairing two different
 prompt sets would compare datasets, not configurations.
 
-**Captures are deterministic**, which is what makes the gate meaningful. Greedy
-decoding over fixed weights reproduces exactly, across processes and not merely
-within one — a capture at cap 1536 predicted 47/60 truncations at cap 512, and a
-separate run actually at 512 truncated exactly 47. It also means comparing a
-config against *itself* yields exactly zero rather than a noise floor: the ±0.10
-null comes from benign *configuration* changes, not from measurement noise.
+**Captures are deterministic**, which is what makes the gate meaningful:
+greedy decoding over fixed weights reproduces exactly across processes — a
+capture at cap 1536 predicted 47/60 truncations at cap 512, and a separate run
+at 512 truncated exactly 47. A config against *itself* reads exactly zero; the
+±0.10 null comes from benign *configuration* changes, not measurement noise.
 
 ---
 
@@ -258,9 +253,9 @@ model, tok = my_patched_loader("./model")
 cand = capture(None, prompts, tag="patched", model_obj=model, tokenizer=tok)
 ```
 
-clausius does not manage configurations. It compares whatever two runs you hand
-it, which is why a LoRA checkpoint, an inference backend and an offload setting
-all work through the same three commands.
+clausius does not manage configurations — it compares whatever two runs you
+hand it, which is why a LoRA checkpoint, an inference backend and an offload
+setting all work through the same three commands.
 
 ---
 
