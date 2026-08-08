@@ -92,8 +92,6 @@ control must be able to fail on the assumption it is meant to protect.*
 
 ---
 
----
-
 # Index
 
 Sub-findings (F8b, F14c …) are listed only where they **correct or supersede**
@@ -1388,8 +1386,6 @@ the observable.
 
 ---
 
----
-
 ## Inherited negatives — do not re-run
 
 From §W5.3: targeted per-expert extraction (removing the single most important
@@ -1397,10 +1393,6 @@ of 128 costs <=8% of baseline NLL); layer-identity transfer across checkpoints
 (top-4 overlap 1/4, Spearman +0.215 at n=30); domain-conditional extraction
 (each domain touches 78-86% of all (layer, expert) pairs); and the compression
 framing entirely.
-
----
-
-Current plan, to-dos and operational cautions: [README.md](README.md).
 
 ---
 
@@ -2381,12 +2373,11 @@ binomial McNemar over the discordant pairs.*
    a second instance of F8's top-k result (−2.3pp, flagged at n=200, labels
    needing n=800), on an unrelated mechanism and a different model.
 
-**The effect is stable, and a mid-run read of it was not.** Items 0–499 give
-Δacc −0.0220; items 500–1318 give −0.0220. But *unpaired* running accuracy part
-way through the second block suggested the gap was collapsing to ~−0.8pp, which
-was sampling noise in an incomplete arm. McNemar depends on the item-level
-discordance, not on either arm's marginal accuracy, so partial-run marginals are
-not a preview of the verdict — a caution worth keeping for any long paired run.
+**The effect is stable; a mid-run read of it was not.** Both blocks (items
+0–499 and 500–1318) give Δacc −0.0220 exactly, yet unpaired running accuracy
+mid-second-block suggested
+~−0.8pp — sampling noise in an incomplete arm. McNemar turns on item-level
+discordance, not marginals: partial-run marginals do not preview the verdict.
 
 **Limits.**
 
@@ -2476,12 +2467,11 @@ are blind, and the ground truth from 6.6x more items agrees with entropy.** F8's
 top-k arm and F14's n=878 walk both argued this by comparing budgets across
 different item counts; this shows it at a fixed one.
 
-**The correction.** F14's third point attributed the widened null (+0.172) to the
-reference being unquantized. That is wrong. The same 8-bit checkpoint, against
-the same bf16 reference, reads −0.062 on gsm8k — comfortably inside ±0.10. What
-changed between the two measurements is the prompt set: 60 heterogeneous
-instruction-following prompts versus 200 items of one task. Two candidates, not
-separated here:
+**The correction.** F14's third point attributed the widened null (+0.172) to
+the unquantized reference. Wrong: the same 8-bit checkpoint against the same
+bf16 reference reads −0.062 on gsm8k, inside ±0.10. What changed is the prompt
+set — 60 heterogeneous instruction prompts versus 200 items of one task. Two
+candidates, not separated here:
 
 - **Prompt-set heterogeneity**, consistent with F14b — a mixed set truncates
   unevenly and mixes output-length regimes, both of which move per-item
@@ -2539,8 +2529,8 @@ zero.
 
 ### F14e — the offload path through the public API (integration, not a finding)
 
-F8 already measured offload arms label-free, and their accuracy was measured
-accuracy, so nothing here is a new result. What had never been exercised is the
+F8 already measured offload arms label-free and their accuracy was measured
+separately, so nothing here is a new result. What had never been exercised is the
 README's claim that the same three commands cover an offload setting:
 `knowledge/regress.py` carries its own capture implementation and never touches
 the packaged `clausius`, so the public `model_obj` extension point had no
@@ -2569,8 +2559,9 @@ this is that case.
 measured as truncating 78% at the chosen cap. The truncation curve and the
 fail-fast added for exactly this failure live in `cli.py`, so a caller using the
 Python API — which is the documented path for offload wrappers and patched
-runtimes — receives neither the curve nor the refusal. The protection is on the
-interface least likely to be scripted.
+runtimes — received neither the curve nor the refusal. The protection sat on
+the interface least likely to be scripted. *(Fixed the same day: `capture()` now
+attaches the curve to `meta` and warns when the floor is unreachable.)*
 
 ## F15 — the torch *framework* backend: sensitivity transfers, the threshold does not
 
@@ -2631,8 +2622,10 @@ Per-tensor fake-quantization is cruder than any production quantizer, so the
 damaged arms test damage detection rather than characterizing bitsandbytes,
 GPTQ or AWQ. **CUDA itself is untested**, as is multi-GPU sharding.
 
-**Status: the backend ships, marked experimental, with the 0.3 default flagged
-as not transferring.** The remedy is not a CUDA spot-check — F8d already
+**Status — superseded.** Written when the plan was to ship the backend marked
+experimental; v0 later shipped mlx-only (EXPERIMENT.md, BUILT NOT SHIPPED).
+What stands is the finding: the 0.3 default does not transfer here, and the
+remedy is not a CUDA spot-check — F8d already
 established that d_z magnitude is mechanism-dependent, so validating one CUDA
 quantizer would not license a claim about the others. It is the calibration
 recipe now in the README: measure your own floor from configurations you have
@@ -2670,14 +2663,11 @@ here: fp16 scored 0.8750 against bf16's 0.8450 on the same items — b=2 against
 c=8, p=0.109, so not significant, but certainly not damaged. The overflow
 concern is real in general and did not bite this checkpoint on this task.
 
-**What is still unresolved.** The two rows differ in scale *and* in framework,
-so this does not tell you which caused F15's false positive. The run that would
-isolate it — the same fp16 → fp32 change on a 7B model in torch, holding
-framework and change-type fixed — did not complete: it targeted a `backend`
-argument that had been removed from the shipping branch hours earlier, while the
-job sat queued. A self-inflicted failure, recorded because the experiment is
-still owed. It remains the open question in the torch scope decision, and the
-work belongs on `feat/torch-backend` where the argument still exists.
+**What this leaves unresolved** *(resolved by F15c, below)*: the two rows
+differ in scale *and* framework, so they cannot say which caused F15's false
+positive. The isolating run — fp16 → fp32 at 7B in torch — failed twice on
+self-inflicted harness errors before producing its answer; F15c's process note
+records both.
 
 ### F15c — the torch false positive is a small-model artifact, not a framework defect
 
