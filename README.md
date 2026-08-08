@@ -9,16 +9,16 @@ model families:
 
 ## What's new here
 
+- **Accuracy measured across MoE offload configurations at all** — four surveyed
+  implementations report none. It inverts the default advice: at matched memory,
+  aggressive quantization costs **73 points** of instruction adherence where
+  exact expert offload costs **1.0**.
 - **Label-free regression detection, checked against independently measured
   damage.** Predictive entropy is well studied; using it to detect that *a
   deployment change broke the model* — validated against five unrelated damage
   mechanisms whose true cost was measured separately — appears not to be. It
   flagged a −2.2pp quantization regression on **60 unlabeled prompts**, where
   paired McNemar on gold labels needed **n=878** to reach p<0.05 (F14).
-- **Accuracy measured across MoE offload configurations at all** — four surveyed
-  implementations report none. It inverts the default advice: at matched memory,
-  aggressive quantization costs **73 points** of instruction adherence where
-  exact expert offload costs **1.0**.
 - **The corpus is committed, so the tables below rebuild on a laptop** — no
   model, no accelerator, two commands. Negatives included: eight controlled
   failures where the interesting signal lost to a simpler one, and seven places
