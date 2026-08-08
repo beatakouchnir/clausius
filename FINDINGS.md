@@ -92,27 +92,28 @@ control must be able to fail on the assumption it is meant to protect.*
 
 ---
 
-# Index
+# Index — the findings, as they stand
 
-Sub-findings (F8b, F14c …) are listed only where they **correct or supersede**
-the entry above them — those are the ones that change what an earlier section
-claims, and reading the parent alone would leave you with the wrong number.
+Each row states a claim in its **current, post-correction form** — read only
+this section and you leave with the record's conclusions as they stand today.
+⚠ marks the entries that corrected or superseded an earlier one; ⤷ marks
+sub-findings grouped under a parent. Entries appear in document order.
 
 ### Part I — What holds
 
 | | |
 |---|---|
-| **R9** | routing carries a causal, fact-level address — the original question |
-| ⤷ R9b–R9g | replication on a second architecture; the address lives in the late layers; distributed rather than point-like; the overlap confound; ground-truth validation by injection |
-| R10 | provenance over the model's own generated text |
-| R11 | prefetch: the signal is real and far too small |
-| R12 | read-only fact identification: ties with reading the text |
-| R17 | entropy is architecture-independent (Stage C) |
-| R16 | entropy vs self-consistency: competitive at 1/4 the cost, 2 of 3 (Stage B) |
-| R15 | entropy generalizes across task types, but not as R13 measured it (Stage A) |
-| R13 | error prediction on PopQA: entropy wins, routing is not needed |
-| R3 · R1 · R2 | routing separates retrieval from computation; recall from derivation; context-grounded from parametric |
-| ⤷ R4 | cross-suite transfer |
+| **R9** | routing carries a **causal, fact-level address**: ablating a fact's own experts costs ΔNLL 3.022 against 0.024 for random, and a paraphrase's experts damage it as much as its own (para>samerel 0.738) |
+| ⤷ R9b–R9g | replicates on gemma (0.783); lives in the late layers (28–39: selectivity 0.777, survival 0.341); distributed — joint ablation does roughly triple the sum of single layers; survives the overlap confound (para and other at matched overlap 0.78 vs 0.73, 68% damage gap); injection shows the address tracks **retrieval success**, not training membership (0.673 vs 0.563/0.581) |
+| R10 | the address survives into the model's own generated text — selectivity +3.219 directed, +2.263 open-ended |
+| R11 | early-layer prefetch is real and far too small: +0.030 over the budget-matched control, against recency's free 0.4177 |
+| R12 | read-only routing ties reading the text (0.6000 vs 0.6067); where the two views agree, answers are right at 0.936 |
+| R13 | entropy 0.892 AUC beats routing 0.781 on popqa; combining makes it worse. *(Measurement position is popqa-specific — see R15)* |
+| R15 | `p90` over the generation clears 0.75 AUC on 5/5 task types; R13's `first` position scores 0.444 on GSM8K — the aggregate is what generalizes |
+| R16 | within 0.05 AUC of 5-vote self-consistency at 1/4 the cost on 2 of 3 tasks, beating it outright on popqa |
+| R17 | architecture-independent: spread 0.073 across five models, and the matched MoE/dense pair differs by 0.005 |
+| R3 · R1 · R2 | routing separates retrieval from computation (0.982, cues controlled), selection separates domains against a permutation null in 9/9 configurations, and grounding reads at 0.964 |
+| ⤷ R4 | the computation profile transfers across suites on qwen (0.979) and not on gemma (0.696) |
 
 ### Part II — What was ruled out
 
@@ -121,9 +122,9 @@ membership detection was dropped.
 
 | | |
 |---|---|
-| R5 → R8 | fact *classification* does not generalize |
-| R6 | fabrication detection: no |
-| P1 | document membership / contamination: no |
+| R5 → R8 | fact *classification* is unwinnable when the prompt names the fact — routing beats bag-of-words in exactly one domain of five |
+| R6 | fabrication detection: routing loses to one scalar — entropy separates the classes at 1.000 |
+| P1 | membership: routing 0.545 where perplexity reads 0.942, on a benchmark whose blind baseline holds at 0.488 |
 | — | inherited negatives — do not re-run |
 
 ### Part III — Deployment configuration, and the detector
@@ -132,38 +133,39 @@ membership detection was dropped.
 
 | | |
 |---|---|
-| F1 | the sweep that was canceled, and why that is the finding |
-| F2 | exact offload is semantically exact but not numerically reproducible |
-| F3 · F4 | the accuracy floor is flat; memory and speed, measured |
-| **F5** | **the dominance result** — offload beats downsizing, and it is not close |
-| F6 | the lossy path is dominated everywhere |
-| F7 | top-k reduction, and a hypothesis killed by its own bug fix |
+| F1 | the 16-50 GPU-hour sweep was canceled by reading the implementation: exact policy cannot move accuracy |
+| F2 | exact offload is semantically exact but **not numerically reproducible across capacities** (10/16 identical), yet deterministic at fixed capacity (16/16) — output-diffing cannot validate an offload runtime |
+| F3 · F4 | the accuracy floor is flat to 12% residency; speed falls as memory^0.5 after a cliff, and TTFT degrades 2-3x faster than throughput |
+| **F5** | **dominance**: qwen-35b offloaded into 3.40 GB scores 0.9447 where the natively-fitting e4b at 3.91 GB scores 0.8426 — the crossing point is latency, never accuracy |
+| F6 | the lossy path is dominated everywhere: 0.0250 at matched memory, slower |
+| F7 | the top-k catastrophe was an `argpartition` ranking bug; corrected, k=4 costs a real −2.3pp (p = 0.0038 at n=800) |
 
 **The label-free detector**
 
 | | |
 |---|---|
-| **F8** | **detecting a broken config without labels** — the core result |
-| ⤷ F8b–F8e | a second task and a calibrated threshold; "confidently wrong"; the quantization ladder; the adversarial constructions |
-| ⚠ F14b | **corrects F8's stated rationale** — rambling tracks off-distribution, not damage |
-| F9 | label-free detection of catastrophic forgetting |
-| F10 | RAG context utilization — the claim holds, the refinement does not (F10b, F10c) |
-| F11 | the agentic axis: what compression actually breaks (~14x understatement) |
-| F12 | `p90` is the wrong aggregation, and `max` is the right one |
-| ⚠ F12b | **corrects F12** — `max` does not dominate; the verdicts are what is robust |
-| F13 | the floor holds on a long-output task |
+| **F8** | **a broken config is detectable without labels**: 6/6 correct, benign 3-3.3x memory reductions move nothing, and a −2.3pp effect flags at n=200 where labeled McNemar needs n=800 |
+| ⤷ F8b–F8e | 13 benign arms put the null at \|d_z\| ≤ 0.10, calibrating the threshold at 0.3; gen_len *inverts* on terse damage; the quantization ladder is monotone and resolves −1.5pp; the adversarial constructions were all detected, and logit sharpening is why the detector is one-sided |
+| ⚠ F14b | **corrects F8's stated rationale** — rambling tracks off-distribution, not damage; the truncation filter stands on its other two legs |
+| F9 | forgetting is detectable the same way: three LoRA checkpoints flagged at d_z +0.74 to +0.84 (−16pp to −26pp) |
+| F10 · F10b | the RAG aggregate claim holds; the per-item conditional claim **died with the alias fix** (−0.431 became +0.066) |
+| ⤷ F10c | redesigned: aggregate validated on three models (d_z −1.23 to −1.86); the per-item claim is untestable on verbatim-lookup tasks |
+| F11 | short factual QA understates structured-generation damage **~14x** (1.5pp vs 18-21pp) — the axis agents live on |
+| F12 | `max` stays monotone where `p90` inverts on long-output tasks, rescuing a borderline detection (+0.309 → +1.921) |
+| ⚠ F12b | **corrects F12** — neither aggregation dominates; at threshold 0.3 every verdict agrees under both, and the verdicts are what is robust |
+| F13 | the floor holds on ifeval (1.5pp across a 5.3x range); at matched ~7.4 GB, offload keeps 0.869 where 2-bit quantization keeps 0.115 |
 
 **Adjudicating the detector against labels**
 
 | | |
 |---|---|
-| **F14** | **the ladder against an unquantized reference**, adjudicated with labels |
-| ⚠ F14c | **supersedes F14's third point** — the widened null belongs to the prompt set, not the reference |
-| F14d | the complete matched ladder — `d_z` is ordinal, not proportional |
-| F14e | the offload path through the public API (integration, not a finding) |
-| F15 | the torch **framework** backend: sensitivity transfers, the threshold does not |
-| ⚠ F15c | **corrects F15's headline** — the false positive is a small-model artifact |
-| F15b | the same class of change is benign at production scale on mlx |
+| **F14** | the bf16 → 4-bit flag is a **true detection**: −2.2pp at p=0.0076, caught on 60 unlabeled prompts where labels first reach p<0.05 at n=878 |
+| ⚠ F14c | **supersedes F14's third point** — the widened null (+0.172 vs −0.062) belongs to the prompt set, not the unquantized reference; on matched items entropy flags what labels cannot see |
+| F14d | the complete matched ladder is monotone on both instruments, and **d_z is ordinal, not proportional**: 25x the damage reads 2x the d_z |
+| F14e | the offload path works through the public API — integration, not a finding |
+| F15 | the torch **framework** backend transfers sensitivity but flagged a benign precision change (+0.306) on a 0.5B model |
+| ⚠ F15c | **corrects F15's headline** — the false positive is a small-model artifact: the same change at 7B reads −0.036 with Δacc exactly zero. CUDA remains unmeasured |
+| F15b | the same class of change is benign at 26B on mlx (−0.043) — precision sensitivity is not a property of the method |
 
 *Scope decisions, designs, and what was deliberately not built are in*
 *[EXPERIMENT.md](EXPERIMENT.md).*
@@ -869,89 +871,79 @@ in predictable order"; it caught a worse problem instead.
 
 ---
 
-## R17 (Stage C) — entropy is architecture-independent
+## R13 — error prediction on PopQA: entropy wins, routing is not needed
 
-→ `records/stage_a.json`
+→ `knowledge/popqa.py`, `records/popqa.json`
 
-Five models, two families, both architectures, same two tasks. `p90` of
-per-token entropy, abstentions and truncations excluded:
+The triage question answered on a real error corpus. **400 PopQA items, 300
+genuine model errors (75%)**, ground truth from the benchmark's curated alias
+sets — not from a table written here. Dataset, prompt builder (`think=False`)
+and scorer come from the vendored `_vendor/suite.py` unchanged, so the accuracy is
+comparable to the run already recorded there: **0.250 here against 0.29
+recorded**, on a different 400-item sample. That agreement is the check that
+the harness is sound.
 
-| model | arch | popqa `p90` | omniscience `p90` | popqa abstain |
+| signal | AUC vs error | cost |
+|---|---|---|
+| **entropy** | **0.8924** | one scalar, free, works on dense models |
+| top1_prob | 0.8840 | one scalar, free |
+| routing | 0.7805 | 40x8 ints/token, needs the router seam |
+| routing + entropy | 0.8765 | *worse than entropy alone* |
+
+**Entropy beats routing by 0.11 AUC, and combining them makes it worse** —
+routing does not add an independent component, it dilutes. *(R15 later showed
+the measurement position is popqa-specific — `first` scores 0.444 on GSM8K; the
+statistic that generalizes is an aggregate over the generation.)*
+
+**The prediction that motivated this experiment was wrong.** The argument was
+that entropy measures uncertainty while the dangerous failure is the confident
+error, so entropy should be blind in the confident half and routing should earn
+its place there. It does not:
+
+| | n | errors | entropy | routing |
 |---|---|---|---|---|
-| qwen36-35b-a3b | **MoE** | **0.922** | **0.764** | 0.0% |
-| qwen36-27b | dense | **0.917** | **0.735** | 0.0% |
-| gemma-4-26b-a4b | **MoE** | 0.889 | 0.734 | 6.8% |
-| gemma-4-31b | dense | 0.849 | 0.706 | 16.4% |
-| gemma-4-e4b | dense | 0.884 | 0.763 | 11.2% |
-| **spread** | | **0.073** | **0.058** | |
+| confident (entropy <= median) | 200 | 106 | **0.753** | 0.643 |
+| uncertain | 200 | 194 | **0.885** | 0.760 |
 
-**The matched pair is the clean test** — qwen MoE vs qwen dense hold family,
-training and 4-bit quantization constant and vary only the architecture.
-Entropy moves **0.005** on popqa and **0.029** on omniscience, well inside the
-bootstrap intervals from Stage A. The generation-length baseline tracks equally
-closely (0.600 vs 0.590), which is the sanity check that this is genuine
-invariance rather than two unrelated numbers landing near each other.
+Entropy still separates errors within the confident band. The confident-and-wrong
+population exists, and entropy finds it anyway.
 
-Across all five models the spread is 0.073 (popqa) and 0.058 (omniscience) —
-smaller than the within-task CI width. **Entropy needs no router seam and works
-on dense models**, which is precisely what routing cannot do, and it is why the
-online half of the product is not MoE-specific.
+### Why the earlier attempts could not have shown this
 
-### Abstention varies enormously by model, and that is a product finding
+Two prior captures failed to answer it, both instructively:
 
-| model | omniscience abstain |
-|---|---|
-| gemma-4-e4b | **65.0%** |
-| qwen36-27b dense | 31.0% |
-| qwen36-35b-a3b | 21.3% |
-| gemma-4-31b | 17.0% |
-| gemma-4-26b-a4b | 15.0% |
+1. **Hand-authored questions produced zero errors.** qwen answered all 44
+   factual questions correctly and **refused all 16 invented entities** rather
+   than fabricating. Both apparent errors were bugs in the scoring here — a
+   Polish `ł` destroyed by an ASCII filter, and a refusal phrase missing from a
+   pattern list. Net: the measurement produced 100% of the apparent errors.
+   Worth keeping as a finding in its own right — **R6's fictional-entity
+   fabrication was an artefact of forced completion**; in a chat setting a
+   modern instruct tune refuses.
+2. **The R12 agreement result was circular.** "Error" meant the routing reader
+   was wrong and "disagreement" meant routing differed from a text reader, so
+   disagreement mechanically implied error, and the corpus contained no model
+   mistakes at all.
 
-The smallest model abstains on two thirds of AA-Omniscience — it *knows* it does
-not know, which is the behavior that benchmark rewards. Any deployment that
-scores abstention as an error (as an earlier suite here did) would rank e4b
-catastrophically and wrongly. Abstention rate is a model property, it varies by
-4x across this set, and it must be measured per model rather than assumed.
+Only a curated benchmark with a real error rate removes the author from the
+ground-truth path.
 
-## R16 (Stage B) — entropy vs self-consistency: competitive at 1/4 the cost, 2 of 3
+### Verdict for the product
 
-→ `knowledge/stage_b.py`, `records/stage_b.json`
+**Use entropy for online triage.** It is better (0.892 vs 0.781), free, needs no
+router seam, and works on dense models — which makes the online half of the
+product architecture-agnostic and addresses a far larger market than MoE alone.
 
-The comparison that decides whether this is a product or a redundancy.
-Self-consistency — sample k times, measure agreement — is what production
-systems actually use. k=5 at temperature 0.7, vote signals from the vendored calibration suite's
-`vote_signals` so the numbers stay comparable to its n=740 study. Wall-clock is
-measured per arm, not assumed.
+**Routing keeps the offline half.** R9/R10 remain the only thing here that can
+say *which stored fact* a claim causally depends on, and no scalar does that.
 
-| task | errors | **p90 entropy** (1x) | best vote signal | gap | combined | measured cost |
-|---|---|---|---|---|---|---|
-| popqa | 142 | **0.923** | 0.896 (share) | **+0.027** | 0.930 | 4.0x |
-| mmlu_pro | 17 | 0.780 | 0.808 (share) | −0.028 | **0.863** | 4.8x |
-| omniscience | 131 | 0.733 | 0.802 (share) | **−0.069** | 0.805 | 3.7x |
+This is the seventh applied framing in which routing loses to a simpler signal
+(entity familiarity, fabrication, membership, contamination, prefetch, read-only
+provenance, error prediction). The pattern is entirely consistent: routing is
+informative about **what the model did** and is not competitive as a
+**predictor**.
 
-**Pre-registered bar — within 0.05 AUC of the best vote signal at 1/k cost —
-passes on 2 of 3.** On PopQA entropy *beats* 5-vote self-consistency outright
-while costing a quarter as much. On MMLU-Pro it is within tolerance. On
-AA-Omniscience it loses by 0.069.
-
-**Where it loses, and why that is coherent.** AA-Omniscience runs at 14%
-accuracy against PopQA's 25%. At that difficulty the model's samples disagree
-wildly, which is highly informative for a vote, while entropy appears to
-saturate. So the failure is on the *hardest* task, which is also where a
-practitioner would most willingly pay 4x.
-
-**Combination is task-dependent, and an earlier partial read here was wrong.**
-On two tasks it adds almost nothing (+0.007 popqa, +0.003 omniscience) — but on
-MMLU-Pro it adds **+0.055** over the best single signal (0.863 vs 0.808). So the
-two signals are largely redundant on short-answer recall and genuinely
-complementary on multiple choice. The MMLU-Pro cell rests on 17 errors and
-should be held loosely.
-
-**Product reading.** Entropy is the right default: one forward pass, no sampling,
-competitive-or-better on most tasks. Self-consistency is the right escalation
-for hard or high-stakes items — which fits the two-mode architecture rather than
-undermining it, with entropy triaging and something more expensive spent only
-where it is warranted.
+---
 
 ## R15 (Stage A) — entropy generalizes across task types, but not as R13 measured it
 
@@ -1004,77 +996,89 @@ This is the same effect recorded across the earlier suite (`mmlu_pro/qwen`
 0.345 -> 0.820 at cap4160; `gsm8k/qwen` 0.86 -> 0.935 at cap960) and that R14
 found on GSM8K, where 73% of "errors" were truncation artifacts.
 
-## R13 — error prediction on PopQA: entropy wins, routing is not needed
+## R16 (Stage B) — entropy vs self-consistency: competitive at 1/4 the cost, 2 of 3
 
-→ `knowledge/popqa.py`, `records/popqa.json`
+→ `knowledge/stage_b.py`, `records/stage_b.json`
 
-The triage question answered on a real error corpus. **400 PopQA items, 300
-genuine model errors (75%)**, ground truth from the benchmark's curated alias
-sets — not from a table written here. Dataset, prompt builder (`think=False`)
-and scorer come from the vendored `_vendor/suite.py` unchanged, so the accuracy is
-comparable to the run already recorded there: **0.250 here against 0.29
-recorded**, on a different 400-item sample. That agreement is the check that
-the harness is sound.
+The comparison that decides whether this is a product or a redundancy.
+Self-consistency — sample k times, measure agreement — is what production
+systems actually use. k=5 at temperature 0.7, vote signals from the vendored calibration suite's
+`vote_signals` so the numbers stay comparable to its n=740 study. Wall-clock is
+measured per arm, not assumed.
 
-| signal | AUC vs error | cost |
-|---|---|---|
-| **entropy** | **0.8924** | one scalar, free, works on dense models |
-| top1_prob | 0.8840 | one scalar, free |
-| routing | 0.7805 | 40x8 ints/token, needs the router seam |
-| routing + entropy | 0.8765 | *worse than entropy alone* |
+| task | errors | **p90 entropy** (1x) | best vote signal | gap | combined | measured cost |
+|---|---|---|---|---|---|---|
+| popqa | 142 | **0.923** | 0.896 (share) | **+0.027** | 0.930 | 4.0x |
+| mmlu_pro | 17 | 0.780 | 0.808 (share) | −0.028 | **0.863** | 4.8x |
+| omniscience | 131 | 0.733 | 0.802 (share) | **−0.069** | 0.805 | 3.7x |
 
-**Entropy beats routing by 0.11 AUC, and combining them makes it worse** —
-routing does not add an independent component, it dilutes.
+**Pre-registered bar — within 0.05 AUC of the best vote signal at 1/k cost —
+passes on 2 of 3.** On PopQA entropy *beats* 5-vote self-consistency outright
+while costing a quarter as much. On MMLU-Pro it is within tolerance. On
+AA-Omniscience it loses by 0.069.
 
-**The prediction that motivated this experiment was wrong.** The argument was
-that entropy measures uncertainty while the dangerous failure is the confident
-error, so entropy should be blind in the confident half and routing should earn
-its place there. It does not:
+**Where it loses, and why that is coherent.** AA-Omniscience runs at 14%
+accuracy against PopQA's 25%. At that difficulty the model's samples disagree
+wildly, which is highly informative for a vote, while entropy appears to
+saturate. So the failure is on the *hardest* task, which is also where a
+practitioner would most willingly pay 4x.
 
-| | n | errors | entropy | routing |
+**Combination is task-dependent, and an earlier partial read here was wrong.**
+On two tasks it adds almost nothing (+0.007 popqa, +0.003 omniscience) — but on
+MMLU-Pro it adds **+0.055** over the best single signal (0.863 vs 0.808). So the
+two signals are largely redundant on short-answer recall and genuinely
+complementary on multiple choice. The MMLU-Pro cell rests on 17 errors and
+should be held loosely.
+
+**Product reading.** Entropy is the right default: one forward pass, no sampling,
+competitive-or-better on most tasks. Self-consistency is the right escalation
+for hard or high-stakes items — which fits the two-mode architecture rather than
+undermining it, with entropy triaging and something more expensive spent only
+where it is warranted.
+
+## R17 (Stage C) — entropy is architecture-independent
+
+→ `records/stage_a.json`
+
+Five models, two families, both architectures, same two tasks. `p90` of
+per-token entropy, abstentions and truncations excluded:
+
+| model | arch | popqa `p90` | omniscience `p90` | popqa abstain |
 |---|---|---|---|---|
-| confident (entropy <= median) | 200 | 106 | **0.753** | 0.643 |
-| uncertain | 200 | 194 | **0.885** | 0.760 |
+| qwen36-35b-a3b | **MoE** | **0.922** | **0.764** | 0.0% |
+| qwen36-27b | dense | **0.917** | **0.735** | 0.0% |
+| gemma-4-26b-a4b | **MoE** | 0.889 | 0.734 | 6.8% |
+| gemma-4-31b | dense | 0.849 | 0.706 | 16.4% |
+| gemma-4-e4b | dense | 0.884 | 0.763 | 11.2% |
+| **spread** | | **0.073** | **0.058** | |
 
-Entropy still separates errors within the confident band. The confident-and-wrong
-population exists, and entropy finds it anyway.
+**The matched pair is the clean test** — qwen MoE vs qwen dense hold family,
+training and 4-bit quantization constant and vary only the architecture.
+Entropy moves **0.005** on popqa and **0.029** on omniscience, well inside the
+bootstrap intervals from Stage A. The generation-length baseline tracks equally
+closely (0.600 vs 0.590), which is the sanity check that this is genuine
+invariance rather than two unrelated numbers landing near each other.
 
-### Why the earlier attempts could not have shown this
+Across all five models the spread is 0.073 (popqa) and 0.058 (omniscience) —
+smaller than the within-task CI width. **Entropy needs no router seam and works
+on dense models**, which is precisely what routing cannot do, and it is why the
+online half of the product is not MoE-specific.
 
-Two prior captures failed to answer it, both instructively:
+### Abstention varies enormously by model, and that is a product finding
 
-1. **Hand-authored questions produced zero errors.** qwen answered all 44
-   factual questions correctly and **refused all 16 invented entities** rather
-   than fabricating. Both apparent errors were bugs in the scoring here — a
-   Polish `ł` destroyed by an ASCII filter, and a refusal phrase missing from a
-   pattern list. Net: the measurement produced 100% of the apparent errors.
-   Worth keeping as a finding in its own right — **R6's fictional-entity
-   fabrication was an artefact of forced completion**; in a chat setting a
-   modern instruct tune refuses.
-2. **The R12 agreement result was circular.** "Error" meant the routing reader
-   was wrong and "disagreement" meant routing differed from a text reader, so
-   disagreement mechanically implied error, and the corpus contained no model
-   mistakes at all.
+| model | omniscience abstain |
+|---|---|
+| gemma-4-e4b | **65.0%** |
+| qwen36-27b dense | 31.0% |
+| qwen36-35b-a3b | 21.3% |
+| gemma-4-31b | 17.0% |
+| gemma-4-26b-a4b | 15.0% |
 
-Only a curated benchmark with a real error rate removes the author from the
-ground-truth path.
-
-### Verdict for the product
-
-**Use entropy for online triage.** It is better (0.892 vs 0.781), free, needs no
-router seam, and works on dense models — which makes the online half of the
-product architecture-agnostic and addresses a far larger market than MoE alone.
-
-**Routing keeps the offline half.** R9/R10 remain the only thing here that can
-say *which stored fact* a claim causally depends on, and no scalar does that.
-
-This is the seventh applied framing in which routing loses to a simpler signal
-(entity familiarity, fabrication, membership, contamination, prefetch, read-only
-provenance, error prediction). The pattern is entirely consistent: routing is
-informative about **what the model did** and is not competitive as a
-**predictor**.
-
----
+The smallest model abstains on two thirds of AA-Omniscience — it *knows* it does
+not know, which is the behavior that benchmark rewards. Any deployment that
+scores abstention as an error (as an earlier suite here did) would rank e4b
+catastrophically and wrongly. Abstention rate is a model property, it varies by
+4x across this set, and it must be measured per model rather than assumed.
 
 ## R3 — routing separates retrieval from computation
 
@@ -1674,7 +1678,9 @@ it would fire on every deployment.
 *The gen_len baseline.* Broken models ramble into the token cap, so generation
 length alone might separate the arms. This project has been burned by exactly
 that twice (R2's length artifact; R15's cap confound, where `gen_len` scored
-0.878 until truncation contamination was removed).
+0.878 until truncation contamination was removed). *(The premise was later
+corrected — F14b: rambling tracks off-distribution, not damage. The baseline
+itself remains necessary.)*
 
 | config | true damage | McNemar (paired) | p90 d_z | gen_len d_z |
 |---|---|---|---|---|
@@ -1811,42 +1817,6 @@ computation entirely well-formed and is a knob real runtimes expose), and
   logprobs. Needs a reference config; it cannot score a config in isolation.
 - **Reports that something moved, not how much accuracy was lost.**
 
-## Prior art for Part III
-
-**Applied, not ours.** MoE expert offloading with an LRU cache is established —
-[Mixtral-offloading](https://arxiv.org/pdf/2312.17238) (2023) — as is
-speculative expert prefetch from prior-layer or prior-token routing
-([HOBBIT](https://arxiv.org/pdf/2411.01433), ExpertFlow, CommitMoE,
-[ST-MoE](https://arxiv.org/pdf/2606.15453)). Predictive entropy as an
-uncertainty signal is textbook. Paired McNemar, Belady's optimal, and Pareto
-dominance are all standard. Multiple MIT-licensed implementations of the runtime
-exist and are downloadable today.
-
-**What appears to be new.**
-
-1. **Accuracy measured across MoE offload configurations at all.** Four
-   competing implementations were surveyed; none reports perplexity, benchmark
-   scores, or any output-quality comparison against a resident model. The
-   accuracy-vs-residency floor (F3), the dominance result (F5), and the
-   quantified cost of the lossy path (F6) had no published counterpart found.
-2. **Exact-policy offload is not numerically reproducible across capacities, but
-   is deterministic at a fixed capacity** (F2) — with the specific mechanisms
-   (slot-ordered sort, capacity-triggered prefill chunking) identified. This
-   invalidates output-diffing as a validation method for any such runtime.
-3. **Prefill admits *optimal* caching** (F6). Every published prefetcher
-   predicts future routing because decode forces it; prefill computes the whole
-   layer's routing before fetching anything, so Belady is directly achievable
-   there. Not found stated.
-4. **Label-free config-regression detection validated against
-   independently-known damage** (F8), including the benign controls that
-   distinguish a damage detector from a change detector, and the
-   truncation-controlled analysis separating entropy from generation length.
-
-**What the literature predicts and this confirms.** SSD offload exploits MoE
-sparsity to hide transfer latency but does not reduce the energy of the
-transfers ([arXiv 2508.06978](https://arxiv.org/html/2508.06978v1)) — relevant
-to "otherwise impossible", weaker for "cheaper".
-
 ### F8d — a third damage mechanism: the quantization ladder
 
 The same gemma-26b-a4b at five bit-widths from one pipeline, all at
@@ -1883,7 +1853,8 @@ The `gen_len` column names the cause: 3-bit rambles far more (+1.07 against
 +0.66), and truncated items dilute p90 across hundreds of low-information
 tokens — the same effect F8's truncation-controlled analysis already documented.
 Ordering is reliable on short-output tasks; on long-output tasks it degrades
-while the flag itself does not.
+while the flag itself does not. *(Resolved in F12: the degradation was the
+statistic, not the method — `max` stays monotone where `p90` inverts.)*
 
 **Two things this establishes.**
 
@@ -2022,7 +1993,7 @@ probability to that particular surface form on essentially every item, so the
 gemma's median is 4.89 and does span knowing from not-knowing. The fix is to
 score against the best-matching alias (minimum NLL over the alias set) rather
 than the first, and re-run; until then the conditional claim is unmeasured on
-qwen rather than refuted.
+qwen rather than refuted. *(Run in F10b: the claim did not survive the fix.)*
 
 ### F10b — the alias fix, and why item 3 still does not validate
 
@@ -2076,6 +2047,70 @@ format-matched no-retrieval arm rather than the bare-question `parametric` one.
 This is a redesign, not a patch, and it is the weakest of the three Tier-1
 applications. F8 (config regression) and F9 (forgetting) do not depend on it.
 
+### F10c — redesigned, and now partially validated
+
+Three faults were identified in F10b. All three are fixed here: PopQA long-tail
+items so there is something to detect; every prompt through the vendored
+`build_prompt` so the models are in-distribution; and entropy measured over the
+model's **own generated span** rather than one token — the likely cause of the
+chance-level per-item agreement, and also what the shipped `clausius` measures.
+
+The baseline is `irrelevant` — a context block of the same shape drawn from a
+different item — not `nocontext`. Only content differs, which removes the frame
+confound that muddied F10b.
+
+| arm | qwen | gemma | e4b |
+|---|---|---|---|
+| nocontext | 0.2467 | 0.1933 | 0.1100 |
+| irrelevant (baseline) | 0.2000 | 0.1433 | 0.0700 |
+| relevant | 0.9733 | 0.9833 | 0.9667 |
+| haystack (answer + 9 distractors) | **1.0000** | **1.0000** | **0.9967** |
+
+**H1 — is there anything to detect? YES, emphatically.** Context fixed 240, 257
+and 278 items and broke **zero** on all three models.
+
+**H2 — does relevant context lower entropy against a format-matched baseline?
+YES, on all three.** Paired shift, relevant − irrelevant:
+
+| signal | qwen | gemma | e4b |
+|---|---|---|---|
+| max | −3.174 (d_z −1.86) | −1.181 (−1.23) | −1.616 (−1.50) |
+| p90 | −2.677 (−1.69) | −0.969 (−1.25) | −1.399 (−1.42) |
+| first | −3.107 (−1.82) | −1.067 (−1.17) | −1.611 (−1.49) |
+
+So the aggregate claim holds: **whether the retrieval supplied the answer is
+detectable without labels**, replicated across three models and two
+architectures. That is a usable RAG diagnostic — it catches a retriever
+returning nothing useful.
+
+**H3 — the per-item claim — is NOT TESTABLE ON THIS TASK, and the reason is now
+demonstrated rather than assumed.** It needs items where context helped and
+items where it did not, to rank between. There are **0, 0 and 1** of the latter.
+
+Two attempts to create that variance failed in the same direction:
+
+- Burying the answer among **nine distractors made the task EASIER**, not harder
+  (0.973 → 1.000 on qwen). A multi-entry block reads unambiguously as a
+  reference list, where a single pair can read as part of the question.
+- A **4B model** copies out of that ten-entry haystack at **0.9967**. The
+  ceiling is the task, not model capability.
+
+> **When the answer is verbatim present in the context, retrieval "helping" is
+> not graded — it is binary, and it essentially always works.** PopQA-style
+> lookup therefore cannot produce the per-item variance H3 requires, at any
+> model scale available here.
+
+**What H3 would need:** *partial* relevance — a passage topically right that
+does not state the answer, or an answer requiring two passages combined. PopQA
+exposes no subject/relation fields to build oblique statements from, so this
+needs a different dataset (multi-hop QA, or real retrieved prose rather than
+question-answer pairs).
+
+**Status: aggregate claim validated on three models; per-item claim out of scope
+for this task.** That is an upgrade from F10b's "does not validate", and the
+remaining gap is a dataset problem rather than a signal problem. Three attempts
+is where this stops.
+
 ## F11 — the agentic axis: what compression actually breaks
 
 Agentic loops compound per-step error — published figures put 95% per-step over
@@ -2117,6 +2152,9 @@ rests on gsm8k, popqa and mmlu_pro. popqa's robustness means it should not carry
 weight in a compression decision aimed at agentic use.
 
 ## F12 — `p90` is the wrong aggregation, and `max` is the right one
+
+*(Headline corrected in F12b, below: `max` does not dominate — the verdicts are
+what is robust.)*
 
 The "ordering degrades on long-output tasks" limitation recorded in F8d was not
 a limitation of the method. It was the wrong statistic.
@@ -2245,69 +2283,41 @@ only, and `mixed_4_6` shows quantization is not uniformly destructive — a
 well-chosen mixed scheme is free (−0.6pp). The claim is about aggressive
 bit-width reduction, not about quantization as such.
 
-### F10c — redesigned, and now partially validated
+## Prior art for Part III
 
-Three faults were identified in F10b. All three are fixed here: PopQA long-tail
-items so there is something to detect; every prompt through the vendored
-`build_prompt` so the models are in-distribution; and entropy measured over the
-model's **own generated span** rather than one token — the likely cause of the
-chance-level per-item agreement, and also what the shipped `clausius` measures.
+**Applied, not ours.** MoE expert offloading with an LRU cache is established —
+[Mixtral-offloading](https://arxiv.org/pdf/2312.17238) (2023) — as is
+speculative expert prefetch from prior-layer or prior-token routing
+([HOBBIT](https://arxiv.org/pdf/2411.01433), ExpertFlow, CommitMoE,
+[ST-MoE](https://arxiv.org/pdf/2606.15453)). Predictive entropy as an
+uncertainty signal is textbook. Paired McNemar, Belady's optimal, and Pareto
+dominance are all standard. Multiple MIT-licensed implementations of the runtime
+exist and are downloadable today.
 
-The baseline is `irrelevant` — a context block of the same shape drawn from a
-different item — not `nocontext`. Only content differs, which removes the frame
-confound that muddied F10b.
+**What appears to be new.**
 
-| arm | qwen | gemma | e4b |
-|---|---|---|---|
-| nocontext | 0.2467 | 0.1933 | 0.1100 |
-| irrelevant (baseline) | 0.2000 | 0.1433 | 0.0700 |
-| relevant | 0.9733 | 0.9833 | 0.9667 |
-| haystack (answer + 9 distractors) | **1.0000** | **1.0000** | **0.9967** |
+1. **Accuracy measured across MoE offload configurations at all.** Four
+   competing implementations were surveyed; none reports perplexity, benchmark
+   scores, or any output-quality comparison against a resident model. The
+   accuracy-vs-residency floor (F3), the dominance result (F5), and the
+   quantified cost of the lossy path (F6) had no published counterpart found.
+2. **Exact-policy offload is not numerically reproducible across capacities, but
+   is deterministic at a fixed capacity** (F2) — with the specific mechanisms
+   (slot-ordered sort, capacity-triggered prefill chunking) identified. This
+   invalidates output-diffing as a validation method for any such runtime.
+3. **Prefill admits *optimal* caching** (F6). Every published prefetcher
+   predicts future routing because decode forces it; prefill computes the whole
+   layer's routing before fetching anything, so Belady is directly achievable
+   there. Not found stated.
+4. **Label-free config-regression detection validated against
+   independently-known damage** (F8), including the benign controls that
+   distinguish a damage detector from a change detector, and the
+   truncation-controlled analysis separating entropy from generation length.
 
-**H1 — is there anything to detect? YES, emphatically.** Context fixed 240, 257
-and 278 items and broke **zero** on all three models.
-
-**H2 — does relevant context lower entropy against a format-matched baseline?
-YES, on all three.** Paired shift, relevant − irrelevant:
-
-| signal | qwen | gemma | e4b |
-|---|---|---|---|
-| max | −3.174 (d_z −1.86) | −1.181 (−1.23) | −1.616 (−1.50) |
-| p90 | −2.677 (−1.69) | −0.969 (−1.25) | −1.399 (−1.42) |
-| first | −3.107 (−1.82) | −1.067 (−1.17) | −1.611 (−1.49) |
-
-So the aggregate claim holds: **whether the retrieval supplied the answer is
-detectable without labels**, replicated across three models and two
-architectures. That is a usable RAG diagnostic — it catches a retriever
-returning nothing useful.
-
-**H3 — the per-item claim — is NOT TESTABLE ON THIS TASK, and the reason is now
-demonstrated rather than assumed.** It needs items where context helped and
-items where it did not, to rank between. There are **0, 0 and 1** of the latter.
-
-Two attempts to create that variance failed in the same direction:
-
-- Burying the answer among **nine distractors made the task EASIER**, not harder
-  (0.973 → 1.000 on qwen). A multi-entry block reads unambiguously as a
-  reference list, where a single pair can read as part of the question.
-- A **4B model** copies out of that ten-entry haystack at **0.9967**. The
-  ceiling is the task, not model capability.
-
-> **When the answer is verbatim present in the context, retrieval "helping" is
-> not graded — it is binary, and it essentially always works.** PopQA-style
-> lookup therefore cannot produce the per-item variance H3 requires, at any
-> model scale available here.
-
-**What H3 would need:** *partial* relevance — a passage topically right that
-does not state the answer, or an answer requiring two passages combined. PopQA
-exposes no subject/relation fields to build oblique statements from, so this
-needs a different dataset (multi-hop QA, or real retrieved prose rather than
-question-answer pairs).
-
-**Status: aggregate claim validated on three models; per-item claim out of scope
-for this task.** That is an upgrade from F10b's "does not validate", and the
-remaining gap is a dataset problem rather than a signal problem. Three attempts
-is where this stops.
+**What the literature predicts and this confirms.** SSD offload exploits MoE
+sparsity to hide transfer latency but does not reduce the energy of the
+transfers ([arXiv 2508.06978](https://arxiv.org/html/2508.06978v1)) — relevant
+to "otherwise impossible", weaker for "cheaper".
 
 ## F14 — the ladder against an *unquantized* reference, adjudicated with labels
 
