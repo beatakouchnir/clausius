@@ -123,9 +123,8 @@ low-error-rate control. `think=False` throughout to match `suite.json`.
 Sized by expected error count, not item count.
 
 Reuses the vendored `_vendor/suite.py` loaders, prompt builder and scorers
-unchanged, so
-accuracies are comparable to the recorded runs and the scorer is not
-re-litigated.
+unchanged, so accuracies are comparable to the recorded runs and the scorer is
+not re-litigated.
 
 **Signals:** all entropy variants, top1, answer NLL, generation length (a dumb
 baseline that must be beaten — long answers may simply correlate with errors),
@@ -209,8 +208,6 @@ already on disk.
 
 ---
 
----
-
 # Index
 
 Designs, scope decisions, and what was deliberately not built. Measurements and
@@ -233,90 +230,34 @@ from scratch.
 
 # Designs pending GPU (drafted 2026-07-29)
 
-## A. Entity discrimination — a test that can actually work
+Superseded the next day by the pivot below. Kept compressed, because two lessons
+and one withdrawal remain load-bearing.
 
-**Why the last one failed.** `other` was split by whether the substitute entity
-shared the target's `field`. But the field **never appears in the question** —
-"Who directs Glascheis Trust?" contains no field information — so the split
-varied something the model could not condition on. Same-field 0.582 vs
-cross-field 0.558 is not a null result; it is a non-experiment.
+**A. Entity discrimination — why the last test failed, and three replacements.**
+The `other` split varied the entity's `field`, which never appears in the
+question — same-field 0.582 vs cross-field 0.558 was a non-experiment, not a
+null result. The rule it violated stands: **a control can only vary what is
+present in the input.** Replacements, cheapest first: **A1** correlate per-item
+`other` damage against name-token similarity between target and substitute
+(free, graded — flat means entity identity is barely encoded); **A2** split by
+org type, which unlike `field` *is* in the prompt (free, weak semantics, valid);
+**A3** inject semantically-loaded entity names, needing a retrain — if
+discrimination improves, weak separation is a limitation of the injection
+paradigm, not of R9.
 
-**The rule this violated:** a control can only vary what is present in the
-input. Anything else measures nothing.
-
-Three replacements, cheapest first.
-
-**A1 — name-similarity gradient (free, no retraining, no new capture).**
-Entities differ *only* in coined name tokens, so if entity routing is
-name-driven, `other` damage should rise as names get more similar. Correlate
-per-item `other` damage against token-level similarity between the target and
-substitute entity names (shared token count / Jaccard over the tokenised name).
-A positive correlation says entity discrimination is real but name-token-driven;
-a flat one says entity identity is barely encoded at all. Graded rather than
-binary, and it runs on `inject.json`'s saved rows.
-
-**A2 — org-type split (free, existing data).** Names are `<coined> <type>` where
-type ∈ {Trust, Foundation, Institute, Society, Consortium, Bureau, Academy,
-Guild}. Unlike `field`, the **type is in the prompt**. Split `other` by
-same-type vs different-type. Weak semantics, but it is a valid control because
-the variable is present in the input.
-
-**A3 — semantically-loaded entities (needs a retrain).** The real hypothesis is
-that coined entities have no semantic content, whereas R9's grid used
-France/Japan/iron/gold with rich pretrained representations. Test it by
-injecting entities whose names carry meaning in the prompt — e.g.
-`the Glacier Survey of Vantholm` vs `the Foundry Guild of Bracken` — and split
-`other` by semantic distance of the head noun. If discrimination improves, weak
-entity separation is a limitation of the injection paradigm, not of R9.
-
-## B. Improving separation (currently 0.673 vs 0.563/0.581)
-
-Ranked by expected gain per unit cost.
-
+**B. Improving separation (0.673 vs 0.563/0.581).**
 **B1 — WITHDRAWN after measurement.** The consensus set retains 7.07 of 8
 experts per layer (paraphrases route near-identically), so it is not a distinct
-intervention. The overlap check this prompted — see FINDINGS R9g — showed
-`para` and `other` sit at matched overlap (0.78 vs 0.73) with 68% different
-damage, which is a stronger result than B1 could have produced.
-
-*Original rationale, kept for the record:* Today `own` ablates the experts from ONE
-rendering of the fact, so it inevitably mixes fact-specific and
-input-specific routing. Instead ablate the **intersection** (or top-weighted
-union) of experts across all three paraphrases — the routing the fact evokes
-*regardless of wording*. If a fact-level address exists, the consensus set
-should damage its own fact more sharply and its neighbors less. This is the
-single change most likely to separate the two hypotheses rather than merely
-reduce noise.
-
-**B2 — average over multiple substitutes (cheap variance reduction).** `para`,
-`samerel` and `other` each currently draw ONE random substitute per item, so
-each condition carries the variance of a single draw. Averaging 3-5 draws should
-tighten every cell without changing what is measured.
-
-**B3 — score the FIRST answer token only.** NLL is currently averaged over the
-whole answer span, and for multi-token coined names the later tokens are nearly
-determined by the first — diluting the signal with tokens that carry no fact
-content. Scoring the decisive token concentrates it.
-
-**B4 — paired within-item statistics (free).** Compare `own − samerel` *per
-item* rather than group means. Item-level variance in base NLL is large and
-cancels exactly in a paired test.
-
-**B5 — retune K and layers for this setting.** Layers 28-39 and K=8 were chosen
-on grid2's pretrained facts (R9c). LoRA touched every layer's router, so
-injected facts may localise differently. A short sweep is cheap.
-
-**B6 — train to higher recall.** Recall is 41.7%; items the model answers
-correctly are the only usable ones, and crisper retrieval plausibly means
-crisper addresses. More epochs or fewer facts would raise it.
-
-**Order:** B4 and B2 first (free/cheap, pure variance), then B1 (the real
-experiment), then B3, then B5/B6 only if still needed.
-
-**Pre-registered bar:** the separation is meaningfully improved if
-`para>samerel` for correctly-recalled injected facts exceeds **0.75** while the
-two confabulation groups stay near **0.55-0.60**. Raising all three together
-would indicate a scoring artifact, not better discrimination.
+intervention. The overlap check it prompted — FINDINGS R9g — put `para` and
+`other` at matched overlap (0.78 vs 0.73) with 68% different damage, a stronger
+result than B1 could have produced. The rest, by expected gain per cost:
+**B2** average 3-5 substitute draws instead of one; **B3** score only the first
+answer token, where the fact content is; **B4** paired within-item statistics;
+**B5** retune K=8 / layers 28-39 for injected facts; **B6** train recall above
+41.7%. **Pre-registered bar:** separation is improved if `para>samerel` exceeds
+**0.75** on correctly-recalled injected facts while the confabulation groups
+stay near **0.55-0.60** — all three rising together would be a scoring
+artifact, not discrimination.
 
 ---
 
@@ -414,9 +355,8 @@ offload (7.78 GB), 26b hot-10%/cold-2-bit resident (9.06 GB), e4b resident
 holds **one** `self.weight` of shape `(num_experts, out, in)` quantized with a
 single `bits` and `group_size`. Per-expert mixed bit width inside a layer is
 impossible without splitting each layer into two modules (hot subset + cold
-subset) and routing between them, or writing custom kernels. the expert-skew analysis
-is analysis only — it projects GB via a `gb(n_experts, bits)` formula and builds
-no artifact. Not an overnight job; needs a decision on whether to build it.
+subset) and routing between them, or writing custom kernels. The expert-skew analysis
+projects GB via a `gb(n_experts, bits)` formula and builds no artifact. Not an overnight job; needs a decision on whether to build it.
 
 ## What runs instead — `knowledge/frontier.py` + `run_frontier1_exactness.sh`
 
@@ -1284,6 +1224,6 @@ around it.
 These matter most where compute is rented and time-boxed: the dollars are
 trivial, but a silent failure burns a slot in a day you cannot extend. They are
 the pre-flight list for the CUDA validation the torch backend is waiting on
-(see [EXPERIMENT.md](https://github.com/beatakouchnir/clausius/blob/main/EXPERIMENT.md)).
+(the scope decision above).
 
 ---
