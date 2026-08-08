@@ -3,7 +3,7 @@
 Two questions, both answered on consumer hardware (M5 Max, 128 GB), across five
 model families:
 
-1. **If a model does not fit in your memory, what should you actually run?**
+1. **What is the best model you can actually run in the memory you have?**
 2. **If you change anything — config, quantization, fine-tune — how would you
    know it broke the model, without a labeled eval set?**
 
