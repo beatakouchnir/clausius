@@ -47,10 +47,12 @@ clean  (max d_z = +0.187 [95% CI -0.06, +0.52], threshold 0.3, one-sided)
 ```
 
 **That clean verdict is the everyday answer**: on this model and this traffic,
-4-bit costs nothing the detector can see. (The interval brushing past 0.3 is
-the 60-prompt reality — this is "nothing detected", not "proven safe"; the
-reading table below covers exactly this case.) Now watch it catch a
-configuration that does hurt — the 3-bit, 3.3 GB:
+4-bit costs nothing the detector can see. How to read it: **the verdict
+compares the point estimate to the calibrated 0.3 threshold; the interval
+never changes the verdict — it grades how much to trust it.** Here the
+interval brushes past 0.3, which is the 60-prompt reality: this is "nothing
+detected", not "proven safe", and the reading table below covers exactly this
+case. Now watch it catch a configuration that does hurt — the 3-bit, 3.3 GB:
 
 ```bash
 clausius capture --model mlx-community/Qwen2.5-7B-Instruct-3bit \
@@ -70,7 +72,8 @@ REGRESSION  (max d_z = +1.020 [95% CI +0.82, +1.35], threshold 0.3, one-sided)
 ```
 
 Same model family, same prompts, no labels anywhere: one bit-width flags, the
-other does not, and `--show` names the items that moved — here, a model that
+other does not — and this time the interval sits entirely above the threshold,
+so the flag is no prompt-sampling accident. `--show` names the items that moved — here, a model that
 still knows the answer but pads it with elaboration it is less sure of.
 `compare` exited 0 on the first pair and 1 on the second, which is the whole CI
 story. The rest of this manual is how to read the numbers and point this at
