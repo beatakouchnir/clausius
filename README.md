@@ -46,7 +46,8 @@ like the related quantities they are. Entropy is the signal this tool reads.*
 ## Quickstart
 
 ```bash
-pip install "clausius[mlx] @ git+https://github.com/beatakouchnir/clausius"
+pip install "clausius[mlx]"        # capture + analysis (Apple Silicon)
+pip install clausius               # analysis only — pure numpy, runs anywhere
 ```
 
 Take 60 prompts of your own — production traffic is ideal, and **no labels are
