@@ -73,6 +73,9 @@ quantization; the 2-bit one independently measures **73 points lower** on
 instruction adherence. `compare` exits non-zero on a regression, so it drops
 into CI without glue.
 
+**Never run it before?** [Try it in 30 minutes](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md#try-it-in-30-minutes)
+— three public checkpoints, five commands, measured output included.
+
 **→ [USAGE.md](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md) is the operating manual**: choosing prompts, setting
 the token cap, reading `d_z` and its interval, calibrating your own null, and
 running it as a CI gate. Start there after your first run.
