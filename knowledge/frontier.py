@@ -487,7 +487,7 @@ def cmd_acc(a):
 
     from mlx_lm import generate
     from .popqa import task_suite
-    from .stage_a import CAPS, QUANTIZE_TASKS, load_task, score_item
+    from .stage_a import CAPS, SUITE_TASKS, load_task, score_item
     suite = task_suite()
     items = load_task(a.task, a.n, a.seed)
     rows, t0 = [], time.time()

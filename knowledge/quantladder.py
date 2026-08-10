@@ -129,7 +129,7 @@ def load_arm(tag):
     return model, by_i
 
 
-def cmd_analyse(a):
+def cmd_analyze(a):
     arms = {t: got for t in ARMS if (got := load_arm(t))}
     if a.ref not in arms:
         raise SystemExit(f'{a.ref} arm missing from {RECORDS}')
@@ -178,7 +178,7 @@ def main():
     d.add_argument('--ref', default='bf16', choices=ARMS)
 
     a = ap.parse_args()
-    {'score': cmd_score, 'analyze': cmd_analyse}[a.cmd](a)
+    {'score': cmd_score, 'analyze': cmd_analyze}[a.cmd](a)
 
 
 if __name__ == '__main__':

@@ -44,7 +44,7 @@ from . import traces
 from .cot import variants
 from .meter import OUT
 from .popqa import task_suite
-from .stage_a import CAPS, QUANTIZE_TASKS, load_task, score_item
+from .stage_a import CAPS, SUITE_TASKS, load_task, score_item
 
 
 def answer_key(task, item, text):
@@ -106,7 +106,7 @@ def capture(a):
     out, t_greedy, t_votes = [], 0.0, 0.0
     for i, it in enumerate(items):
         pr = (suite.build_prompt(tok, it, think=False)
-              if a.task in QUANTIZE_TASKS else _prompt(tok, it))
+              if a.task in SUITE_TASKS else _prompt(tok, it))
         cap = it.get('max_tokens', 512)
 
         t0 = time.time()

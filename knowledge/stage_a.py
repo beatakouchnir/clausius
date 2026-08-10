@@ -58,7 +58,7 @@ CAPS = {'gsm8k': 960, 'mmlu_pro': 4160, 'popqa': 64,
 # Its gold is a set of programmatic constraint checks rather than an answer
 # string, so it MUST route to the vendored scorer — scoring it here would be a
 # re-implementation of the official IFEval constraint library.
-QUANTIZE_TASKS = ('gsm8k', 'mmlu_pro', 'popqa', 'longbench', 'ifeval')
+SUITE_TASKS = ('gsm8k', 'mmlu_pro', 'popqa', 'longbench', 'ifeval')
 
 ABSTAIN = ('i do not know', 'i don\'t know', 'not sure', 'cannot determine',
            'unable to determine', 'no information', 'not enough information',
@@ -74,7 +74,7 @@ def _norm(s):
 
 def load_task(task, n, seed):
     """[(item)] with a uniform shape. the vendored loaders where they exist."""
-    if task in QUANTIZE_TASKS:
+    if task in SUITE_TASKS:
         items = task_suite().load_items(task, n, seed)
         for it in items:
             it['max_tokens'] = CAPS.get(task, it.get('max_tokens', 512))
@@ -132,7 +132,7 @@ def score_item(task, item, text, suite):
     t = _norm(text)
     if any(w in t for w in (_norm(x) for x in ABSTAIN)):
         return None, True
-    if task in QUANTIZE_TASKS or item.get('score') == 'letter':
+    if task in SUITE_TASKS or item.get('score') == 'letter':
         # reuse the vendored letter scorer for GPQA too — it already handles the
         # ANSWER: marker and the bare-letter fallback
         v = suite.score(item, text)
@@ -193,7 +193,7 @@ def capture(a):
     out = []
     for i, it in enumerate(items):
         pr = (suite.build_prompt(tok, it, think=False)
-              if a.task in QUANTIZE_TASKS else _prompt(tok, it))
+              if a.task in SUITE_TASKS else _prompt(tok, it))
         cap = it.get('max_tokens', 512)
         text = generate(model, tok, prompt=pr, max_tokens=cap, verbose=False)
         ok, abstained = score_item(a.task, it, text, suite)

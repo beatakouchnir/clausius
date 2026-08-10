@@ -235,7 +235,7 @@ validated against independently-known damage**.
 |---|---|---|
 | `src/clausius/` | **the tool** — capture, compare, CLI | numpy; mlx-lm only to capture |
 | `tests/` | 36 tests, none load a model; CI installs the built wheel | numpy |
-| `records/` | **the measurement corpus** — every number in FINDINGS.md, ~5 MB | — |
+| `records/` | **the measurement corpus** — the evidence behind FINDINGS.md, ~10 MB | — |
 | `knowledge/` | the research package that produced the findings | local checkpoints, external artifact store (`CLAUSIUS_ARTIFACTS`) |
 | `USAGE.md` | **the operating manual** — prompts, caps, reading the output, CI | — |
 | `FINDINGS.md` | the full experimental record, positives and negatives | — |

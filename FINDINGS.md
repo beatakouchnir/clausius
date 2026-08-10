@@ -117,8 +117,8 @@ sub-findings grouped under a parent. Entries appear in document order.
 
 ### Part II — What was ruled out
 
-**Load-bearing.** R8's failure is why R9 was reframed as a causal test; P1 is why
-membership detection was dropped.
+**Load-bearing.** R8's failure is why R9 was reframed as a causal test rather
+than a classification one; R6c is why membership detection was dropped.
 
 | | |
 |---|---|

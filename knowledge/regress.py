@@ -202,7 +202,7 @@ def cmd_capture(a):
           f"/{len(rows)} · {time.time() - t0:.0f}s → {dest}")
 
 
-def cmd_analyse(a):
+def cmd_analyze(a):
     import glob
     files = sorted(glob.glob(str(REG / f'{a.model}.{a.task}.*.json')))
     got = {}
@@ -287,7 +287,7 @@ def main():
     s.add_argument('--task', default='gsm8k')
     s.add_argument('--ref', default='ref')
     a = ap.parse_args()
-    {'capture': cmd_capture, 'analyze': cmd_analyse}[a.cmd](a)
+    {'capture': cmd_capture, 'analyze': cmd_analyze}[a.cmd](a)
 
 
 if __name__ == '__main__':
