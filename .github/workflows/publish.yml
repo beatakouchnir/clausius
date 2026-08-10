@@ -1,0 +1,49 @@
+name: publish
+
+# Publishes to PyPI via Trusted Publishing (OIDC) — no stored token anywhere.
+# Triggered by pushing a version tag:
+#
+#     git tag -a v0.1.1 -m "..." && git push origin v0.1.1
+#
+# PyPI accepts the upload because this repo+workflow+environment is registered
+# as a trusted publisher for the `clausius` project; the id-token permission
+# below is what lets the job prove its identity.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write   # the OIDC credential — this replaces UV_PUBLISH_TOKEN
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # A tag that does not match pyproject would be rejected by PyPI anyway
+      # (duplicate or unknown version), but this fails in seconds with a
+      # readable message instead of after a build.
+      - name: tag must match pyproject version
+        run: |
+          V=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          if [ "v$V" != "$GITHUB_REF_NAME" ]; then
+            echo "pyproject says $V but the tag is $GITHUB_REF_NAME"; exit 1
+          fi
+
+      # Never publish what was not tested. The main CI also runs these, but a
+      # tag can be pushed on any commit; this gate is unconditional.
+      - name: test
+        run: pip install ".[dev]" && pytest -q
+
+      - name: build
+        run: pip install build && python -m build
+
+      # The canonical PyPA action: with Trusted Publishing configured it needs
+      # no credentials at all, and it generates PEP 740 attestations.
+      - uses: pypa/gh-action-pypi-publish@release/v1
