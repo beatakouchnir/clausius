@@ -32,4 +32,4 @@ __all__ = ['capture', 'compare', 'Capture', 'Result', 'aggregate',
            'SIGNALS', 'DEFAULT_SIGNAL', 'DEFAULT_THRESHOLD',
            'MIN_PAIRED_ITEMS', 'CAP_LADDER',
            'BOOTSTRAP_RESAMPLES', 'BOOTSTRAP_SEED']
-__version__ = '0.1.0'
+__version__ = '0.1.1'
