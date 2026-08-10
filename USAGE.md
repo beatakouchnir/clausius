@@ -3,6 +3,7 @@
 How to run the detector and read what it tells you. For *why* each default is
 what it is, see [FINDINGS.md](FINDINGS.md); this file is the operating manual.
 
+- [Try it in 30 minutes](#try-it-in-30-minutes)
 - [Choosing prompts](#choosing-prompts)
 - [Setting the token cap](#setting-the-token-cap)
 - [Reading the output](#reading-the-output)
@@ -12,6 +13,69 @@ what it is, see [FINDINGS.md](FINDINGS.md); this file is the operating manual.
 - [What it costs](#what-it-costs)
 - [The Python API](#the-python-api)
 - [Every flag](#every-flag)
+
+---
+
+## Try it in 30 minutes
+
+A complete first run on public checkpoints — every command paste-able, every
+output below measured rather than promised (timings from an M5 Max; yours scale
+with your chip, and your numbers should land close).
+
+You need: an Apple Silicon Mac with ≥16 GB of memory, ~16 GB of disk for the
+downloads, Python ≥3.9.
+
+```bash
+pip install "clausius[mlx]"
+curl -sO https://raw.githubusercontent.com/beatakouchnir/clausius/main/examples/prompts.jsonl
+```
+
+Capture a configuration you'd trust (8-bit, 8.1 GB download) and the one
+everyone actually runs (4-bit, 4.3 GB), then compare:
+
+```bash
+clausius capture --model mlx-community/Qwen2.5-7B-Instruct-8bit \
+    --prompts prompts.jsonl --out 8bit.json --max-tokens 1536    # ~4.5 min
+clausius capture --model mlx-community/Qwen2.5-7B-Instruct-4bit \
+    --prompts prompts.jsonl --out 4bit.json --max-tokens 1536    # ~2.5 min
+clausius compare 8bit.json 4bit.json
+```
+
+```
+clean  (max d_z = +0.187 [95% CI -0.06, +0.52], threshold 0.3, one-sided)
+  compared 58 paired items, dropped 2 truncated
+```
+
+**That clean verdict is the everyday answer**: on this model and this traffic,
+4-bit costs nothing the detector can see. (The interval brushing past 0.3 is
+the 60-prompt reality — this is "nothing detected", not "proven safe"; the
+reading table below covers exactly this case.) Now watch it catch a
+configuration that does hurt — the 3-bit, 3.3 GB:
+
+```bash
+clausius capture --model mlx-community/Qwen2.5-7B-Instruct-3bit \
+    --prompts prompts.jsonl --out 3bit.json --max-tokens 1536    # ~2.5 min
+clausius compare 8bit.json 3bit.json --show 2
+```
+
+```
+REGRESSION  (max d_z = +1.020 [95% CI +0.82, +1.35], threshold 0.3, one-sided)
+  compared 58 paired items, dropped 2 truncated
+
+  item 3  Δmax +3.61  (0.00 -> 3.61)
+    prompt: What is the chemical symbol for tungsten?
+    ref   : The chemical symbol for tungsten is W.
+    cand  : The chemical symbol for tungsten is W. This symbol is derived from
+            the German word "Wolfram," which...
+```
+
+Same model family, same prompts, no labels anywhere: one bit-width flags, the
+other does not, and `--show` names the items that moved — here, a model that
+still knows the answer but pads it with elaboration it is less sure of.
+`compare` exited 0 on the first pair and 1 on the second, which is the whole CI
+story. The rest of this manual is how to read the numbers and point this at
+*your* model. (Cleanup: the checkpoints live under `~/.cache/huggingface`,
+~15 GB.)
 
 ---
 
