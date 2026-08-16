@@ -1,5 +1,9 @@
 # clausius — did the thing you changed break your model?
 
+[![ci](https://github.com/beatakouchnir/clausius/actions/workflows/test.yml/badge.svg)](https://github.com/beatakouchnir/clausius/actions/workflows/test.yml)
+[![PyPI](https://img.shields.io/pypi/v/clausius)](https://pypi.org/project/clausius/)
+[![license](https://img.shields.io/pypi/l/clausius)](LICENSE)
+
 Two questions, both answered on consumer hardware (M5 Max, 128 GB), across five
 model families:
 
@@ -23,6 +27,8 @@ model families:
   model, no accelerator, two commands. Negatives included: eight controlled
   failures where the interesting signal lost to a simpler one, and seven places
   where a result did not survive its own check and the record says so.
+
+**Sibling project.** The speed half of these findings became [boyle](https://github.com/beatakouchnir/boyle) — *run the model you want at the memory pressure you specify*: budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repo's measured accuracy; this repo's F3–F6 are why those budgets cost no correctness.
 
 **Scope, up front.** Capturing needs Apple Silicon (`mlx-lm`). Everything else —
 `compare`, the analysis, and re-deriving every table below from the committed
@@ -49,6 +55,10 @@ like the related quantities they are. Entropy is the signal this tool reads.*
 pip install "clausius[mlx]"        # capture + analysis (Apple Silicon)
 pip install clausius               # analysis only — pure numpy, runs anywhere
 ```
+
+![clausius compare on real captures: the 2-bit config is flagged REGRESSION with the ref's coherent reasoning shown against the 2-bit model's garbled output](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/compare.gif)
+
+*A fresh live run of the exact pair described below — same checkpoints, new captures.*
 
 Take 60 prompts of your own — production traffic is ideal, and **no labels are
 needed** — or start with the 60 in [`examples/prompts.jsonl`](https://github.com/beatakouchnir/clausius/blob/main/examples/prompts.jsonl).
@@ -109,6 +119,10 @@ re-derive published work and which appear to be new. The headline results:
 | **Forgetting is detectable too** | move the reference and it becomes a training monitor: LoRA checkpoints on a held-out domain read d_z +0.74 to +0.84 at −16 to −26pp accuracy. | F9 |
 | **Short benchmarks understate damage ~14×** | factual QA loses 1.5pp where structured generation loses 18–21pp under the same quantization — the axis agents live on. | F11 |
 | **Routing carries a fact-level address** | ablate the experts a fact routes to and that fact degrades far more than a paraphrase, a same-relation fact, or a random control. Two architectures. A **mechanism** result, not a product. | R9–R10 |
+
+![Exact expert offload holds full accuracy down to 3.4 GB while dropping experts collapses and the natively-fitting 4B trails](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/frontier_gsm8k.png)
+
+*The headline rows, drawn: every point above is rebuilt by `python -m knowledge.frontier report` from the committed records.*
 
 ### What it does not do
 
