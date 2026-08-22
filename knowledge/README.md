@@ -1,36 +1,23 @@
 # `knowledge/` — the research package
 
-This is the code that produced [FINDINGS.md](../FINDINGS.md). It is **not the
-product** — that is [`src/clausius/`](../src/clausius), which is installable,
-tested, and depends on none of this.
+This is the code that produced [FINDINGS.md](../FINDINGS.md). It is **not the product** — that is [`src/clausius/`](../src/clausius), which is installable, tested, and depends on none of this.
 
-It is kept for one reason: the findings make claims, and the claims should be
-checkable. It is coupled to local model checkpoints and an external artifact
-store, so it is not expected to run unmodified on another machine.
+It is kept for one reason: the findings make claims, and the claims should be checkable. It is coupled to local model checkpoints and an external artifact store, so it is not expected to run unmodified on another machine.
 
-Code it needs from the author's other projects is **vendored** under
-`_vendor/`, not imported, so this repository is self-contained: clone it and
-every import resolves.
+Code it needs from the author's other projects is **vendored** under `_vendor/`, not imported, so this repository is self-contained: clone it and every import resolves.
 
 ```bash
 export CLAUSIUS_ARTIFACTS=/path/to/artifacts   # defaults to ../artifacts
 python3 -m knowledge.frontier report     # no model needed
 ```
 
-Modules marked **superseded** produced negative results. They are here because
-[FINDINGS.md Part II](../FINDINGS.md) records eight controlled negatives, and a
-record that kept only the wins would invite re-running the dead ends. The code
-is the evidence for those, not a suggestion to build on them.
+Modules marked **superseded** produced negative results. They are here because [FINDINGS.md Part II](../FINDINGS.md) records eight controlled negatives, and a record that kept only the wins would invite re-running the dead ends. The code is the evidence for those, not a suggestion to build on them.
 
 ## Datasets — none are bundled
 
-Every task fetches its data from the Hugging Face Hub at run time, so `records/`
-holds only derived measurements. Reproducing an arm means obtaining the dataset
-from its original source under that source's terms; see NOTICE for the full list
-and licenses.
+Every task fetches its data from the Hugging Face Hub at run time, so `records/` holds only derived measurements. Reproducing an arm means obtaining the dataset from its original source under that source's terms; see NOTICE for the full list and licenses.
 
-Most load with no setup. **Two are gated** and need a one-off approval, which is
-granted automatically once you accept the terms on the dataset page:
+Most load with no setup. **Two are gated** and need a one-off approval, which is granted automatically once you accept the terms on the dataset page:
 
 ```bash
 huggingface-cli login
@@ -39,14 +26,9 @@ huggingface-cli login
 #   https://huggingface.co/datasets/cais/hle            (HLE  — MIT)
 ```
 
-Without that, `load_dataset` raises a gated-repo error naming the dataset; every
-other task is unaffected.
+Without that, `load_dataset` raises a gated-repo error naming the dataset; every other task is unaffected.
 
-**IFEval needs its scorer fetched separately.** The dataset itself is open
-(`google/IFEval`, Apache-2.0), but scoring instruction adherence requires Google
-Research's `instruction_following_eval` registry, which is Apache-2.0, not on
-PyPI, and not bundled here. Fetch it once as a package named `_ifeval_official`,
-importable from wherever you run:
+**IFEval needs its scorer fetched separately.** The dataset itself is open (`google/IFEval`, Apache-2.0), but scoring instruction adherence requires Google Research's `instruction_following_eval` registry, which is Apache-2.0, not on PyPI, and not bundled here. Fetch it once as a package named `_ifeval_official`, importable from wherever you run:
 
 ```bash
 mkdir -p _ifeval_official && touch _ifeval_official/__init__.py
@@ -56,19 +38,9 @@ for f in instructions.py instructions_registry.py instructions_util.py; do
 done
 ```
 
-`load_items('ifeval', ...)` checks for it **before** the run starts and exits
-with these instructions if it is missing — deliberately, because without it every
-item scores as no-verdict, and a no-verdict read as a boolean is `False`. An
-unscoreable arm would otherwise report near-zero accuracy that looks exactly like
-catastrophic damage.
+`load_items('ifeval', ...)` checks for it **before** the run starts and exits with these instructions if it is missing — deliberately, because without it every item scores as no-verdict, and a no-verdict read as a boolean is `False`. An unscoreable arm would otherwise report near-zero accuracy that looks exactly like catastrophic damage.
 
-**GPQA carries one extra condition.** Its authors ask that the dataset not be
-posted in plain text online, to keep it out of future training corpora. This
-repository honors that: no GPQA question, option or gold answer appears here,
-and the model's generated answer text has been stripped from
-`records/stage_a.gpqa*.json`, leaving correctness, entropy and the domain label.
-That costs nothing for reproduction — the questions were never in `records/` to
-begin with, since the records are outputs, not inputs.
+**GPQA carries one extra condition.** Its authors ask that the dataset not be posted in plain text online, to keep it out of future training corpora. This repository honors that: no GPQA question, option or gold answer appears here, and the model's generated answer text has been stripped from `records/stage_a.gpqa*.json`, leaving correctness, entropy and the domain label. That costs nothing for reproduction — the questions were never in `records/` to begin with, since the records are outputs, not inputs.
 
 ## Infrastructure
 

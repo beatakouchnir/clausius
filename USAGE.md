@@ -1,7 +1,6 @@
 # Using clausius
 
-How to run the detector and read what it tells you. For *why* each default is
-what it is, see [FINDINGS.md](FINDINGS.md); this file is the operating manual.
+How to run the detector and read what it tells you. For *why* each default is what it is, see [FINDINGS.md](FINDINGS.md); this file is the operating manual.
 
 - [Try it in 30 minutes](#try-it-in-30-minutes)
 - [Choosing prompts](#choosing-prompts)
@@ -18,20 +17,16 @@ what it is, see [FINDINGS.md](FINDINGS.md); this file is the operating manual.
 
 ## Try it in 30 minutes
 
-A complete first run on public checkpoints — every command paste-able, every
-output below measured rather than promised (timings from an M5 Max; yours scale
-with your chip, and your numbers should land close).
+A complete first run on public checkpoints — every command paste-able, every output below measured rather than promised (timings from an M5 Max; yours scale with your chip, and your numbers should land close).
 
-You need: an Apple Silicon Mac with ≥16 GB of memory, ~16 GB of disk for the
-downloads, Python ≥3.9.
+You need: an Apple Silicon Mac with ≥16 GB of memory, ~16 GB of disk for the downloads, Python ≥3.9.
 
 ```bash
 pip install "clausius[mlx]"
 curl -sO https://raw.githubusercontent.com/beatakouchnir/clausius/main/examples/prompts.jsonl
 ```
 
-Capture a configuration you'd trust (8-bit, 8.1 GB download) and the one
-everyone actually runs (4-bit, 4.3 GB), then compare:
+Capture a configuration you'd trust (8-bit, 8.1 GB download) and the one everyone actually runs (4-bit, 4.3 GB), then compare:
 
 ```bash
 clausius capture --model mlx-community/Qwen2.5-7B-Instruct-8bit \
@@ -46,13 +41,7 @@ clean  (max d_z = +0.187 [95% CI -0.06, +0.52], threshold 0.3, one-sided)
   compared 58 paired items, dropped 2 truncated
 ```
 
-**That clean verdict is the everyday answer**: on this model and this traffic,
-4-bit costs nothing the detector can see. How to read it: **the verdict
-compares the point estimate to the calibrated 0.3 threshold; the interval
-never changes the verdict — it grades how much to trust it.** Here the
-interval brushes past 0.3, which is the 60-prompt reality: this is "nothing
-detected", not "proven safe", and the reading table below covers exactly this
-case. Now watch it catch a configuration that does hurt — the 3-bit, 3.3 GB:
+**That clean verdict is the everyday answer**: on this model and this traffic, 4-bit costs nothing the detector can see. How to read it: **the verdict compares the point estimate to the calibrated 0.3 threshold; the interval never changes the verdict — it grades how much to trust it.** Here the interval brushes past 0.3, which is the 60-prompt reality: this is "nothing detected", not "proven safe", and the reading table below covers exactly this case. Now watch it catch a configuration that does hurt — the 3-bit, 3.3 GB:
 
 ```bash
 clausius capture --model mlx-community/Qwen2.5-7B-Instruct-3bit \
@@ -71,38 +60,19 @@ REGRESSION  (max d_z = +1.020 [95% CI +0.82, +1.35], threshold 0.3, one-sided)
             the German word "Wolfram," which...
 ```
 
-Same model family, same prompts, no labels anywhere: one bit-width flags, the
-other does not — and this time the interval sits entirely above the threshold,
-so the flag is no prompt-sampling accident. `--show` names the items that moved — here, a model that
-still knows the answer but pads it with elaboration it is less sure of.
-`compare` exited 0 on the first pair and 1 on the second, which is the whole CI
-story. The rest of this manual is how to read the numbers and point this at
-*your* model. (Cleanup: the checkpoints live under `~/.cache/huggingface`,
-~15 GB.)
+Same model family, same prompts, no labels anywhere: one bit-width flags, the other does not — and this time the interval sits entirely above the threshold, so the flag is no prompt-sampling accident. `--show` names the items that moved — here, a model that still knows the answer but pads it with elaboration it is less sure of. `compare` exited 0 on the first pair and 1 on the second, which is the whole CI story. The rest of this manual is how to read the numbers and point this at *your* model. (Cleanup: the checkpoints live under `~/.cache/huggingface`, ~15 GB.)
 
 ---
 
 ## Choosing prompts
 
-**No labels are needed.** A sample of real production traffic is ideal, because
-the detector's job is to notice a change in behavior on the distribution you
-actually serve. Sixty is a good starting number, and
-[`examples/prompts.jsonl`](examples/prompts.jsonl) ships sixty you can use
-immediately.
+**No labels are needed.** A sample of real production traffic is ideal, because the detector's job is to notice a change in behavior on the distribution you actually serve. Sixty is a good starting number, and [`examples/prompts.jsonl`](examples/prompts.jsonl) ships sixty you can use immediately.
 
-`compare` refuses to run on fewer than **20 surviving paired items**, and
-truncated items are dropped before that count is taken — so 60 keeps the floor
-out of reach on a first attempt while 25 sits right on it.
+`compare` refuses to run on fewer than **20 surviving paired items**, and truncated items are dropped before that count is taken — so 60 keeps the floor out of reach on a first attempt while 25 sits right on it.
 
-**Composition changes the answer.** Compression does not degrade capabilities
-evenly: short factual recall loses 1.5pp where structured generation loses
-18–21pp at the same bit width, a ~14x difference in what the same setting
-appears to cost (FINDINGS §4). A short-answers-only set will understate
-damage; the shipped set is six blocks of ten — factual recall, arithmetic,
-instruction following, explanation, code, business writing — for that reason.
+**Composition changes the answer.** Compression does not degrade capabilities evenly: short factual recall loses 1.5pp where structured generation loses 18–21pp at the same bit width, a ~14x difference in what the same setting appears to cost (FINDINGS §4). A short-answers-only set will understate damage; the shipped set is six blocks of ten — factual recall, arithmetic, instruction following, explanation, code, business writing — for that reason.
 
-One prompt per line, either JSONL with a `prompt`, `text` or `input` field, or
-plain text:
+One prompt per line, either JSONL with a `prompt`, `text` or `input` field, or plain text:
 
 ```jsonl
 {"prompt": "What is the capital of Australia?"}
@@ -113,16 +83,11 @@ plain text:
 
 ## Setting the token cap
 
-**`--max-tokens` is the setting most likely to make a first run unusable.** The
-512 default suits short-answer work. A mixed instruction-following set will blow
-straight through it — the shipped example set truncates 47 of 60 items at 512 on
-a healthy model.
+**`--max-tokens` is the setting most likely to make a first run unusable.** The 512 default suits short-answer work. A mixed instruction-following set will blow straight through it — the shipped example set truncates 47 of 60 items at 512 on a healthy model.
 
-Items that hit the cap are **dropped at compare time**, so a cap that is too
-tight silently shrinks your sample until `compare` refuses to run.
+Items that hit the cap are **dropped at compare time**, so a cap that is too tight silently shrinks your sample until `compare` refuses to run.
 
-**Capture generously once rather than twice.** Every capture prints the
-truncation it would have had at every *tighter* cap:
+**Capture generously once rather than twice.** Every capture prints the truncation it would have had at every *tighter* cap:
 
 ```
 → ref.json
@@ -134,11 +99,7 @@ truncation at this and every tighter cap:
     table cannot be extended above it
 ```
 
-The table is exact downward and silent upward: a capture re-analyzes at any
-tighter cap, never at a looser one — a truncated item never revealed how long
-it wanted to be. **So capture high.** If the reference alone already falls
-under the floor, `capture` exits non-zero rather than letting you pay for a
-second capture that cannot help.
+The table is exact downward and silent upward: a capture re-analyzes at any tighter cap, never at a looser one — a truncated item never revealed how long it wanted to be. **So capture high.** If the reference alone already falls under the floor, `capture` exits non-zero rather than letting you pay for a second capture that cannot help.
 
 ---
 
@@ -150,14 +111,9 @@ REGRESSION  (max d_z = +0.654 [95% CI +0.31, +1.02], threshold 0.3, one-sided)
   all signals: max +0.65  p90 +0.67  mean +0.79  mean_top10 +0.96  first +0.06  gen_len +0.18
 ```
 
-**The verdict.** `REGRESSION` or `clean`, decided by one thing only: whether the
-chosen signal exceeds the threshold. `compare` exits **1** on a regression and
-**0** on a clean pair, so it drops into CI without glue.
+**The verdict.** `REGRESSION` or `clean`, decided by one thing only: whether the chosen signal exceeds the threshold. `compare` exits **1** on a regression and **0** on a clean pair, so it drops into CI without glue.
 
-**`d_z`** is a standardized effect size — the mean of the paired per-item
-entropy differences, divided by their standard deviation. Positive means the
-candidate is *less* certain than the reference. It has no units and does not
-convert to accuracy.
+**`d_z`** is a standardized effect size — the mean of the paired per-item entropy differences, divided by their standard deviation. Positive means the candidate is *less* certain than the reference. It has no units and does not convert to accuracy.
 
 > **`d_z` is ordinal, not proportional.** On a matched ladder, 3-bit lost **25×
 > more accuracy** than 4-bit (−56.6pp against −2.2pp) and read only **2× the
@@ -165,26 +121,13 @@ convert to accuracy.
 > quantity of damage. "Something moved, and roughly how hard" is supportable;
 > "you lost k accuracy points" is not.
 
-**The interval** is a 95% bootstrap over resampling your *prompts*. It answers
-"would a different sample of prompts have given a different number?" — which is
-how you tell a real marginal result from noise. It is seeded, so repeated runs
-on identical inputs give identical output.
+**The interval** is a 95% bootstrap over resampling your *prompts*. It answers "would a different sample of prompts have given a different number?" — which is how you tell a real marginal result from noise. It is seeded, so repeated runs on identical inputs give identical output.
 
-It does **not** cover benign-configuration variation, which is what the ±0.10
-null measures. A tight interval around +0.15 means *this prompt set reliably
-reads +0.15*, not that the change is safe.
+It does **not** cover benign-configuration variation, which is what the ±0.10 null measures. A tight interval around +0.15 means *this prompt set reliably reads +0.15*, not that the change is safe.
 
-**The six signals** are aggregations of the same per-token entropy. None
-dominates — `max` stays monotone where `p90` inverts on long-output tasks — so
-all are reported: the verdict should be robust, not an artifact of one choice.
-If they disagree sharply, treat the result as unresolved. And if `gen_len` is
-the only one that moved, the "difference" may be generation length, not
-uncertainty.
+**The six signals** are aggregations of the same per-token entropy. None dominates — `max` stays monotone where `p90` inverts on long-output tasks — so all are reported: the verdict should be robust, not an artifact of one choice. If they disagree sharply, treat the result as unresolved. And if `gen_len` is the only one that moved, the "difference" may be generation length, not uncertainty.
 
-**`dropped N truncated`** tells you which prompts were measured, not just how
-many. The filter removes long-output items, and those are the family most
-sensitive to compression — so a large drop count means the surviving sample is
-biased toward the *least* sensitive prompts. Raise the cap rather than accept it.
+**`dropped N truncated`** tells you which prompts were measured, not just how many. The filter removes long-output items, and those are the family most sensitive to compression — so a large drop count means the surviving sample is biased toward the *least* sensitive prompts. Raise the cap rather than accept it.
 
 ### What to do with a verdict
 
@@ -213,19 +156,13 @@ clausius compare ref.json cand.json --show 3
     cand  : <|channel>thought * Shiloh's current age: 44 years old. * Timeframe ...
 ```
 
-It reads recorded data, so it costs nothing and needs no model. Because `d_z` is
-ordinal, this per-item view is how you form your own judgment of severity.
+It reads recorded data, so it costs nothing and needs no model. Because `d_z` is ordinal, this per-item view is how you form your own judgment of severity.
 
 ---
 
 ## Calibrating your own null
 
-The 0.3 threshold comes from 13 benign configurations measured on **one stack**,
-and the null is not a universal constant — the same benign 8-bit checkpoint
-against the same bf16 reference reads **+0.172** on a mixed instruction set and
-**−0.062** on gsm8k (FINDINGS F14c). On a different framework (mlx vs torch),
-a different device (cuda, mps, cpu), a different quantizer, or a markedly
-different prompt set, measure your own floor first:
+The 0.3 threshold comes from 13 benign configurations measured on **one stack**, and the null is not a universal constant — the same benign 8-bit checkpoint against the same bf16 reference reads **+0.172** on a mixed instruction set and **−0.062** on gsm8k (FINDINGS F14c). On a different framework (mlx vs torch), a different device (cuda, mps, cpu), a different quantizer, or a markedly different prompt set, measure your own floor first:
 
 ```bash
 # two configurations you have independent reason to believe are equivalent —
@@ -235,16 +172,9 @@ clausius capture --model ./cfg-b --prompts prompts.jsonl --out null_b.json --max
 clausius compare null_a.json null_b.json
 ```
 
-Whatever |d_z| that produces is **your** false-alarm floor. If it exceeds 0.10,
-scale the threshold with it — the published 0.3 is ~3× a null of 0.10, so a
-floor of 0.2 argues for `--threshold 0.6`. Use two or three benign pairs, not
-one: a single pair gives you a point, not a floor. The interval matters here
-too — a null estimated on 25 items with a CI half a unit wide has established
-nothing.
+Whatever |d_z| that produces is **your** false-alarm floor. If it exceeds 0.10, scale the threshold with it — the published 0.3 is ~3× a null of 0.10, so a floor of 0.2 argues for `--threshold 0.6`. Use two or three benign pairs, not one: a single pair gives you a point, not a floor. The interval matters here too — a null estimated on 25 items with a CI half a unit wide has established nothing.
 
-This is the procedure that produced the 0.3 default, and it is the honest answer
-to "does the threshold transfer to my setup" on any stack this project has not
-measured.
+This is the procedure that produced the 0.3 default, and it is the honest answer to "does the threshold transfer to my setup" on any stack this project has not measured.
 
 ---
 
@@ -258,21 +188,11 @@ clausius capture --model "$MODEL" --prompts ci/prompts.jsonl \
 clausius compare artifacts/golden-ref.json "$ARTIFACTS/cand.json" --json | tee report.json
 ```
 
-**Managing the reference.** Capture the configuration you trust once, commit
-`ref.json` as a build artifact, and compare every candidate against it.
-Re-baseline **deliberately** — when you accept a new configuration, not when a
-run goes red.
+**Managing the reference.** Capture the configuration you trust once, commit `ref.json` as a build artifact, and compare every candidate against it. Re-baseline **deliberately** — when you accept a new configuration, not when a run goes red.
 
-`compare` **rejects** captures made on different prompt sets rather than
-silently comparing them, so changing your prompts forces a new reference. That
-is intended behavior, not an obstacle to route around: pairing two different
-prompt sets would compare datasets, not configurations.
+`compare` **rejects** captures made on different prompt sets rather than silently comparing them, so changing your prompts forces a new reference. That is intended behavior, not an obstacle to route around: pairing two different prompt sets would compare datasets, not configurations.
 
-**Captures are deterministic**, which is what makes the gate meaningful:
-greedy decoding over fixed weights reproduces exactly across processes — a
-capture at cap 1536 predicted 47/60 truncations at cap 512, and a separate run
-at 512 truncated exactly 47. A config against *itself* reads exactly zero; the
-±0.10 null comes from benign *configuration* changes, not measurement noise.
+**Captures are deterministic**, which is what makes the gate meaningful: greedy decoding over fixed weights reproduces exactly across processes — a capture at cap 1536 predicted 47/60 truncations at cap 512, and a separate run at 512 truncated exactly 47. A config against *itself* reads exactly zero; the ±0.10 null comes from benign *configuration* changes, not measurement noise.
 
 ---
 
@@ -286,21 +206,15 @@ Measured on `gemma-4-26b-a4b-it` (26B MoE) on an M5 Max:
 | 8-bit, ~28 GB | ~11 s | ~11 min | ~22 min |
 | bf16, ~52 GB | ~18 s | ~18 min | ~36 min |
 
-Generation dominates, so cost scales with what your prompts elicit rather than
-with `--max-tokens` directly: tripling the cap from 512 to 1536 cost 2.2×, not
-3×, because items that finish early are unaffected.
+Generation dominates, so cost scales with what your prompts elicit rather than with `--max-tokens` directly: tripling the cap from 512 to 1536 cost 2.2×, not 3×, because items that finish early are unaffected.
 
-**Capture needs a GPU.** CPU decode is memory-bandwidth bound and the gap widens
-with model size — measured, 6.7 tok/s against 22 on the same machine's GPU at
-7B, and worse above that. `compare` and the analysis paths have no such
-constraint and run anywhere.
+**Capture needs a GPU.** CPU decode is memory-bandwidth bound and the gap widens with model size — measured, 6.7 tok/s against 22 on the same machine's GPU at 7B, and worse above that. `compare` and the analysis paths have no such constraint and run anywhere.
 
 ---
 
 ## The Python API
 
-The same three steps, and the extension point for configurations the CLI cannot
-construct — a patched runtime, a custom cache, an offload wrapper:
+The same three steps, and the extension point for configurations the CLI cannot construct — a patched runtime, a custom cache, an offload wrapper:
 
 ```python
 from clausius import capture, compare, top_movers
@@ -320,9 +234,7 @@ model, tok = my_patched_loader("./model")
 cand = capture(None, prompts, tag="patched", model_obj=model, tokenizer=tok)
 ```
 
-clausius does not manage configurations — it compares whatever two runs you
-hand it, which is why a LoRA checkpoint, an inference backend and an offload
-setting all work through the same three commands.
+clausius does not manage configurations — it compares whatever two runs you hand it, which is why a LoRA checkpoint, an inference backend and an offload setting all work through the same three commands.
 
 ---
 
@@ -352,5 +264,4 @@ setting all work through the same three commands.
 | `--keep-truncated` | off | do not drop capped items. Dilutes the effect and lets generation length leak in — use when an arm cannot survive the filter, and say so when reporting |
 | `--json` | off | machine-readable output including the interval |
 
-Exit codes: **0** clean, **1** regression, **2** (on `capture`) the capture
-cannot support a comparison.
+Exit codes: **0** clean, **1** regression, **2** (on `capture`) the capture cannot support a comparison.
