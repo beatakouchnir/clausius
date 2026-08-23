@@ -50,7 +50,7 @@ That is a real run on 25 unlabeled prompts. The two checkpoints differ only in q
 - The threshold is calibrated on one stack (MLX, Apple Silicon). On another framework, device, or quantizer, measure your own null first — [USAGE.md](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md#calibrating-your-own-null) has the recipe.
 - Local and self-hosted models only: hosted APIs expose no logprobs, or truncated ones, which is a different quantity.
 
-Capture targets Apple Silicon via MLX in this release. A PyTorch backend exists on `feat/torch-backend` and is deliberately unshipped: it has been measured on mps and cpu, never calibrated on cuda or the CUDA-native quantizers, and shipping an uncalibrated threshold would contradict what this package claims about its defaults. The bar it must clear is in [the experiment log](https://github.com/beatakouchnir/clausius/blob/main/the experiment log).
+Capture targets Apple Silicon via MLX in this release. An experimental PyTorch backend exists and is deliberately unshipped: it has been measured on mps and cpu, never calibrated on cuda or the CUDA-native quantizers, and shipping an uncalibrated threshold would contradict what this package claims about its defaults. It is archived at the tag `archive/torch-backend` rather than kept as a live branch, and will be revisited if a user needs it or a contribution calls for it; the bar it must clear is in [the experiment log](https://github.com/beatakouchnir/clausius/blob/main/the experiment log).
 
 ## Receipts
 
