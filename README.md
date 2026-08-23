@@ -98,7 +98,8 @@ v0.2 adds report cards — the benchmarks official model cards report, re-measur
 | path | what | needs |
 |---|---|---|
 | `src/clausius/` | the tool — capture, compare, plan, CLI; `data/cards.json` is the measured card | numpy; mlx-lm only to capture |
-| `tests/` | 44 tests, none load a model; CI installs the built wheel | numpy |
+| `src/clausius/measure/` | the measurement engine: run a strategy over items against any OpenAI-compatible endpoint, one JSONL record per item with resume, paired statistics (exact McNemar, Wilson intervals), manifests → card rows | stdlib |
+| `tests/` | 80 tests, none load a model; CI installs the built wheel | numpy |
 | `records/` | the measurement corpus behind the findings record, ~10 MB | — |
 | `knowledge/` | the research package that produced the findings; not packaged | local checkpoints, `CLAUSIUS_ARTIFACTS` |
 | `USAGE.md` | the operating manual | — |
