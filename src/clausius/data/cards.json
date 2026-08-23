@@ -1044,6 +1044,34 @@
    "checkpoint": "lmstudio-community/Qwen3.8-27B-MLX-4bit",
    "quant": "4-bit MLX",
    "engine": "boyle (mlx-lm)",
+   "task": "livecodebench",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 8192,
+   "n": 100,
+   "accuracy": 0.5,
+   "ci95": [
+    0.4038,
+    0.5962
+   ],
+   "wall_s": 160.2,
+   "truncation": 0.37,
+   "tokens_out": 4858,
+   "source": {
+    "program": "the coding-agent study C2",
+    "cell": "c2-lcb-nothink-8k",
+    "dir": "c2_qwen38",
+    "measured": "2026-08-23",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.8-27b",
+   "checkpoint": "lmstudio-community/Qwen3.8-27B-MLX-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
    "task": "math500-l5",
    "strategy": "greedy",
    "thinking": false,
