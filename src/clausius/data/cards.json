@@ -1,0 +1,1043 @@
+{
+ "schema": 1,
+ "exported": "2026-08-22",
+ "hardware": "Apple M5 Max, 128 GB",
+ "rows": [
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gpqa-diamond",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 3072,
+   "n": 198,
+   "accuracy": 0.4899,
+   "ci95": [
+    0.4211,
+    0.5591
+   ],
+   "wall_s": 13.9,
+   "truncation": 0.4394,
+   "tokens_out": 2060,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-gpqa-3072",
+    "dir": "phase1-4b",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.89,
+   "ci95": [
+    0.8137,
+    0.9375
+   ],
+   "wall_s": 2.2,
+   "truncation": 0.02,
+   "tokens_out": 341,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-gsm8k",
+    "dir": "phase1-4b",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.4552,
+   "ci95": [
+    0.3733,
+    0.5396
+   ],
+   "wall_s": 10.2,
+   "truncation": 0.4701,
+   "tokens_out": 1514,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-math",
+    "dir": "phase1-4b",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 16384,
+   "n": 100,
+   "accuracy": 0.75,
+   "ci95": [
+    0.657,
+    0.8245
+   ],
+   "wall_s": 65.7,
+   "truncation": 0.54,
+   "tokens_out": 9783,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-gsm8k-16k",
+    "dir": "phase1-4b",
+    "measured": "2026-08-18",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 16384,
+   "n": 134,
+   "accuracy": 0.2985,
+   "ci95": [
+    0.2275,
+    0.3807
+   ],
+   "wall_s": 105.7,
+   "truncation": 0.8731,
+   "tokens_out": 15565,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-math-16k",
+    "dir": "phase1-4b",
+    "measured": "2026-08-18",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "self-consistency k=5",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.88,
+   "ci95": [
+    0.8019,
+    0.93
+   ],
+   "wall_s": 11.8,
+   "truncation": 0.13,
+   "tokens_out": 1738,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s2k5-gsm8k",
+    "dir": "phase1-4b",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "self-consistency k=5",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.5448,
+   "ci95": [
+    0.4604,
+    0.6267
+   ],
+   "wall_s": 53.2,
+   "truncation": 0.597,
+   "tokens_out": 7587,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s2k5-math",
+    "dir": "phase1-4b",
+    "measured": "2026-08-18",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "best-of-5, self-judged",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.9,
+   "ci95": [
+    0.8256,
+    0.9448
+   ],
+   "wall_s": 13.8,
+   "truncation": 0.13,
+   "tokens_out": 1743,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3a-gsm8k",
+    "dir": "phase1-4b",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "best-of-5, self-judged",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.5075,
+   "ci95": [
+    0.4238,
+    0.5907
+   ],
+   "wall_s": 49.0,
+   "truncation": 0.597,
+   "tokens_out": 7593,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3a-math",
+    "dir": "phase1-4b",
+    "measured": "2026-08-18",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "best-of-5, lowest entropy",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.87,
+   "ci95": [
+    0.7902,
+    0.9224
+   ],
+   "wall_s": 13.2,
+   "truncation": 0.13,
+   "tokens_out": 1738,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3b-gsm8k",
+    "dir": "phase1-4b",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-4b",
+   "checkpoint": "mlx-community/Qwen3.5-4B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "best-of-5, lowest entropy",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.5522,
+   "ci95": [
+    0.4678,
+    0.6338
+   ],
+   "wall_s": 48.6,
+   "truncation": 0.597,
+   "tokens_out": 7587,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3b-math",
+    "dir": "phase1-4b",
+    "measured": "2026-08-18",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "aime-2024-25",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 8192,
+   "n": 60,
+   "accuracy": 0.55,
+   "ci95": [
+    0.4249,
+    0.6691
+   ],
+   "wall_s": 47.4,
+   "truncation": 0.6667,
+   "tokens_out": 6190,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-aime-8k",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "aime-2024-25",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 2048,
+   "n": 60,
+   "accuracy": 0.2,
+   "ci95": [
+    0.1183,
+    0.3178
+   ],
+   "wall_s": 18.7,
+   "truncation": 0.8,
+   "tokens_out": 1928,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-aime",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gpqa-diamond",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 3072,
+   "n": 198,
+   "accuracy": 0.5404,
+   "ci95": [
+    0.4709,
+    0.6084
+   ],
+   "wall_s": 16.7,
+   "truncation": 0.4293,
+   "tokens_out": 2038,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-gpqa-3072",
+    "dir": "phase1",
+    "measured": "2026-08-16",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.93,
+   "ci95": [
+    0.8625,
+    0.9657
+   ],
+   "wall_s": 3.2,
+   "truncation": 0.03,
+   "tokens_out": 357,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-gsm8k",
+    "dir": "phase1",
+    "measured": "2026-08-16",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.6119,
+   "ci95": [
+    0.5274,
+    0.6902
+   ],
+   "wall_s": 12.5,
+   "truncation": 0.3582,
+   "tokens_out": 1448,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-math",
+    "dir": "phase1",
+    "measured": "2026-08-16",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "aime-2024-25",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 16384,
+   "n": 60,
+   "accuracy": 0.4,
+   "ci95": [
+    0.2857,
+    0.5263
+   ],
+   "wall_s": 121.0,
+   "truncation": 0.6167,
+   "tokens_out": 14527,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-aime-16k",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "aime-2024-25",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 32768,
+   "n": 60,
+   "accuracy": 0.55,
+   "ci95": [
+    0.4249,
+    0.6691
+   ],
+   "wall_s": 204.4,
+   "truncation": 0.4667,
+   "tokens_out": 22888,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-aime-32k",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 16384,
+   "n": 100,
+   "accuracy": 0.88,
+   "ci95": [
+    0.8019,
+    0.93
+   ],
+   "wall_s": 89.3,
+   "truncation": 0.55,
+   "tokens_out": 10256,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-gsm8k-16k",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 16384,
+   "n": 134,
+   "accuracy": 0.694,
+   "ci95": [
+    0.6115,
+    0.7657
+   ],
+   "wall_s": 96.0,
+   "truncation": 0.2836,
+   "tokens_out": 10817,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-math-16k",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "self-consistency k=10",
+   "thinking": false,
+   "effort": null,
+   "k": 10,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.6567,
+   "ci95": [
+    0.573,
+    0.7317
+   ],
+   "wall_s": 106.2,
+   "truncation": 0.5299,
+   "tokens_out": 14562,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s2k10-math",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "self-consistency k=3",
+   "thinking": false,
+   "effort": null,
+   "k": 3,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.597,
+   "ci95": [
+    0.5124,
+    0.6762
+   ],
+   "wall_s": 31.8,
+   "truncation": 0.4552,
+   "tokens_out": 4354,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s2k3-math",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gpqa-diamond",
+   "strategy": "self-consistency k=5",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 3072,
+   "n": 198,
+   "accuracy": 0.6616,
+   "ci95": [
+    0.5932,
+    0.7239
+   ],
+   "wall_s": 77.4,
+   "truncation": 0.5455,
+   "tokens_out": 10448,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s2k5-gpqa-3072",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "self-consistency k=5",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.6343,
+   "ci95": [
+    0.5501,
+    0.7111
+   ],
+   "wall_s": 63.7,
+   "truncation": 0.4776,
+   "tokens_out": 7281,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s2k5-math",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "best-of-5, self-judged",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.94,
+   "ci95": [
+    0.8752,
+    0.9722
+   ],
+   "wall_s": 16.8,
+   "truncation": 0.09,
+   "tokens_out": 1847,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3a-gsm8k",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "best-of-5, self-judged",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.6045,
+   "ci95": [
+    0.5199,
+    0.6832
+   ],
+   "wall_s": 61.0,
+   "truncation": 0.4851,
+   "tokens_out": 7287,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3a-math",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "best-of-5, lowest entropy",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.95,
+   "ci95": [
+    0.8882,
+    0.9785
+   ],
+   "wall_s": 16.6,
+   "truncation": 0.09,
+   "tokens_out": 1842,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3b-gsm8k",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "best-of-5, lowest entropy",
+   "thinking": false,
+   "effort": null,
+   "k": 5,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.6119,
+   "ci95": [
+    0.5274,
+    0.6902
+   ],
+   "wall_s": 62.3,
+   "truncation": 0.4776,
+   "tokens_out": 7281,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s3b-math",
+    "dir": "phase1",
+    "measured": "2026-08-17",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "bfcl-v4",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 512,
+   "n": 100,
+   "accuracy": 0.87,
+   "ci95": [
+    0.7902,
+    0.9224
+   ],
+   "wall_s": 0.6,
+   "truncation": 0.0,
+   "tokens_out": 41,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "screen-bfcl-s0",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gpqa-diamond",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 1024,
+   "n": 198,
+   "accuracy": 0.2475,
+   "ci95": [
+    0.1926,
+    0.312
+   ],
+   "wall_s": 9.4,
+   "truncation": 0.803,
+   "tokens_out": 970,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "screen-gpqa-s0",
+    "dir": "phase1",
+    "measured": "2026-08-16",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "ifeval",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 1024,
+   "n": 150,
+   "accuracy": 0.8333,
+   "ci95": [
+    0.7655,
+    0.8845
+   ],
+   "wall_s": 2.2,
+   "truncation": 0.0467,
+   "tokens_out": 288,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "screen-ifeval-s0",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "livecodebench",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 8192,
+   "n": 100,
+   "accuracy": 0.46,
+   "ci95": [
+    0.3656,
+    0.5574
+   ],
+   "wall_s": 36.4,
+   "truncation": 0.45,
+   "tokens_out": 4831,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "screen-lcb-s0-8k",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-35b-a3b",
+   "checkpoint": "mlx-community/Qwen3.5-35B-A3B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "livecodebench",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 2048,
+   "n": 100,
+   "accuracy": 0.35,
+   "ci95": [
+    0.2636,
+    0.4475
+   ],
+   "wall_s": 11.3,
+   "truncation": 0.61,
+   "tokens_out": 1537,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "screen-lcb-s0",
+    "dir": "phase1",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-397b-a17b",
+   "checkpoint": "mlx-community/Qwen3.5-397B-A17B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "gsm8k",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 768,
+   "n": 100,
+   "accuracy": 0.95,
+   "ci95": [
+    0.8882,
+    0.9785
+   ],
+   "wall_s": 71.4,
+   "truncation": 0.0,
+   "tokens_out": 339,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-gsm8k",
+    "dir": "phase1-397b",
+    "measured": "2026-08-19",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-397b-a17b",
+   "checkpoint": "mlx-community/Qwen3.5-397B-A17B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 2048,
+   "n": 134,
+   "accuracy": 0.6343,
+   "ci95": [
+    0.5501,
+    0.7111
+   ],
+   "wall_s": 260.6,
+   "truncation": 0.3209,
+   "tokens_out": 1398,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s0sig-math",
+    "dir": "phase1-397b",
+    "measured": "2026-08-19",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.5-397b-a17b",
+   "checkpoint": "mlx-community/Qwen3.5-397B-A17B-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "thinking",
+   "thinking": true,
+   "effort": "default",
+   "k": null,
+   "cap": 16384,
+   "n": 134,
+   "accuracy": 0.8209,
+   "ci95": [
+    0.7473,
+    0.8766
+   ],
+   "wall_s": 1482.6,
+   "truncation": 0.1045,
+   "tokens_out": 8520,
+   "source": {
+    "program": "the measurement harness",
+    "cell": "s1-math-16k",
+    "dir": "phase1-397b",
+    "measured": "2026-08-21",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.8-27b",
+   "checkpoint": "lmstudio-community/Qwen3.8-27B-MLX-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "math500-l5",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 8192,
+   "n": 134,
+   "accuracy": 0.8209,
+   "ci95": [
+    0.7473,
+    0.8766
+   ],
+   "wall_s": 82.1,
+   "truncation": 0.0224,
+   "tokens_out": 2393,
+   "source": {
+    "program": "the coding-agent study C2",
+    "cell": "c2-math-nothink-8k",
+    "dir": "c2_qwen38",
+    "measured": "2026-08-22",
+    "partial": false
+   }
+  }
+ ]
+}

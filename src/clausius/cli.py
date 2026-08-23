@@ -1,5 +1,6 @@
 """Command line for clausius. Exits non-zero on a regression, for CI.
 
+    clausius plan --model qwen3.8-27b
     clausius capture --model M --prompts p.jsonl --out ref.json
     clausius capture --model M --prompts p.jsonl --out cand.json --adapter ./lora
     clausius compare ref.json cand.json
@@ -89,7 +90,26 @@ def main(argv=None):
                         'says something broke; this says what.')
     d.add_argument('--json', action='store_true')
 
+    pl = sub.add_parser('plan', help='how to run a model, from measured cells')
+    pl.add_argument('--model', default=None, help='model name as listed by `clausius plan` with no arguments')
+    pl.add_argument('--task', default=None, help='restrict to one task')
+    pl.add_argument('--json', action='store_true', help='emit the rows as JSON instead of a table')
+
     a = ap.parse_args(argv)
+
+    if a.cmd == 'plan':
+        from . import plan
+        if a.json:
+            data = plan.load()
+            rows = plan.rows_for(a.model, a.task, data) if a.model else data['rows']
+            print(json.dumps({'schema': data['schema'], 'exported': data['exported'], 'hardware': data['hardware'], 'rows': rows}, indent=1))
+            return 0
+        if not a.model:
+            print(plan.render_models())
+            return 0
+        text = plan.render(a.model, a.task)
+        print(text)
+        return 0 if not text.startswith('no measured rows') else 2
 
     if a.cmd == 'capture':
         prompts = read_prompts(a.prompts)

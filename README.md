@@ -65,9 +65,29 @@ The numbers behind the defaults, measured on consumer hardware (M5 Max, 128 GB) 
 
 Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is on the [receipts page](https://github.com/beatakouchnir/clausius/blob/main/docs/receipts.md); the full record is [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record). The corpus is committed, so every table rebuilds on a laptop with no model and no accelerator.
 
+## Ask how to run a model
+
+`clausius plan` answers "thinking on or off, at what cap, and what does it cost" from measured cells — never from estimates. Each row is one configuration actually run: accuracy with a 95% interval, seconds per item, and the share of items that hit the output cap. One pick per task by a fixed rule (highest accuracy among rows that truncated at most half their items; ties go to the cheaper row). A row that truncated more than half is reported as cap-bound, because its accuracy is partly the cap's.
+
+```bash
+clausius plan                          # models on the card
+clausius plan --model qwen3.5-35b-a3b --task aime-2024-25
+```
+
+```
+  aime-2024-25
+    strategy                        cap    n  accuracy           95% CI  s/item  trunc
+    greedy                         2048   60     0.200   [0.118, 0.318]      19   0.80  cap-bound
+    greedy                         8192   60     0.550   [0.425, 0.669]      47   0.67  cap-bound
+    thinking                      16384   60     0.400   [0.286, 0.526]     121   0.62  cap-bound
+    thinking                      32768   60     0.550   [0.425, 0.669]     204   0.47  ◀ pick
+```
+
+The card currently holds 37 rows across four Qwen models on gsm8k, MATH-500 L5, GPQA-Diamond, AIME, IFEval, BFCL, and LiveCodeBench, all measured on one machine (M5 Max, 128 GB) at 4-bit; the rows and their sources are in the packaged `data/cards.json` (`--json` prints them). Rows are added as cells are measured, never interpolated.
+
 ## Where this is going
 
-v0.2 adds the other half of "measure the models you really run": report cards — the benchmarks official model cards report, re-measured across the quantizations and configurations people actually deploy, with paired statistics and truncation rates — and `clausius plan`, per-model advice on thinking, reasoning effort, and output caps, generated from measured cells. The plan and its sequencing are in [docs/v02_plan.md](https://github.com/beatakouchnir/clausius/blob/main/docs/v02_plan.md).
+v0.2 adds report cards — the benchmarks official model cards report, re-measured across the quantizations and configurations people actually deploy, with paired statistics and truncation rates — alongside `plan`. The plan and its sequencing are in [docs/v02_plan.md](https://github.com/beatakouchnir/clausius/blob/main/docs/v02_plan.md).
 
 **Sibling.** [boyle](https://github.com/beatakouchnir/boyle) runs the model you want at the memory pressure you specify — budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repository's measured accuracy.
 
@@ -77,8 +97,8 @@ v0.2 adds the other half of "measure the models you really run": report cards �
 
 | path | what | needs |
 |---|---|---|
-| `src/clausius/` | the tool — capture, compare, CLI | numpy; mlx-lm only to capture |
-| `tests/` | 36 tests, none load a model; CI installs the built wheel | numpy |
+| `src/clausius/` | the tool — capture, compare, plan, CLI; `data/cards.json` is the measured card | numpy; mlx-lm only to capture |
+| `tests/` | 44 tests, none load a model; CI installs the built wheel | numpy |
 | `records/` | the measurement corpus behind the findings record, ~10 MB | — |
 | `knowledge/` | the research package that produced the findings; not packaged | local checkpoints, `CLAUSIUS_ARTIFACTS` |
 | `USAGE.md` | the operating manual | — |
