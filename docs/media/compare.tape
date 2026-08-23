@@ -1,8 +1,8 @@
 # VHS tape: the detector's money moment — real captures, real verdict.
 # Prereq: ref.json (26B 4-bit) and cand.json (same model, 2-bit) produced by
 # `clausius capture` in the working dir below.
-# Render: vhs docs/compare.tape  (from the clausius repo root)
-Output docs/compare.gif
+# Render: vhs docs/media/compare.tape  (from the clausius repo root)
+Output docs/media/compare.gif
 Set FontSize 15
 Set Width 1000
 Set Height 470
