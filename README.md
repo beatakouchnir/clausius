@@ -1,10 +1,10 @@
-# clausius — measure the models you really run
+# clausius — measure the model as you run it
 
 [![ci](https://github.com/beatakouchnir/clausius/actions/workflows/test.yml/badge.svg)](https://github.com/beatakouchnir/clausius/actions/workflows/test.yml)
 [![PyPI](https://img.shields.io/pypi/v/clausius)](https://pypi.org/project/clausius/)
 [![license](https://img.shields.io/pypi/l/clausius)](LICENSE)
 
-You changed something — the quantization, a config flag, a fine-tune — and you want to know whether it broke the model. `clausius` answers that on your own prompts, with no labels, in three commands. It exits non-zero on a regression, so it drops into CI without glue.
+Benchmarks measure models; `clausius` measures the model as you run it — at your quantization, your cap, your thinking setting, on your prompts — with paired statistics and the truncation rate beside every number. Today that is two verbs: `compare` tells you whether a change broke the model, on your own prompts, with no labels, and exits non-zero so it drops into CI without glue; `plan` tells you how to run a model from measured cells.
 
 ## Install
 
@@ -87,7 +87,7 @@ The card currently holds 37 rows across four Qwen models on gsm8k, MATH-500 L5, 
 
 ## Where this is going
 
-v0.2 adds report cards — the benchmarks official model cards report, re-measured across the quantizations and configurations people actually deploy, with paired statistics and truncation rates — alongside `plan`. The plan and its sequencing are in [docs/v02_plan.md](https://github.com/beatakouchnir/clausius/blob/main/docs/v02_plan.md).
+v0.2 adds report cards — the benchmarks official model cards report, re-measured at the configurations people actually deploy — and makes every measurement a module on one statistical core, so later measurements (agent trajectories, stopping behavior) arrive as rows on the same card rather than as new tools. The plan and its sequencing are in [docs/v02_plan.md](https://github.com/beatakouchnir/clausius/blob/main/docs/v02_plan.md).
 
 **Sibling.** [boyle](https://github.com/beatakouchnir/boyle) runs the model you want at the memory pressure you specify — budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repository's measured accuracy.
 
