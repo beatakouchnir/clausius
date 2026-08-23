@@ -63,7 +63,7 @@ The numbers behind the defaults, measured on consumer hardware (M5 Max, 128 GB) 
 | Short benchmarks understate damage ~14× | factual QA loses 1.5pp where structured generation loses 18–21pp under the same quantization | F11 |
 | Offload beats downsizing | an offloaded 35B at 3.40 GB scores 0.9447 on gsm8k against a natively-fitting 4B at 3.91 GB scoring 0.8426; the whole cost is latency | F3–F6 |
 
-Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is on the [evidence](https://github.com/beatakouchnir/clausius/blob/main/docs/measurements.md); the full record is [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record). The corpus is committed, so every table rebuilds on a laptop with no model and no accelerator.
+Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is in [MEASUREMENTS](https://github.com/beatakouchnir/clausius/blob/main/docs/measurements.md); the full record is [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record). The corpus is committed, so every table rebuilds on a laptop with no model and no accelerator.
 
 ## Ask how to run a model
 
