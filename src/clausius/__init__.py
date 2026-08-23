@@ -18,7 +18,7 @@ comparison is between the model's own per-token entropy distributions on
 identical inputs.
 
 See `core` for why each default is what it is — every one of them is a measured
-result rather than a taste, and the findings record has the evidence.
+result rather than a taste, and docs/measurements.md has the evidence.
 """
 from .core import (BOOTSTRAP_RESAMPLES, BOOTSTRAP_SEED, CAP_LADDER,
                    DEFAULT_SIGNAL, DEFAULT_THRESHOLD, MIN_PAIRED_ITEMS,

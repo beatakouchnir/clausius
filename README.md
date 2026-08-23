@@ -38,7 +38,7 @@ That is a real run on 25 unlabeled prompts. The two checkpoints differ only in q
 ## What the verdict means
 
 - The signal is the change in the model's predictive entropy over its own answers, paired prompt by prompt between the two captures (`d_z`).
-- The defaults are measured, not chosen: the 0.3 threshold comes from 13 configurations known to be harmless; the one-sided test from a construction that fools a two-sided one; the truncation filter from an effect that doubles once applied. `src/clausius/core.py` states each one and [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record) has the evidence.
+- The defaults are measured, not chosen: the 0.3 threshold comes from 13 configurations known to be harmless; the one-sided test from a construction that fools a two-sided one; the truncation filter from an effect that doubles once applied. `src/clausius/core.py` states each one and [MEASUREMENTS](https://github.com/beatakouchnir/clausius/blob/main/docs/measurements.md) has the evidence.
 - It is more sensitive than labels on the damage it was validated against: a −2.2pp quantization regression was flagged on 60 unlabeled prompts where a paired test on gold labels needed n=878 (F14).
 - It is a regression check, not a score: it needs a reference capture and cannot rate a configuration in isolation.
 
@@ -50,7 +50,7 @@ That is a real run on 25 unlabeled prompts. The two checkpoints differ only in q
 - The threshold is calibrated on one stack (MLX, Apple Silicon). On another framework, device, or quantizer, measure your own null first — [USAGE.md](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md#calibrating-your-own-null) has the recipe.
 - Local and self-hosted models only: hosted APIs expose no logprobs, or truncated ones, which is a different quantity.
 
-Capture targets Apple Silicon via MLX in this release. An experimental PyTorch backend exists and is deliberately unshipped: it has been measured on mps and cpu, never calibrated on cuda or the CUDA-native quantizers, and shipping an uncalibrated threshold would contradict what this package claims about its defaults. It is archived at the tag `archive/torch-backend` rather than kept as a live branch, and will be revisited if a user needs it or a contribution calls for it; the bar it must clear is in [the experiment log](https://github.com/beatakouchnir/clausius/blob/main/the experiment log).
+Capture targets Apple Silicon via MLX in this release. An experimental PyTorch backend exists and is deliberately unshipped: it has been measured on mps and cpu, never calibrated on cuda or the CUDA-native quantizers, and shipping an uncalibrated threshold would contradict what this package claims about its defaults. It is archived at the tag `archive/torch-backend` rather than kept as a live branch, and will be revisited if a user needs it or a contribution calls for it; the bar it must clear is recorded in the research notes.
 
 ## Receipts
 
@@ -63,7 +63,7 @@ The numbers behind the defaults, measured on consumer hardware (M5 Max, 128 GB) 
 | Short benchmarks understate damage ~14× | factual QA loses 1.5pp where structured generation loses 18–21pp under the same quantization | F11 |
 | Offload beats downsizing | an offloaded 35B at 3.40 GB scores 0.9447 on gsm8k against a natively-fitting 4B at 3.91 GB scoring 0.8426; the whole cost is latency | F3–F6 |
 
-Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is in [MEASUREMENTS](https://github.com/beatakouchnir/clausius/blob/main/docs/measurements.md); the full record is [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record). The corpus is committed, so every table rebuilds on a laptop with no model and no accelerator.
+Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is in [MEASUREMENTS](https://github.com/beatakouchnir/clausius/blob/main/docs/measurements.md). The corpus and the research code that produced these results live in a separate research repository; MEASUREMENTS records each result with its n and its interval.
 
 ## Ask how to run a model
 
@@ -100,8 +100,5 @@ v0.2 adds report cards — the benchmarks official model cards report, re-measur
 | `src/clausius/` | the tool — capture, compare, plan, CLI; `data/cards.json` is the measured card | numpy; mlx-lm only to capture |
 | `src/clausius/measure/` | the measurement engine: run a strategy over items against any OpenAI-compatible endpoint, one JSONL record per item with resume, paired statistics (exact McNemar, Wilson intervals), manifests → card rows | stdlib |
 | `tests/` | 80 tests, none load a model; CI installs the built wheel | numpy |
-| `records/` | the measurement corpus behind the findings record, ~10 MB | — |
-| `knowledge/` | the research package that produced the findings; not packaged | local checkpoints, `CLAUSIUS_ARTIFACTS` |
 | `USAGE.md` | the operating manual | — |
 | `docs/measurements.md` | the measured basis for the tool's defaults and claims | — |
-| `the findings record` · `the experiment log` | the full experimental record and design decisions | — |

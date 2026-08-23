@@ -1,30 +1,18 @@
 # clausius — measurements
 
-*The measured basis for the tool's defaults and claims, kept out of the README so it can say what the tool does and how to run it. Nothing here was edited except headings; the full experimental record is [the findings record](../the findings record), designs and scope decisions are in [the experiment log](../the experiment log), and every table below rebuilds from the committed corpus:*
+*The measured basis for the tool's defaults and claims, kept out of the README so it can say what the tool does and how to run it. Nothing here was edited except headings; the full experimental record and the code that produced it are kept in a separate research repository; every result below is stated with its n and its interval.*
 
-```bash
-git clone https://github.com/beatakouchnir/clausius && cd clausius
-pip install ".[dev]" && pytest -q                  # 36 tests, no accelerator
-python -m knowledge.quantladder analyze            # rebuilds F14's ladder from records
-python -m knowledge.frontier report                # rebuilds the 3-axis Pareto frontier
-```
 
 ## What is new here
 
 - **Accuracy measured across MoE offload configurations at all** — four surveyed implementations report none. It inverts the default advice: at matched memory, aggressive quantization costs **73 points** of instruction adherence where exact expert offload costs **1.0**.
 - **Label-free regression detection, checked against independently measured damage.** Predictive entropy is well studied; using it to detect that *a deployment change broke the model* — validated against five unrelated damage mechanisms whose true cost was measured separately — appears not to be. It flagged a −2.2pp quantization regression on **60 unlabeled prompts**, where paired McNemar on gold labels needed **n=878** to reach p<0.05 (F14).
-- **The corpus is committed, so the tables below rebuild on a laptop** — no model, no accelerator, two commands. Negatives included: eight controlled failures where the interesting signal lost to a simpler one, and seven places where a result did not survive its own check and the record says so.
+- **Negatives are kept alongside the positives:** eight controlled failures where the interesting signal lost to a simpler one, and seven places where a result did not survive its own check and the record says so.
 
 **Sibling project.** The speed half of these findings became [boyle](https://github.com/beatakouchnir/boyle) — *run the model you want at the memory pressure you specify*: budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repo's measured accuracy; this repo's F3–F6 are why those budgets cost no correctness.
 
 **Scope, up front.** Capturing needs Apple Silicon (`mlx-lm`). Everything else — `compare`, the analysis, and re-deriving every table below from the committed corpus — is pure numpy and runs anywhere, with no model downloads:
 
-```bash
-git clone https://github.com/beatakouchnir/clausius && cd clausius
-pip install ".[dev]" && pytest -q                  # 36 tests, no accelerator
-python -m knowledge.quantladder analyze            # rebuilds F14's ladder from records
-python -m knowledge.frontier report                # rebuilds the 3-axis Pareto frontier
-```
 
 That is the fastest way to check whether the numbers here are real.
 
@@ -34,7 +22,7 @@ That is the fastest way to check whether the numbers here are real.
 
 ## What was measured
 
-Full evidence, positives *and* negatives, in [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record) — which opens with a prior-art accounting stating which parts independently re-derive published work and which appear to be new. The headline results:
+The headline results, each stated with its n and interval (finding codes such as F14 identify the entry in the full research record):
 
 | | result | where |
 |---|---|---|
@@ -48,7 +36,7 @@ Full evidence, positives *and* negatives, in [the findings record](https://githu
 
 ![Left: exact expert offload holds full accuracy down to 3.4 GB while skipping non-resident experts collapses and the natively-fitting 4B trails — all at 4-bit. Right: the quantization ladder on the same 26B — 8-bit is free, 4-bit costs 2.2pp, the cliff to 3-bit costs 57pp](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/media/frontier_gsm8k.png)
 
-*The headline rows, drawn. Left: three ways to fit in less memory, all at 4-bit (`knowledge.frontier report`). Right: what quantizing harder does instead (`knowledge.quantladder analyze`) — 8-bit is statistically free, 4-bit costs 2.2pp, and the cliff lives between 4 and 3 bits. Both panels rebuild from the committed records.*
+*The headline rows, drawn. Left: three ways to fit in less memory, all at 4-bit. Right: what quantizing harder does instead — 8-bit is statistically free, 4-bit costs 2.2pp, and the cliff lives between 4 and 3 bits.*
 
 ### What it does not do
 
@@ -60,7 +48,7 @@ Full evidence, positives *and* negatives, in [the findings record](https://githu
 
 ### Scope: local models, GPU capture
 
-**Local and self-hosted only, deliberately.** Anthropic exposes no logprobs at all, Gemini's are missing on current frontier models, and OpenAI caps `top_logprobs` at 20 — *truncated* entropy, a different quantity. Hosted-API support and cascade routing are recorded as **don't-build** decisions in [the experiment log](https://github.com/beatakouchnir/clausius/blob/main/the experiment log).
+**Local and self-hosted only, deliberately.** Anthropic exposes no logprobs at all, Gemini's are missing on current frontier models, and OpenAI caps `top_logprobs` at 20 — *truncated* entropy, a different quantity. Hosted-API support and cascade routing are recorded as **don't-build** decisions in the research record.
 
 **Capture targets a GPU**: Apple Silicon via MLX in this release, CUDA next, CPU never — measured here, 7B decode runs 6.7 tok/s on CPU against 22 on the same machine's GPU, the gap widens with size, and the 26B MoE behind the findings is impractical there. Two terms that are often conflated:
 
@@ -69,7 +57,7 @@ Full evidence, positives *and* negatives, in [the findings record](https://githu
 | **framework** | mlx, PyTorch | which library runs the forward pass |
 | **device** | cuda, mps, cpu | which hardware PyTorch dispatches to |
 
-Nothing about the *method* needs Apple Silicon, and a working PyTorch framework backend exists on the `feat/torch-backend` branch — **deliberately not shipped**. It was measured on mps and cpu (F15, F15c), so the framework path is exercised; what has never been calibrated is the **cuda device** and the CUDA-native quantizers (bitsandbytes, GPTQ, AWQ). Shipping a runtime whose threshold is uncalibrated on the device most users would run would contradict the claim this package makes about its defaults. The bar it must clear is in [the experiment log](https://github.com/beatakouchnir/clausius/blob/main/the experiment log).
+Nothing about the *method* needs Apple Silicon, and a working PyTorch framework backend exists on the `feat/torch-backend` branch — **deliberately not shipped**. It was measured on mps and cpu (F15, F15c), so the framework path is exercised; what has never been calibrated is the **cuda device** and the CUDA-native quantizers (bitsandbytes, GPTQ, AWQ). Shipping a runtime whose threshold is uncalibrated on the device most users would run would contradict the claim this package makes about its defaults; the bar it must clear is recorded in the research notes.
 
 ## Claim taxonomy — keep these separate
 
@@ -84,7 +72,7 @@ Two halves making **different kinds of claim**. Conflating them would overstate 
 
 ## What did not work
 
-Eight controlled negatives where routing lost to a simpler signal — usually reading the prompt text, or predictive entropy. The structural reason: routing is downstream of the residual stream *and* the prompt, so it is bounded by both. Part II of [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record) records them so they are not re-run.
+Eight controlled negatives where routing lost to a simpler signal — usually reading the prompt text, or predictive entropy. The structural reason: routing is downstream of the residual stream *and* the prompt, so it is bounded by both. The research record documents them so they are not re-run.
 
 ## Seven corrections worth reading
 

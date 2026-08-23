@@ -1,17 +1,3 @@
-# The measurement corpus IS the differentiated asset and is published:
-#   records/frontier, records/regress, records/context  (~5 MB, 159 files)
-# Everything else under records/ is a 6 GB pile of LoRA adapters, training
-# corpora and routing traces — derivable, huge, and not what anyone needs.
-records/*
-!records/frontier/
-!records/regress/
-!records/context/
-!records/quantladder/
-!records/backend/
-*.jsonl.gz
-*.safetensors
-*.npy
-
 # scratch
 *.log
 __pycache__/

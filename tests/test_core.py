@@ -144,7 +144,7 @@ def test_keep_truncated_is_opt_in():
 def test_threshold_matches_the_measured_null():
     """13 configurations known harmless produced |d_z| <= 0.10; 0.3 is ~3x that.
 
-    If this constant is ever changed, the calibration evidence in the findings record
+    If this constant is ever changed, the calibration evidence in docs/measurements.md
     (F8b) has to change with it.
     """
     assert DEFAULT_THRESHOLD == 0.3

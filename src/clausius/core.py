@@ -11,7 +11,7 @@ signal is a byproduct of a forward pass you are already running.
 
 Validated against five unrelated damage mechanisms whose true damage was
 measured independently — quantization, expert zeroing, top-k reduction, expert
-substitution and LoRA fine-tuning — on two architectures. See the findings record (F8,
+substitution and LoRA fine-tuning — on two architectures. See docs/measurements.md (F8,
 F9, F11, F13).
 
 The design decisions below are not defaults chosen by taste. Each one is a
@@ -283,7 +283,7 @@ def _backend_mlx():
             "    pip install 'clausius[mlx]'\n"
             "There is no other capture backend in this release. One was built\n"
             "and measured, and is not shipped because its threshold has never\n"
-            "been calibrated — see the experiment log.\n"
+            "been calibrated — see docs/measurements.md.\n"
             "compare, aggregate and truncation_curve are pure numpy and run "
             "anywhere, so captures made elsewhere can be analyzed here.") from e
 
@@ -320,8 +320,8 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     that extension point finds out on any machine rather than only on a Mac.
 
     The runtime is recorded on the capture. A torch backend exists on the
-    `feat/torch-backend` branch and is NOT shipped — see the experiment log for the
-    decision and FINDINGS F15 for the measurement behind it.
+    `feat/torch-backend` branch and is NOT shipped — see docs/measurements.md for the
+    decision and the research record (F15) for the measurement behind it.
     """
     if model_obj is None and model is None:
         raise ValueError(
@@ -498,7 +498,7 @@ def top_movers(reference, candidate, n=5, signal=DEFAULT_SIGNAL,
 
     `compare` answers "did something break". This answers "show me", which is
     the next question every time and the one the aggregate cannot address:
-    d_z is ordinal rather than proportional (FINDINGS F14d), so the per-item
+    d_z is ordinal rather than proportional (research record, F14d), so the per-item
     view is how a reader forms their own judgment of severity.
 
     Everything needed is already recorded — no second capture, no model.

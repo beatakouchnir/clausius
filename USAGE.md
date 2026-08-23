@@ -1,6 +1,6 @@
 # Using clausius
 
-How to run the detector and read what it tells you. For *why* each default is what it is, see [the findings record](the findings record); this file is the operating manual.
+How to run the detector and read what it tells you. For *why* each default is what it is, see the measured basis in [docs/measurements.md](docs/measurements.md); this file is the operating manual.
 
 - [Try it in 30 minutes](#try-it-in-30-minutes)
 - [Choosing prompts](#choosing-prompts)
@@ -70,7 +70,7 @@ Same model family, same prompts, no labels anywhere: one bit-width flags, the ot
 
 `compare` refuses to run on fewer than **20 surviving paired items**, and truncated items are dropped before that count is taken — so 60 keeps the floor out of reach on a first attempt while 25 sits right on it.
 
-**Composition changes the answer.** Compression does not degrade capabilities evenly: short factual recall loses 1.5pp where structured generation loses 18–21pp at the same bit width, a ~14x difference in what the same setting appears to cost (FINDINGS §4). A short-answers-only set will understate damage; the shipped set is six blocks of ten — factual recall, arithmetic, instruction following, explanation, code, business writing — for that reason.
+**Composition changes the answer.** Compression does not degrade capabilities evenly: short factual recall loses 1.5pp where structured generation loses 18–21pp at the same bit width, a ~14x difference in what the same setting appears to cost (research record, §4). A short-answers-only set will understate damage; the shipped set is six blocks of ten — factual recall, arithmetic, instruction following, explanation, code, business writing — for that reason.
 
 One prompt per line, either JSONL with a `prompt`, `text` or `input` field, or plain text:
 
@@ -162,7 +162,7 @@ It reads recorded data, so it costs nothing and needs no model. Because `d_z` is
 
 ## Calibrating your own null
 
-The 0.3 threshold comes from 13 benign configurations measured on **one stack**, and the null is not a universal constant — the same benign 8-bit checkpoint against the same bf16 reference reads **+0.172** on a mixed instruction set and **−0.062** on gsm8k (FINDINGS F14c). On a different framework (mlx vs torch), a different device (cuda, mps, cpu), a different quantizer, or a markedly different prompt set, measure your own floor first:
+The 0.3 threshold comes from 13 benign configurations measured on **one stack**, and the null is not a universal constant — the same benign 8-bit checkpoint against the same bf16 reference reads **+0.172** on a mixed instruction set and **−0.062** on gsm8k (research record, F14c). On a different framework (mlx vs torch), a different device (cuda, mps, cpu), a different quantizer, or a markedly different prompt set, measure your own floor first:
 
 ```bash
 # two configurations you have independent reason to believe are equivalent —
