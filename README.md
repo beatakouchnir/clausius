@@ -29,7 +29,7 @@ REGRESSION  (max d_z = +5.922, threshold 0.3, one-sided)
   all signals: max +5.92  p90 +11.64  mean +10.43  mean_top10 +9.00  first +2.80  gen_len +10.55
 ```
 
-![clausius compare on real captures: the 2-bit config is flagged REGRESSION with the ref's coherent reasoning shown against the 2-bit model's garbled output](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/compare.gif)
+![clausius compare on real captures: the 2-bit config is flagged REGRESSION with the ref's coherent reasoning shown against the 2-bit model's garbled output](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/media/compare.gif)
 
 That is a real run on 25 unlabeled prompts. The two checkpoints differ only in quantization; the 2-bit one independently measures 73 points lower on instruction adherence. `--show 3` prints the items whose entropy moved most, with the text both configurations produced — the verdict says something broke, this says what.
 
@@ -63,7 +63,7 @@ The numbers behind the defaults, measured on consumer hardware (M5 Max, 128 GB) 
 | Short benchmarks understate damage ~14× | factual QA loses 1.5pp where structured generation loses 18–21pp under the same quantization | F11 |
 | Offload beats downsizing | an offloaded 35B at 3.40 GB scores 0.9447 on gsm8k against a natively-fitting 4B at 3.91 GB scoring 0.8426; the whole cost is latency | F3–F6 |
 
-Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is on the [receipts page](https://github.com/beatakouchnir/clausius/blob/main/docs/receipts.md); the full record is [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record). The corpus is committed, so every table rebuilds on a laptop with no model and no accelerator.
+Everything else — the quantization ladder and frontier chart, the claim taxonomy, what did not work, the seven corrections, prior art — is on the [evidence](https://github.com/beatakouchnir/clausius/blob/main/docs/measurements.md); the full record is [the findings record](https://github.com/beatakouchnir/clausius/blob/main/the findings record). The corpus is committed, so every table rebuilds on a laptop with no model and no accelerator.
 
 ## Ask how to run a model
 
@@ -87,7 +87,7 @@ The card currently holds 37 rows across four Qwen models on gsm8k, MATH-500 L5, 
 
 ## Where this is going
 
-v0.2 adds report cards — the benchmarks official model cards report, re-measured at the configurations people actually deploy — and makes every measurement a module on one statistical core, so later measurements (agent trajectories, stopping behavior) arrive as rows on the same card rather than as new tools. The plan and its sequencing are in [docs/v02_plan.md](https://github.com/beatakouchnir/clausius/blob/main/docs/v02_plan.md).
+v0.2 adds report cards — the benchmarks official model cards report, re-measured at the configurations people actually deploy — and makes every measurement a module on one statistical core, so later measurements (agent trajectories, stopping behavior) arrive as rows on the same card rather than as new tools. The plan and its sequencing are in [ROADMAP.md](https://github.com/beatakouchnir/clausius/blob/main/ROADMAP.md).
 
 **Sibling.** [boyle](https://github.com/beatakouchnir/boyle) runs the model you want at the memory pressure you specify — budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repository's measured accuracy.
 
@@ -103,4 +103,5 @@ v0.2 adds report cards — the benchmarks official model cards report, re-measur
 | `records/` | the measurement corpus behind the findings record, ~10 MB | — |
 | `knowledge/` | the research package that produced the findings; not packaged | local checkpoints, `CLAUSIUS_ARTIFACTS` |
 | `USAGE.md` | the operating manual | — |
-| `the findings record` · `the experiment log` · `docs/receipts.md` | the record: results, designs, what was deliberately not built | — |
+| `docs/measurements.md` | the measured basis for the tool's defaults and claims | — |
+| `the findings record` · `the experiment log` | the full experimental record and design decisions | — |

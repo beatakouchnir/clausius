@@ -1,6 +1,6 @@
-# clausius — receipts
+# clausius — measurements
 
-*The evidence behind the tool, moved out of the README on 2026-08-23 so the README can say what the tool does and how to run it. Nothing here was edited except headings; the full experimental record is [the findings record](../the findings record), designs and scope decisions are in [the experiment log](../the experiment log), and every table below rebuilds from the committed corpus:*
+*The measured basis for the tool's defaults and claims, kept out of the README so it can say what the tool does and how to run it. Nothing here was edited except headings; the full experimental record is [the findings record](../the findings record), designs and scope decisions are in [the experiment log](../the experiment log), and every table below rebuilds from the committed corpus:*
 
 ```bash
 git clone https://github.com/beatakouchnir/clausius && cd clausius
@@ -46,7 +46,7 @@ Full evidence, positives *and* negatives, in [the findings record](https://githu
 | **Short benchmarks understate damage ~14×** | factual QA loses 1.5pp where structured generation loses 18–21pp under the same quantization — the axis agents live on. | F11 |
 | **Routing carries a fact-level address** | ablate the experts a fact routes to and that fact degrades far more than a paraphrase, a same-relation fact, or a random control. Two architectures. A **mechanism** result, not a product. | R9–R10 |
 
-![Left: exact expert offload holds full accuracy down to 3.4 GB while skipping non-resident experts collapses and the natively-fitting 4B trails — all at 4-bit. Right: the quantization ladder on the same 26B — 8-bit is free, 4-bit costs 2.2pp, the cliff to 3-bit costs 57pp](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/frontier_gsm8k.png)
+![Left: exact expert offload holds full accuracy down to 3.4 GB while skipping non-resident experts collapses and the natively-fitting 4B trails — all at 4-bit. Right: the quantization ladder on the same 26B — 8-bit is free, 4-bit costs 2.2pp, the cliff to 3-bit costs 57pp](https://raw.githubusercontent.com/beatakouchnir/clausius/main/docs/media/frontier_gsm8k.png)
 
 *The headline rows, drawn. Left: three ways to fit in less memory, all at 4-bit (`knowledge.frontier report`). Right: what quantizing harder does instead (`knowledge.quantladder analyze`) — 8-bit is statistically free, 4-bit costs 2.2pp, and the cliff lives between 4 and 3 bits. Both panels rebuild from the committed records.*
 
