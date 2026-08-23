@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "exported": "2026-08-22",
+ "exported": "2026-08-23",
  "hardware": "Apple M5 Max, 128 GB",
  "rows": [
   {
@@ -1008,6 +1008,34 @@
     "cell": "s1-math-16k",
     "dir": "phase1-397b",
     "measured": "2026-08-21",
+    "partial": false
+   }
+  },
+  {
+   "model": "qwen3.8-27b",
+   "checkpoint": "lmstudio-community/Qwen3.8-27B-MLX-4bit",
+   "quant": "4-bit MLX",
+   "engine": "boyle (mlx-lm)",
+   "task": "aime-2024-25",
+   "strategy": "greedy",
+   "thinking": false,
+   "effort": null,
+   "k": null,
+   "cap": 8192,
+   "n": 60,
+   "accuracy": 0.7,
+   "ci95": [
+    0.5749,
+    0.801
+   ],
+   "wall_s": 175.2,
+   "truncation": 0.2167,
+   "tokens_out": 4926,
+   "source": {
+    "program": "the coding-agent study C2",
+    "cell": "c2-aime-nothink-8k",
+    "dir": "c2_qwen38",
+    "measured": "2026-08-23",
     "partial": false
    }
   },
