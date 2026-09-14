@@ -4,7 +4,7 @@
 Engine-agnostic by design: boyle, mlx-lm server, or a cloud
 endpoint — anything speaking /v1/chat/completions. Cost is metered here:
 wall-clock around the call plus the server's token usage. Non-streaming
-keeps accounting exact; the measurement harness runs batches, not chats.
+keeps accounting exact; the runner sends batches, not chats.
 """
 
 from __future__ import annotations

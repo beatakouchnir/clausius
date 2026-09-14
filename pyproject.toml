@@ -23,7 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 # mlx-lm is needed only to CAPTURE. Comparison and analysis are pure numpy, so
-# CI and anyone re-analyzing the published corpus need no accelerator at all.
+# CI and anyone re-analyzing existing captures need no accelerator at all.
 mlx = ["mlx-lm>=0.20"]
 dev = ["pytest>=7"]
 
@@ -38,9 +38,9 @@ Issues = "https://github.com/beatakouchnir/clausius/issues"
 packages = ["src/clausius"]
 
 # The sdist carries what is needed to build and test the package. The research
-# package, the chain scripts and the 11 MB measurement corpus are provenance,
-# they live on GitHub, and shipping them here would make `pip download` pull
-# the sdist ships the tool and its tests, nothing else.
+# package, the chain scripts and the measurement corpus are provenance and live
+# in a separate research repository; the sdist ships the tool and its tests,
+# nothing else.
 [tool.hatch.build.targets.sdist]
 include = ["src/", "tests/", "README.md", "LICENSE", "NOTICE", "pyproject.toml"]
 exclude = [".gitignore"]

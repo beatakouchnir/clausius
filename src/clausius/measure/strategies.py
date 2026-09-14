@@ -41,7 +41,7 @@ def _messages(prompt: str) -> list[dict]:
 def _sample_seed(prompt: str, i: int) -> int:
     """Stable per-(item, sample) seed: reproducible cells, diverse samples.
     Exists because the serving path once returned IDENTICAL draws at any
-    temperature (the void-cells incident, a dated amendment)."""
+    temperature (the void-cells incident, recorded as a dated amendment)."""
     return (zlib.crc32(prompt.encode()) ^ (i * 0x9E3779B1)) & 0x7FFFFFFF
 
 
@@ -130,7 +130,8 @@ def s3b_best_of_n_entropy(client: ChatClient, prompt: str, extract,
                              "entropies": [round(c.mean_entropy, 5) for c in calls]})
 
 
-# -- S6: self-refine. Prompts FROZEN here. Greedy throughout. On Qwen3.5's
+# -- S6: self-refine (frozen: draft -> critique -> revise, 2 rounds max,
+# skeptical prior). Prompts FROZEN here. Greedy throughout. On Qwen3.5's
 # hybrid cache every round pays re-prefill — the meter reports that real
 # cost via wall_s; no discounting.
 
@@ -179,7 +180,8 @@ def s6_self_refine(client: ChatClient, prompt: str, extract,
                              "revised": len(calls) > 2})
 
 
-# -- S5: tool-augmented single pass. One generation; if it contains ```python blocks and no final
+# -- S5: tool-augmented single pass (python-exec, frozen tool
+# prompt). One generation; if it contains ```python blocks and no final
 # answer yet, the LAST block is executed and its output returned for ONE
 # continuation (max 2 executions). Greedy. Execution: subprocess, 6 s.
 
@@ -244,8 +246,8 @@ def s_effort(client: ChatClient, prompt: str, extract, max_tokens: int,
     """Thinking at a template-defined reasoning effort (Qwen3.8: low /
     medium / xhigh via chat_template_kwargs), or thinking off when effort is
     None. Records the full response text and the per-token entropy trace
-    in meta — the instrumentation the measurement harness's Phase 1 cells lacked (the mechanism research
-    probe 1 could not locate where a runaway chain first reached its
+    in meta — the instrumentation earlier cells lacked (without it, one
+    probe could not locate where a runaway chain first reached its
     answer). Greedy, signal on."""
     kwargs = {"reasoning_effort": effort} if effort else None
     c = client.complete(_messages(prompt), max_tokens=max_tokens,
