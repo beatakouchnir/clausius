@@ -319,8 +319,8 @@ def capture(model, prompts, tag='run', max_tokens=512, adapter=None,
     Arguments are checked before the runtime is imported, so a caller wiring up
     that extension point finds out on any machine rather than only on a Mac.
 
-    The runtime is recorded on the capture. A torch backend exists on the
-    `feat/torch-backend` branch and is NOT shipped — see docs/measurements.md for the
+    The runtime is recorded on the capture. A torch backend exists at the tag
+    `archive/torch-backend` and is NOT shipped — see docs/measurements.md for the
     decision and the research record (F15) for the measurement behind it.
     """
     if model_obj is None and model is None:

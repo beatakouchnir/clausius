@@ -1,6 +1,7 @@
 # VHS tape: the detector's money moment — real captures, real verdict.
 # Prereq: ref.json (26B 4-bit) and cand.json (same model, 2-bit) produced by
-# `clausius capture` in the working dir below.
+# `clausius capture`, in a directory exported as CLAUSIUS_DEMO with the
+# clausius virtualenv activated.
 # Render: vhs docs/media/compare.tape  (from the clausius repo root)
 Output docs/media/compare.gif
 Set FontSize 15
@@ -11,7 +12,7 @@ Set Padding 12
 Set TypingSpeed 40ms
 
 Hide
-Type "cd $CLAUSIUS_DEMO && source $CLAUSIUS_VENV/bin/activate && clear"
+Type "cd $CLAUSIUS_DEMO && clear"
 Enter
 Sleep 1s
 Show

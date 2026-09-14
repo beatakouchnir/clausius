@@ -57,7 +57,7 @@ The headline results, each stated with its n and interval (finding codes such as
 | **framework** | mlx, PyTorch | which library runs the forward pass |
 | **device** | cuda, mps, cpu | which hardware PyTorch dispatches to |
 
-Nothing about the *method* needs Apple Silicon, and a working PyTorch framework backend exists on the `feat/torch-backend` branch — **deliberately not shipped**. It was measured on mps and cpu (F15, F15c), so the framework path is exercised; what has never been calibrated is the **cuda device** and the CUDA-native quantizers (bitsandbytes, GPTQ, AWQ). Shipping a runtime whose threshold is uncalibrated on the device most users would run would contradict the claim this package makes about its defaults; the bar it must clear is recorded in the research notes.
+Nothing about the *method* needs Apple Silicon, and a working PyTorch framework backend exists at the tag `archive/torch-backend` — **deliberately not shipped**. It was measured on mps and cpu (F15, F15c), so the framework path is exercised; what has never been calibrated is the **cuda device** and the CUDA-native quantizers (bitsandbytes, GPTQ, AWQ). Shipping a runtime whose threshold is uncalibrated on the device most users would run would contradict the claim this package makes about its defaults; the bar it must clear is recorded in the research notes.
 
 ## Claim taxonomy — keep these separate
 
