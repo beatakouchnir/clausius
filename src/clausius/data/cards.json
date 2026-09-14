@@ -24,9 +24,8 @@
    "truncation": 0.4394,
    "tokens_out": 2060,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-gpqa-3072",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "gpqa-diamond-greedy-3072",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -52,9 +51,8 @@
    "truncation": 0.02,
    "tokens_out": 341,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-gsm8k",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "gsm8k-greedy-768",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -80,9 +78,8 @@
    "truncation": 0.4701,
    "tokens_out": 1514,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-math",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "math500-l5-greedy-2048",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -108,9 +105,8 @@
    "truncation": 0.54,
    "tokens_out": 9783,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-gsm8k-16k",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "gsm8k-thinking-16384-default",
     "measured": "2026-08-18",
     "partial": false
    }
@@ -136,9 +132,8 @@
    "truncation": 0.8731,
    "tokens_out": 15565,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-math-16k",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "math500-l5-thinking-16384-default",
     "measured": "2026-08-18",
     "partial": false
    }
@@ -164,9 +159,8 @@
    "truncation": 0.13,
    "tokens_out": 1738,
    "source": {
-    "program": "research phase 1",
-    "cell": "s2k5-gsm8k",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "gsm8k-self-consistency-k-5-768",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -192,9 +186,8 @@
    "truncation": 0.597,
    "tokens_out": 7587,
    "source": {
-    "program": "research phase 1",
-    "cell": "s2k5-math",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "math500-l5-self-consistency-k-5-2048",
     "measured": "2026-08-18",
     "partial": false
    }
@@ -220,9 +213,8 @@
    "truncation": 0.13,
    "tokens_out": 1743,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3a-gsm8k",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "gsm8k-best-of-5-self-judged-768",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -248,9 +240,8 @@
    "truncation": 0.597,
    "tokens_out": 7593,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3a-math",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "math500-l5-best-of-5-self-judged-2048",
     "measured": "2026-08-18",
     "partial": false
    }
@@ -276,9 +267,8 @@
    "truncation": 0.13,
    "tokens_out": 1738,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3b-gsm8k",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "gsm8k-best-of-5-lowest-entropy-768",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -304,9 +294,8 @@
    "truncation": 0.597,
    "tokens_out": 7587,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3b-math",
-    "dir": "phase1-4b",
+    "program": "benchmark run",
+    "cell": "math500-l5-best-of-5-lowest-entropy-2048",
     "measured": "2026-08-18",
     "partial": false
    }
@@ -332,9 +321,8 @@
    "truncation": 0.6667,
    "tokens_out": 6190,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-aime-8k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "aime-2024-25-greedy-8192",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -360,9 +348,8 @@
    "truncation": 0.8,
    "tokens_out": 1928,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-aime",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "aime-2024-25-greedy-2048",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -388,9 +375,8 @@
    "truncation": 0.4293,
    "tokens_out": 2038,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-gpqa-3072",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gpqa-diamond-greedy-3072",
     "measured": "2026-08-16",
     "partial": false
    }
@@ -416,9 +402,8 @@
    "truncation": 0.03,
    "tokens_out": 357,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-gsm8k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gsm8k-greedy-768",
     "measured": "2026-08-16",
     "partial": false
    }
@@ -444,9 +429,8 @@
    "truncation": 0.3582,
    "tokens_out": 1448,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-math",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-greedy-2048",
     "measured": "2026-08-16",
     "partial": false
    }
@@ -472,9 +456,8 @@
    "truncation": 0.6167,
    "tokens_out": 14527,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-aime-16k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "aime-2024-25-thinking-16384-default",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -500,9 +483,8 @@
    "truncation": 0.4667,
    "tokens_out": 22888,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-aime-32k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "aime-2024-25-thinking-32768-default",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -528,9 +510,8 @@
    "truncation": 0.55,
    "tokens_out": 10256,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-gsm8k-16k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gsm8k-thinking-16384-default",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -556,9 +537,8 @@
    "truncation": 0.2836,
    "tokens_out": 10817,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-math-16k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-thinking-16384-default",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -584,9 +564,8 @@
    "truncation": 0.5299,
    "tokens_out": 14562,
    "source": {
-    "program": "research phase 1",
-    "cell": "s2k10-math",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-self-consistency-k-10-2048",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -612,9 +591,8 @@
    "truncation": 0.4552,
    "tokens_out": 4354,
    "source": {
-    "program": "research phase 1",
-    "cell": "s2k3-math",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-self-consistency-k-3-2048",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -640,9 +618,8 @@
    "truncation": 0.5455,
    "tokens_out": 10448,
    "source": {
-    "program": "research phase 1",
-    "cell": "s2k5-gpqa-3072",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gpqa-diamond-self-consistency-k-5-3072",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -668,9 +645,8 @@
    "truncation": 0.4776,
    "tokens_out": 7281,
    "source": {
-    "program": "research phase 1",
-    "cell": "s2k5-math",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-self-consistency-k-5-2048",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -696,9 +672,8 @@
    "truncation": 0.09,
    "tokens_out": 1847,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3a-gsm8k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gsm8k-best-of-5-self-judged-768",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -724,9 +699,8 @@
    "truncation": 0.4851,
    "tokens_out": 7287,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3a-math",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-best-of-5-self-judged-2048",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -752,9 +726,8 @@
    "truncation": 0.09,
    "tokens_out": 1842,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3b-gsm8k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gsm8k-best-of-5-lowest-entropy-768",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -780,9 +753,8 @@
    "truncation": 0.4776,
    "tokens_out": 7281,
    "source": {
-    "program": "research phase 1",
-    "cell": "s3b-math",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "math500-l5-best-of-5-lowest-entropy-2048",
     "measured": "2026-08-17",
     "partial": false
    }
@@ -808,9 +780,8 @@
    "truncation": 0.0,
    "tokens_out": 41,
    "source": {
-    "program": "research phase 1",
-    "cell": "screen-bfcl-s0",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "bfcl-v4-greedy-512",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -836,9 +807,8 @@
    "truncation": 0.803,
    "tokens_out": 970,
    "source": {
-    "program": "research phase 1",
-    "cell": "screen-gpqa-s0",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "gpqa-diamond-greedy-1024",
     "measured": "2026-08-16",
     "partial": false
    }
@@ -864,9 +834,8 @@
    "truncation": 0.0467,
    "tokens_out": 288,
    "source": {
-    "program": "research phase 1",
-    "cell": "screen-ifeval-s0",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "ifeval-greedy-1024",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -892,9 +861,8 @@
    "truncation": 0.45,
    "tokens_out": 4831,
    "source": {
-    "program": "research phase 1",
-    "cell": "screen-lcb-s0-8k",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "livecodebench-greedy-8192",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -920,9 +888,8 @@
    "truncation": 0.61,
    "tokens_out": 1537,
    "source": {
-    "program": "research phase 1",
-    "cell": "screen-lcb-s0",
-    "dir": "phase1",
+    "program": "benchmark run",
+    "cell": "livecodebench-greedy-2048",
     "measured": "2026-08-22",
     "partial": false
    }
@@ -948,9 +915,8 @@
    "truncation": 0.0,
    "tokens_out": 339,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-gsm8k",
-    "dir": "phase1-397b",
+    "program": "benchmark run",
+    "cell": "gsm8k-greedy-768",
     "measured": "2026-08-19",
     "partial": false
    }
@@ -976,9 +942,8 @@
    "truncation": 0.3209,
    "tokens_out": 1398,
    "source": {
-    "program": "research phase 1",
-    "cell": "s0sig-math",
-    "dir": "phase1-397b",
+    "program": "benchmark run",
+    "cell": "math500-l5-greedy-2048",
     "measured": "2026-08-19",
     "partial": false
    }
@@ -1004,9 +969,8 @@
    "truncation": 0.1045,
    "tokens_out": 8520,
    "source": {
-    "program": "research phase 1",
-    "cell": "s1-math-16k",
-    "dir": "phase1-397b",
+    "program": "benchmark run",
+    "cell": "math500-l5-thinking-16384-default",
     "measured": "2026-08-21",
     "partial": false
    }
@@ -1032,9 +996,8 @@
    "truncation": 0.2167,
    "tokens_out": 4926,
    "source": {
-    "program": "coding-agent C2",
-    "cell": "c2-aime-nothink-8k",
-    "dir": "c2_qwen38",
+    "program": "model qualification",
+    "cell": "aime-2024-25-greedy-8192",
     "measured": "2026-08-23",
     "partial": false
    }
@@ -1060,9 +1023,8 @@
    "truncation": 0.37,
    "tokens_out": 4858,
    "source": {
-    "program": "coding-agent C2",
-    "cell": "c2-lcb-nothink-8k",
-    "dir": "c2_qwen38",
+    "program": "model qualification",
+    "cell": "livecodebench-greedy-8192",
     "measured": "2026-08-23",
     "partial": false
    }
@@ -1088,9 +1050,8 @@
    "truncation": 0.0224,
    "tokens_out": 2393,
    "source": {
-    "program": "coding-agent C2",
-    "cell": "c2-math-nothink-8k",
-    "dir": "c2_qwen38",
+    "program": "model qualification",
+    "cell": "math500-l5-greedy-8192",
     "measured": "2026-08-22",
     "partial": false
    }

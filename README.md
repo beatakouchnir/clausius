@@ -87,7 +87,7 @@ The card currently holds 37 rows across four Qwen models on gsm8k, MATH-500 L5, 
 
 ## Where this is going
 
-v0.2 adds report cards — the benchmarks official model cards report, re-measured at the configurations people actually deploy — and makes every measurement a module on one statistical core, so later measurements (agent trajectories, stopping behavior) arrive as rows on the same card rather than as new tools. The plan and its sequencing are in [ROADMAP.md](https://github.com/beatakouchnir/clausius/blob/main/ROADMAP.md).
+v0.2 adds report cards — the benchmarks official model cards report, re-measured at the configurations people actually deploy — and makes every measurement a module on one statistical core, so later measurements (agent trajectories, stopping behavior) arrive as rows on the same card rather than as new tools.
 
 **Sibling.** [boyle](https://github.com/beatakouchnir/boyle) runs the model you want at the memory pressure you specify — budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repository's measured accuracy.
 
