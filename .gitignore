@@ -10,6 +10,3 @@ venv/
 *.egg-info/
 dist/
 build/
-
-# local planning notes, not part of the repo
-ROADMAP.md
