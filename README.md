@@ -1,16 +1,27 @@
-# clausius — measure the model as you run it
+# clausius
 
-[![ci](https://github.com/beatakouchnir/clausius/actions/workflows/test.yml/badge.svg)](https://github.com/beatakouchnir/clausius/actions/workflows/test.yml)
 [![PyPI](https://img.shields.io/pypi/v/clausius)](https://pypi.org/project/clausius/)
 [![license](https://img.shields.io/pypi/l/clausius)](LICENSE)
 
-Benchmarks measure models; `clausius` measures the model as you run it — at your quantization, your cap, your thinking setting, on your prompts — with paired statistics and the truncation rate beside every number. Today that is two verbs: `compare` tells you whether a change broke the model, on your own prompts, with no labels, and exits non-zero so it drops into CI without glue; `plan` tells you how to run a model from measured cells.
+> **Archived, October 2026.** clausius is no longer maintained. The final release, 0.1.3, still installs and runs; no further fixes will follow. This repository remains as the record of what was measured: the label-free regression detector and the evidence behind its defaults, and the measured run-configuration card.
+
+clausius measured a local model as it was actually run (its quantization, output cap and thinking setting, on its own prompts) with paired statistics and the truncation rate beside every number. It had two verbs: `compare` reported whether a change broke the model, on unlabeled prompts, and exited non-zero so it could gate CI; `plan` reported how to run a model from measured cells.
+
+## Where each part went
+
+| clausius | upstream | status (October 2026) |
+|---|---|---|
+| truncation accounting: items cut off by the output cap are recorded with their finish reason instead of being scored as wrong | oMLX [#3945](https://github.com/jundot/omlx/pull/3945) (fixes [#3772](https://github.com/jundot/omlx/issues/3772)) | merged |
+| stop reason in per-sample summaries | Inspect [#5554](https://github.com/UKGovernmentBEIS/inspect_ai/issues/5554) | proposed |
+| label-free regression detector (`capture`, `compare`) | none | not upstreamed; no existing project has a home for it |
+| `plan` and its measured card | none | not upstreamed |
+| measurement engine (`clausius.measure`) | none | not upstreamed |
 
 ## Install
 
 ```bash
-pip install "clausius[mlx]"        # capture + compare (Apple Silicon)
-pip install clausius               # compare and analysis only — pure numpy, runs anywhere
+pip install "clausius[mlx]==0.1.3"   # capture + compare (Apple Silicon)
+pip install clausius==0.1.3          # compare and analysis only — pure numpy, runs anywhere
 ```
 
 ## Run it
@@ -50,7 +61,7 @@ That is a real run on 25 unlabeled prompts. The two checkpoints differ only in q
 - The threshold is calibrated on one stack (MLX, Apple Silicon). On another framework, device, or quantizer, measure your own null first — [USAGE.md](https://github.com/beatakouchnir/clausius/blob/main/USAGE.md#calibrating-your-own-null) has the recipe.
 - Local and self-hosted models only: hosted APIs expose no logprobs, or truncated ones, which is a different quantity.
 
-Capture targets Apple Silicon via MLX in this release. An experimental PyTorch backend exists and is deliberately unshipped: it has been measured on mps and cpu, never calibrated on cuda or the CUDA-native quantizers, and shipping an uncalibrated threshold would contradict what this package claims about its defaults. It is archived at the tag `archive/torch-backend` rather than kept as a live branch, and will be revisited if a user needs it or a contribution calls for it; the bar it must clear is recorded in the research notes.
+Capture targets Apple Silicon via MLX in this release. An experimental PyTorch backend exists and is deliberately unshipped: it has been measured on mps and cpu, never calibrated on cuda or the CUDA-native quantizers, and shipping an uncalibrated threshold would contradict what this package claims about its defaults. It is preserved at the tag `archive/torch-backend`.
 
 ## Receipts
 
@@ -83,13 +94,11 @@ clausius plan --model qwen3.5-35b-a3b --task aime-2024-25
     thinking                      32768   60     0.550   [0.425, 0.669]     204   0.47  ◀ pick
 ```
 
-The card currently holds 37 rows across four Qwen models on gsm8k, MATH-500 L5, GPQA-Diamond, AIME, IFEval, BFCL, and LiveCodeBench, all measured on one machine (M5 Max, 128 GB) at 4-bit; the rows and their sources are in the packaged `data/cards.json` (`--json` prints them). Rows are added as cells are measured, never interpolated.
+The card holds 37 rows across four Qwen models on gsm8k, MATH-500 L5, GPQA-Diamond, AIME, IFEval, BFCL, and LiveCodeBench, all measured on one machine (M5 Max, 128 GB) at 4-bit; the rows and their sources are in the packaged `data/cards.json` (`--json` prints them). Every row was measured, none interpolated, and the card is final.
 
-## Where this is going
+## Related
 
-v0.2 adds report cards — the benchmarks official model cards report, re-measured at the configurations people actually deploy — and makes every measurement a module on one statistical core, so later measurements (agent trajectories, stopping behavior) arrive as rows on the same card rather than as new tools.
-
-**Sibling.** [boyle](https://github.com/beatakouchnir/boyle) runs the model you want at the memory pressure you specify — budgeted MoE inference with speed forecasts before you download. Its `predict` cites this repository's measured accuracy.
+[boyle](https://github.com/beatakouchnir/boyle), also archived, ran mixture-of-experts models inside a memory budget with speed forecasts before download; its runtime now lives in [oMLX](https://github.com/jundot/omlx). Its `predict` cites this repository's measured accuracy.
 
 *Named for Rudolf Clausius, who coined the word entropy in 1865. Entropy is the signal this tool reads.*
 
